@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import '../../Support Chat/support_chat.dart';
 import '../../localization/change_lang.dart';
 import '../viewmodel/content_viewmodel.dart';
 import '../widgets/category_card.dart';
@@ -48,7 +49,14 @@ class HomeContent extends StatelessWidget {
                                 ),
                                 Row(
                                   children: [
-                                    Image.asset("assets/images/img8.png"),
+                                    InkWell(
+                                      onTap: (){
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (context) => SupportChatScreen()),
+                                        );
+                                      },
+                                        child: Image.asset("assets/images/img8.png")),
                                     const SizedBox(width: 10),
                                     Image.asset("assets/images/img9.png"),
                                   ],
@@ -56,14 +64,6 @@ class HomeContent extends StatelessWidget {
                               ],
                             ),
                             const SizedBox(height: 10),
-                            const Text(
-                              'مرحباً!',
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: 'IBM_Plex_Sans_Arabic',
-                                  color: Color(0xff409EDC)),
-                            ),
                             Center(
                               child: Column(
                                 children: [
