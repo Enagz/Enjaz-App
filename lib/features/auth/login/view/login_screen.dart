@@ -11,6 +11,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../localization/change_lang.dart';
 import '../viewmodel/login_viewmodel.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -132,6 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+    final langCode = context.watch<LocalizationProvider>().locale.languageCode;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -157,15 +159,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         Image.asset('assets/images/img1.png',
                             width: imageWidth, height: imageWidth * 0.37),
                         const SizedBox(height: 16),
-                        const Text(
-                          "تسجيل الدخول",
+                        Text(
+                          Translations.getText('login', langCode),
                           style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                               fontFamily: 'IBM_Plex_Sans_Arabic'),
                         ),
-                        const Text(
-                          "الرجاء اختيار وسيلة تسجيل الدخول المناسبة لك",
+                        Text(
+                          Translations.getText('choose_method', langCode),
                           style: TextStyle(
                               fontSize: 12,
                               color: Color(0xffB3B3B3),
@@ -179,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             Consumer<LoginViewModel>(
                               builder: (context, viewModel, child) {
                                 return _buildToggleButton(
-                                  title: "البريد الإلكتروني",
+                                  title: Translations.getText('email', langCode),
                                   isSelected: !viewModel.isPhoneSelected,
                                   onTap: viewModel.toggleLoginMethod,
                                 );
@@ -188,7 +190,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             Consumer<LoginViewModel>(
                               builder: (context, viewModel, child) {
                                 return _buildToggleButton(
-                                  title: "رقم الجوال",
+                                  title: Translations.getText('phone', langCode),
                                   isSelected: viewModel.isPhoneSelected,
                                   onTap: viewModel.toggleLoginMethod,
                                 );
@@ -266,13 +268,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                         LoginState.loading
                                     ? const CircularProgressIndicator(
                                         color: Colors.white)
-                                    : const Text(
-                                        "تسجيل الدخول",
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600,
-                                          fontFamily: 'IBM_Plex_Sans_Arabic',
-                                          color: Colors.white,
+                                    :  Text(
+                                  Translations.getText('login', langCode),
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: 'IBM_Plex_Sans_Arabic',
+                                    color: Colors.white,
                                         ),
                                       ),
                               ),
@@ -352,8 +354,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 width: 1,
                               ),
                             ),
-                            child: const Text(
-                              "تسجيل الدخول بجوجل",
+                            child: Text(
+                              Translations.getText('google_login', langCode),
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
@@ -366,7 +368,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 12),
                         Text.rich(
                           TextSpan(
-                            text: "لا املك حساب؟ ",
+                            text: Translations.getText('no_account', langCode) + " ",
                             style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
@@ -374,7 +376,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             children: [
                               TextSpan(
-                                text: "تسجيل جديد",
+                                text: Translations.getText('signup', langCode),
                                 style: const TextStyle(
                                   color: Color(0xff409EDC),
                                   fontWeight: FontWeight.w600,
@@ -401,9 +403,16 @@ class _LoginScreenState extends State<LoginScreen> {
               Positioned(
                 top: 60,
                 left: padding,
-                child: Image.asset('assets/images/img2.png',
-                    width: screenWidth > 600 ? 120 : 98,
-                    height: screenWidth > 600 ? 40 : 33),
+                child: GestureDetector(
+                  onTap: () {
+                    final currentLang = context.read<LocalizationProvider>().locale.languageCode;
+                    final newLang = currentLang == 'ar' ? 'en' : 'ar';
+                    context.read<LocalizationProvider>().setLocale(Locale(newLang));
+                  },
+                  child: Image.asset('assets/images/img2.png',
+                      width: screenWidth > 600 ? 120 : 98,
+                      height: screenWidth > 600 ? 40 : 33),
+                ),
               ),
             ],
           );
@@ -411,6 +420,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+
 
   Widget _buildToggleButton({
     required String title,

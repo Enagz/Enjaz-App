@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
+import '../localization/change_lang.dart';
+
 
 class SupportChatScreen extends StatefulWidget {
   @override
