@@ -131,10 +131,12 @@ class _GeneralSettingsScreenState extends State<GeneralSettingsScreen> {
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => DeleteAccountScreen()));
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => const DeleteAccountScreen(),
+                      );
                     },
                     child: Text(
                       Translations.getText(

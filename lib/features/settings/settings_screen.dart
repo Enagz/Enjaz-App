@@ -147,7 +147,12 @@ class SettingsScreen extends StatelessWidget {
                     ),
                     child: InkWell(
                       onTap: () {
-                        Navigator.push(context,MaterialPageRoute(builder:(context)=>LogOut()));
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => const LogOutModal(),
+                        );
                       },
                       child: Row(
                         children: [

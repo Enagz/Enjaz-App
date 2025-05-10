@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'package:engaz_app/features/general_settings/general_settings_screen.dart';
 import 'package:engaz_app/features/settings/settings_screen.dart';
-import 'package:engaz_app/features/visitor/view/setting_screen_2.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';

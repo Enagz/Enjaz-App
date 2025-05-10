@@ -94,7 +94,7 @@ void showRatingDialog(BuildContext context, String orderId) {
                           }
 
                           final response = await http.post(
-                            Uri.parse('http://localhost:3000/api/order/$orderId/rate'),
+                            Uri.parse('https://wckb4f4m-3000.euw.devtunnels.ms/api/order/$orderId/rate'),
                             headers: {'Content-Type': 'application/json'},
                             body: jsonEncode({
                               'stars': selectedRating.toInt(),

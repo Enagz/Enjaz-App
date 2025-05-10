@@ -1,35 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class LogOut extends StatelessWidget {
-  const LogOut({super.key});
+class LogOutModal extends StatelessWidget {
+  const LogOutModal({super.key});
+
+  Future<void> _logout(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+    Navigator.of(context).pop();
+    Navigator.of(context).pushReplacementNamed('/login');
+  }
 
   @override
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          actions: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.asset("assets/images/img23.png"),
-            )
-          ],
-          title: const Text('تسجيل الخروج'),
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
+        child: SingleChildScrollView(
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
+              Align(
+                alignment: Alignment.topRight,
+                child: Image.asset("assets/images/img23.png", width: 40),
+              ),
+              const SizedBox(height: 12),
               Image.asset("assets/images/img24.png"),
               const SizedBox(height: 12),
               const Text(
                 'هل حقاً تريد تسجيل الخروج؟',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -37,14 +44,14 @@ class LogOut extends StatelessWidget {
                     width: 150,
                     height: 48,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).pop(); // رجوع فقط
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xff409EDC),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 12),
                       ),
                       child: const Text(
                         'تراجع',
@@ -57,18 +64,16 @@ class LogOut extends StatelessWidget {
                     width: 164,
                     height: 48,
                     child: OutlinedButton(
-                      onPressed: () {},
+                      onPressed: () => _logout(context),
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(
                             color: Color(0xFFE50930), width: 1),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 12),
                       ),
                       child: const Text(
-                        'حذف',
+                        'تسجيل الخروج',
                         style: TextStyle(
                           color: Color(0xFFE50930),
                           fontSize: 16,
