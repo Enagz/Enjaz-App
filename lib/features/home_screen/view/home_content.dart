@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../Support Chat/support_chat.dart';
 import '../../localization/change_lang.dart';
-import '../../notifications_history.dart';
+import '../../notifications_history/notifications_history.dart';
 import '../viewmodel/content_viewmodel.dart';
 import '../widgets/category_card.dart';
 

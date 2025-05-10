@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../../privacy_policy/privacy_policy_screen.dart';
@@ -13,7 +12,7 @@ class SettingsScreen2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Directionality(
-      textDirection: TextDirection.rtl,
+      textDirection: TextDirection.ltr,
       child: Scaffold(
         backgroundColor: const Color(0xFFF5F5F5),
         body: SafeArea(
@@ -22,50 +21,51 @@ class SettingsScreen2 extends StatelessWidget {
             child: Column(
               children: [
                 Align(
-                  alignment: Alignment.topRight,
+                  alignment: Alignment.topLeft,
                   child: Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
+                    padding: const EdgeInsets.only(left: 8.0),
                     child: const Text(
-                      "المزيد",
-                      style:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      "More",
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                     ),
                   ),
                 ),
                 const SizedBox(height: 24),
                 buildSection([
-                  buildSettingItem(context, "إعدادات عامة", Icons.settings,
+                  buildSettingItem(context, "General Settings", Icons.settings,
                       "assets/images/img28.png", const LoginRequiredDialog()),
-                  buildSettingItem(context, "تواصل معنا", Icons.phone,
+                  buildSettingItem(context, "Contact Us", Icons.phone,
                       "assets/images/img29.png", const LoginRequiredDialog()),
                 ]),
                 const SizedBox(height: 12),
                 buildSection([
-                  buildSettingItem(context, "سياسة الاستخدام", Icons.security,
+                  buildSettingItem(context, "Usage Policy", Icons.security,
                       "assets/images/img30.png", const UsagePolicyScreen()),
-                  buildSettingItem(context, "الشروط والأحكام", Icons.rule,
+                  buildSettingItem(context, "Terms & Conditions", Icons.rule,
                       "assets/images/img31.png", const TermsAndConditionsScreen()),
-                  buildSettingItem(context, "سياسة الخصوصية", Icons.privacy_tip,
+                  buildSettingItem(context, "Privacy Policy", Icons.privacy_tip,
                       "assets/images/img32.png", const PrivacyPolicyScreen()),
                 ]),
                 const SizedBox(height: 16),
                 Container(
                   width: double.infinity,
-                  padding:
-                  const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                   decoration: BoxDecoration(
-                    color: Color(0xff28C1ED).withOpacity(.2),
+                    color: const Color(0xff28C1ED).withOpacity(.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: InkWell(
-                    onTap:(){
-                      Navigator.push(context,MaterialPageRoute(builder:(context)=>HomePage2()));
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomePage2()),
+                      );
                     },
                     child: Row(
                       children: [
                         Image.asset("assets/images/img60.png"),
                         const SizedBox(width: 8),
-                        const Text("تسجيل الدخول",
+                        const Text("Log In",
                             style: TextStyle(color: Color(0xff409EDC))),
                       ],
                     ),
@@ -73,9 +73,8 @@ class SettingsScreen2 extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 const Center(
-                  child: Text("تابعنا عبر",
-                      style:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                  child: Text("Follow us on",
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                 ),
                 const SizedBox(height: 8),
                 Row(

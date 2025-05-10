@@ -16,7 +16,7 @@ class HomeContent2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Directionality(
-      textDirection: TextDirection.rtl,
+      textDirection: TextDirection.ltr,
       child: Scaffold(
         backgroundColor: const Color(0xffFDFDFD),
         body: SafeArea(
@@ -28,19 +28,18 @@ class HomeContent2 extends StatelessWidget {
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'الرئيسية',
+                    children: const [
+                      Text(
+                        'Home',
                         style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: 'IBM_Plex_Sans_Arabic'),
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'IBM_Plex_Sans_Arabic',
+                        ),
                       ),
-
                     ],
                   ),
                   const SizedBox(height: 10),
-
                   Center(
                     child: Column(
                       children: [
@@ -51,8 +50,7 @@ class HomeContent2 extends StatelessWidget {
                             itemCount: images.length,
                             itemBuilder: (context, index) {
                               return Container(
-                                margin:
-                                const EdgeInsets.symmetric(horizontal: .5),
+                                margin: const EdgeInsets.symmetric(horizontal: .5),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15),
                                   image: DecorationImage(
@@ -84,7 +82,7 @@ class HomeContent2 extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   const Text(
-                    'التصنيفات',
+                    'Categories',
                     style: TextStyle(
                       fontSize: 16,
                       color: Color(0xff1D1D1D),
@@ -94,16 +92,17 @@ class HomeContent2 extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   CategoryCard(
-                    title: 'الترجمة',
-                    description:
-                    'نقدم أفضل خدمات الترجمة لأكثر من 10 لغات حول العالم',
-                    image: 'assets/images/img5.png', destinationPage: HomePage2(),
+                    title: 'Translation',
+                    description: 'We offer top-quality translation services in over 10 languages worldwide.',
+                    image: 'assets/images/img5.png',
+                    destinationPage: HomePage2(),
                   ),
                   const SizedBox(height: 10),
                   CategoryCard(
-                    title: 'الطباعة',
-                    description: 'نقدم أفضل جودة للطباعة بأسعار تنافسية',
-                    image: 'assets/images/img6.png', destinationPage: HomePage2(),
+                    title: 'Printing',
+                    description: 'We provide the best printing quality at competitive prices.',
+                    image: 'assets/images/img6.png',
+                    destinationPage: HomePage2(),
                   ),
                 ],
               ),

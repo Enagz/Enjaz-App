@@ -12,6 +12,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../localization/change_lang.dart';
+import '../../../visitor/home_screen_2.dart';
 import '../viewmodel/login_viewmodel.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -282,7 +283,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
                         const SizedBox(height: 12),
-                        /*SizedBox(
+                        SizedBox(
                           width: double.infinity,
                           height: buttonHeight,
                           child: OutlinedButton(
@@ -310,7 +311,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
-                         */
                         const SizedBox(height: 12),
                         SizedBox(
                           width: double.infinity,

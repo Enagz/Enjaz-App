@@ -1,20 +1,14 @@
 import 'package:engaz_app/features/visitor/view/dialog.dart';
 import 'package:engaz_app/features/visitor/view/home_content_2.dart';
-import 'package:engaz_app/features/visitor/view/order_screen.dart';
 import 'package:engaz_app/features/visitor/view/setting_screen_2.dart';
 import 'package:flutter/material.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-
-import '../home_screen/widgets/category_card.dart';
-import '../printing_request/view/printer_request_page.dart';
-import '../translation _request/view/translation_request_page.dart';
 
 class HomePage2 extends StatefulWidget {
   @override
-  State<HomePage2> createState() => _HomePageState();
+  State<HomePage2> createState() => _HomePage2State();
 }
 
-class _HomePageState extends State<HomePage2> {
+class _HomePage2State extends State<HomePage2> {
   final PageController _pageController = PageController();
 
   final List<String> images = [
@@ -34,7 +28,7 @@ class _HomePageState extends State<HomePage2> {
   @override
   Widget build(BuildContext context) {
     return Directionality(
-      textDirection: TextDirection.rtl,
+      textDirection: TextDirection.ltr,
       child: Scaffold(
         backgroundColor: const Color(0xffFDFDFD),
         bottomNavigationBar: BottomNavigationBar(
@@ -42,12 +36,17 @@ class _HomePageState extends State<HomePage2> {
           elevation: 0,
           items: [
             BottomNavigationBarItem(
-                icon: Image.asset('assets/images/img13.png'),
-                label: 'الرئيسية'),
+              icon: Image.asset('assets/images/img13.png'),
+              label: 'Home',
+            ),
             BottomNavigationBarItem(
-                icon: Image.asset('assets/images/img14.png'), label: 'طلباتي'),
+              icon: Image.asset('assets/images/img14.png'),
+              label: 'Orders',
+            ),
             BottomNavigationBarItem(
-                icon: Image.asset('assets/images/img15.png'), label: 'المزيد'),
+              icon: Image.asset('assets/images/img15.png'),
+              label: 'More',
+            ),
           ],
           selectedItemColor: Colors.blue,
           unselectedItemColor: Colors.grey,
@@ -63,6 +62,3 @@ class _HomePageState extends State<HomePage2> {
     );
   }
 }
-
-
-

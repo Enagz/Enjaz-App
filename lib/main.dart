@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:engaz_app/features/home_screen/view/home_view.dart';
-import 'package:engaz_app/features/notifications_history.dart';
+import 'package:engaz_app/features/notifications_history/notifications_history.dart';
 import 'package:engaz_app/features/order_details/order_details_page.dart';
 import 'package:engaz_app/features/saved_order/view/saved_order.dart';
 import 'package:engaz_app/features/splash/view/splash_screen.dart';

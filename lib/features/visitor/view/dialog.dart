@@ -16,26 +16,26 @@ class LoginRequiredDialog extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Text(
-            'عفواً !',
+            'Oops!',
             textAlign: TextAlign.right,
             style: TextStyle(
               fontFamily: 'IBMPlexSansArabic',
-              fontWeight: FontWeight.w600, // 600 = semi-bold
+              fontWeight: FontWeight.w600,
               fontSize: 25,
-              height: 1.0, // 100% line height
+              height: 1.0,
               letterSpacing: 0.0,
             ),
           ),
           const Icon(Icons.warning_amber_rounded, size: 70, color: Colors.red),
           const SizedBox(height: 10),
           const Text(
-            'الرجاء تسجيل الدخول أولاً للوصول إلى خدمات التطبيق',
+            'Please log in first to access the app services',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: 'IBMPlexSansArabic',
-              fontWeight: FontWeight.w600, // 600 = semi-bold
+              fontWeight: FontWeight.w600,
               fontSize: 16,
-              height: 1.0, // 100% line height
+              height: 1.0,
               letterSpacing: 0.0,
             ),
           ),
@@ -45,14 +45,17 @@ class LoginRequiredDialog extends StatelessWidget {
               Expanded(
                 child: OutlinedButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text('تراجع',style: TextStyle(
-                    fontFamily: 'IBMPlexSansArabic',
-                    fontWeight: FontWeight.w600, // 600 = semi-bold
-                    fontSize: 15,
-                    height: 1.0, // 100% line height
-                    letterSpacing: 0.0,
-                    color: Colors.black
-                  ),),
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(
+                      fontFamily: 'IBMPlexSansArabic',
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                      height: 1.0,
+                      letterSpacing: 0.0,
+                      color: Colors.black,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
@@ -66,14 +69,17 @@ class LoginRequiredDialog extends StatelessWidget {
                     );
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                  child: const Text('تسجيل الدخول',style: TextStyle(
+                  child: const Text(
+                    'Log In',
+                    style: TextStyle(
                       fontFamily: 'IBMPlexSansArabic',
                       fontWeight: FontWeight.w600,
                       fontSize: 11.9,
                       height: 1.0,
                       letterSpacing: 0.0,
-                      color: Colors.white
-                  ),),
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
             ],
