@@ -98,7 +98,7 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
       });
     });
 
-    socket!.on("NewEmployeeOrderMessage", (data) {
+    socket!.on("SupportEmployeeMessage", (data) {
       print("📥 Received: $data");
       if (data is Map && data.containsKey('message') && data.containsKey('chatId')) {
         final String message = data['message'];
@@ -134,7 +134,7 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
       print('📤 ببعّت للسيرفر: $message');
       print('👤 userId: $userId');
 
-      socket!.emit("OrderCoustmerMessage", {
+      socket!.emit("SupportCoustmerMessage", {
         "message": message,
         "userId": userId,
       });

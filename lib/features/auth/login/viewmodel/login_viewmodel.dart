@@ -33,8 +33,8 @@ class LoginViewModel extends ChangeNotifier {
 
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('userId', result['userId']);
-     print( 'gvdsfgh'+result['userId']);
+      prefs.setString('userId', result['userId'] ?? '');
+      print( 'gvdsfgh'+result['userId']);
       prefs.setString('message', result['message']);
     } else {
       loginState = LoginState.failure;

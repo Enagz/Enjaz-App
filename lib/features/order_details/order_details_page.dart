@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:engaz_app/features/chat_orders/chat_orders_screen.dart';
 import 'package:engaz_app/features/order_details/view_model/order_model.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -171,10 +172,10 @@ class DeliveryInfoSection extends StatelessWidget {
           ),
           InkWell(
             onTap: () {
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) => ChatScreen()));
+               Navigator.push(
+                   context,
+                   MaterialPageRoute(
+                       builder: (context) => const OrderChatScreen()));
             },
             child: CircleAvatar(
                 backgroundColor: const Color(0xff409EDC),

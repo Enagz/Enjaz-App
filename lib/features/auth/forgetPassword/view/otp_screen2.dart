@@ -34,7 +34,7 @@ class _OtpScreen2State extends State<OtpScreen2> {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: '{"code": "$otpCode"}',
+        body: jsonEncode({"code": otpCode}),
       );
 
       final res = jsonDecode(response.body);
@@ -43,11 +43,11 @@ class _OtpScreen2State extends State<OtpScreen2> {
         setState(() {
           message = res['message'] ?? "تم التحقق بنجاح";
         });
-        Navigator.push(
+
+        if (!mounted) return;
+        Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (context) => LoginScreen(),
-          ),
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
         );
       } else {
         setState(() {

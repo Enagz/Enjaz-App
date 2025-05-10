@@ -18,6 +18,8 @@ class _SplashScreenState extends State<SplashScreen> {
     viewModel.handleStartup(context);
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

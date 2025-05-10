@@ -268,7 +268,7 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Expanded(
-                  child: OutlinedButton(
+                  child: /*OutlinedButton(
                     onPressed: () {
                       Navigator.push(
                           context,
@@ -283,6 +283,24 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                     ),
                     child: Text(
                       Translations.getText('new_service_request', langCode),
+                      style: TextStyle(color: Color(0xff409EDC)),
+                    ),
+                  ),
+                 */ OutlinedButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => OrderChatScreen()));
+                    },
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: Color(0xff409EDC)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      Translations.getText('orderChat', langCode),
                       style: TextStyle(color: Color(0xff409EDC)),
                     ),
                   ),

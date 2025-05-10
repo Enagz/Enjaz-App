@@ -20,6 +20,16 @@ class LoginService {
 
       final data = jsonDecode(response.body);
 
+      final prefs = await SharedPreferences.getInstance();
+      final token = data['token'] ?? "";
+      print(token);
+      await prefs.setString('token', token);
+
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+      if (fcmToken != null) {
+        await _sendFcmTokenToBackend(fcmToken, token);
+      }
+
       if (response.statusCode == 200) {
         return {
           'success': true,

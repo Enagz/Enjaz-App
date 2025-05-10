@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:engaz_app/features/home_screen/view/home_view.dart';
 import 'package:engaz_app/features/notifications_history.dart';
 import 'package:engaz_app/features/order_details/order_details_page.dart';
 import 'package:engaz_app/features/saved_order/view/saved_order.dart';
@@ -15,9 +16,11 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'features/Support Chat/support_chat.dart';
 import 'features/address/view_model/add_address_view_model.dart';
 import 'features/auth/forgetPassword/viewmodel/otp_viewmodel.dart';
 import 'features/localization/change_lang.dart';
+import 'features/orders/orders_screen.dart';
 import 'features/translation _request/view/translation_request_page.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -138,6 +141,9 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/translate': (context) => TranslationOrderApp(),
         'notifications':(_)=>NotificationsHistoryScreen(),
+        '/home':(_)=>HomePage(),
+        '/support-chat': (context) => SupportChatScreen(),
+        '/order-details': (context) => OrdersScreen(),
       },
     );
   }

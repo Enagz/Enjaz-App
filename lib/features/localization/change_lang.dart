@@ -312,7 +312,8 @@ class Translations {
       "do": "Do you really want to delete your account?",
       "ree": "Reason for deleting account *",
       "pl": "Please explain the reason for deletion.",
-      "del2": "Delete"
+      "del2": "Delete",
+      'orderChat':'Order Chat'
     },
     'ar': {
       'login': 'تسجيل الدخول',
@@ -466,6 +467,7 @@ class Translations {
   "order_review_msg": "سوف يتم مراجعة طلبك من قبلنا و البدء في تنفيذ الخدمة",
   "new_service_request": "طلب خدمة جديدة",
   "follow_request": "متابعة الطلب",
+      'orderChat':'المحادثه'
     },
   };
 

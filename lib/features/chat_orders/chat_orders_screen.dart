@@ -91,7 +91,7 @@ class _OrderChatScreenState extends State<OrderChatScreen> {
       print('🛑 General socket error: $error');
     });
 
-    socket!.on("SupportEmployeeMessage", (data) {
+    socket!.on("NewEmployeeOrderMessage", (data) {
       print("📥 Received: $data");
       if (data is Map && data.containsKey('message')) {
         final String message = data['message'];
@@ -123,7 +123,7 @@ class _OrderChatScreenState extends State<OrderChatScreen> {
       print('📤 ببعّت للسيرفر: $message');
       print('👤 userId: $userId');
 
-      socket!.emit("SupportCoustmerMessage", {
+      socket!.emit("OrderCoustmerMessage", {
         "message": message,
         "userId": userId,
       });

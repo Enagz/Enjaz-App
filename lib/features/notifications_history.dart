@@ -93,8 +93,6 @@ class _NotificationsScreenState extends State<NotificationsHistoryScreen> {
 
       if (response.statusCode == 200) {
         print("✅ Notification $id marked as read");
-
-        // حدّث العنصر في القائمة مباشرة بدون fetch جديد
         setState(() {
           notifications[index]['isRead'] = true;
         });
@@ -147,9 +145,18 @@ class _NotificationsScreenState extends State<NotificationsHistoryScreen> {
               final isRead = item['isRead'] == true;
 
               return GestureDetector(
-                onTap: () {
+                onTap:() async {
                   if (!isRead) {
-                    markNotificationAsRead(item['id'], index);
+                    await markNotificationAsRead(item['id'], index);
+                  }
+                  final type = item['type'];
+                  final serviceId = item['serviceId'];
+                  if (type == 'Order Message' || type == 'Order Status Changed') {
+                    Navigator.pushNamed(context, '/order-details', arguments: serviceId);
+                  } else if (type == 'Support Message') {
+                    Navigator.pushNamed(context, '/support-chat');
+                  } else {
+                    print("🔔 No action mapped for type: $type");
                   }
                 },
                 child: Column(

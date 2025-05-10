@@ -7,7 +7,7 @@ class HomeViewModel extends ChangeNotifier {
   int selectedIndex = 0;
 
   final List<Widget> pages = [
-    const HomeContent(),
+    HomeContent(),
     OrdersScreen(),
     const SettingsScreen(), // OrdersScreen(),
       // SettingsScreen(),
