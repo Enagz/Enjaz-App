@@ -177,7 +177,7 @@ class AddAddressScreen extends StatelessWidget {
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 14),
                                   ),
-                                  onPressed: model.isLoading
+                                  onPressed: model.isLoading || model.locationController.text.trim().isEmpty
                                       ? null
                                       : () {
                                     model.addAddress(context);

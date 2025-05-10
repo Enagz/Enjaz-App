@@ -1,7 +1,11 @@
 
 import 'package:flutter/material.dart';
 
+import '../../privacy_policy/privacy_policy_screen.dart';
+import '../../terms_and_conditions/terms_and_conditions_screen.dart';
+import '../../usage_policy/usage_polict_screen.dart';
 import '../home_screen_2.dart';
+import 'dialog.dart';
 
 class SettingsScreen2 extends StatelessWidget {
   const SettingsScreen2({super.key});
@@ -29,21 +33,20 @@ class SettingsScreen2 extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-
                 buildSection([
                   buildSettingItem(context, "إعدادات عامة", Icons.settings,
-                      "assets/images/img28.png", HomePage2()),
+                      "assets/images/img28.png", const LoginRequiredDialog()),
                   buildSettingItem(context, "تواصل معنا", Icons.phone,
-                      "assets/images/img29.png", HomePage2()),
+                      "assets/images/img29.png", const LoginRequiredDialog()),
                 ]),
                 const SizedBox(height: 12),
                 buildSection([
                   buildSettingItem(context, "سياسة الاستخدام", Icons.security,
-                      "assets/images/img30.png", HomePage2()),
+                      "assets/images/img30.png", const UsagePolicyScreen()),
                   buildSettingItem(context, "الشروط والأحكام", Icons.rule,
-                      "assets/images/img31.png", HomePage2()),
+                      "assets/images/img31.png", const TermsAndConditionsScreen()),
                   buildSettingItem(context, "سياسة الخصوصية", Icons.privacy_tip,
-                      "assets/images/img32.png", HomePage2()),
+                      "assets/images/img32.png", const PrivacyPolicyScreen()),
                 ]),
                 const SizedBox(height: 16),
                 Container(

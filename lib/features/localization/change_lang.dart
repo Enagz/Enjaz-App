@@ -302,7 +302,7 @@ class Translations {
 
       "order_success": "Congratulations! Your request has been sent successfully",
       "order_review_msg": "Your request will be reviewed and the service will be started",
-      "new_service_request": "New Service Request",
+      "new_service_request": "New Service",
       "follow_request": "Follow Request",
       "pleas": "Please enter the reason for cancellation.",
       "know": "Explain the reason for cancellation",

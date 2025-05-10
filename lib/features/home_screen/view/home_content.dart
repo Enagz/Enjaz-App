@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../Support Chat/support_chat.dart';
 import '../../localization/change_lang.dart';
+import '../../notifications_history.dart';
 import '../viewmodel/content_viewmodel.dart';
 import '../widgets/category_card.dart';
 
@@ -58,7 +59,14 @@ class HomeContent extends StatelessWidget {
                                       },
                                         child: Image.asset("assets/images/img8.png")),
                                     const SizedBox(width: 10),
-                                    Image.asset("assets/images/img9.png"),
+                                    InkWell(
+                                        onTap: (){
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(builder: (context) => const NotificationsHistoryScreen()),
+                                          );
+                                        },
+                                        child: Image.asset("assets/images/img9.png")),
                                   ],
                                 ),
                               ],

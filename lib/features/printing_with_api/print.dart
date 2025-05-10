@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:engaz_app/features/chat_orders/chat_orders_screen.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,8 +7,10 @@ import 'package:open_file/open_file.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../auth/register/widgets/custom_text_feild.dart';
+import '../home_screen/view/home_view.dart';
 import '../localization/change_lang.dart';
 import '../printing_request/widgets/upload_button.dart';
+import '../saved_order/view/saved_order.dart';
 import '../translation _request/widgets/delivery_options.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
@@ -22,17 +25,19 @@ class PrinterRequestPageWithApi extends StatefulWidget {
 class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
   final List<PlatformFile> selectedFiles = [];
   List<Map<String, dynamic>> finalizedFiles = [];
-  final List<String> availableLanguages = ['Colored','White and Black'];
-  final List<String> availableLanguages2 = ['cubed'];
+  List<Map<String, dynamic>> colorOptions = [];
+  List<Map<String, dynamic>> coverOptions = [];
   List<Map<String, dynamic>> fileDetails = [];
-
   String? deliveryMethod;
+  String? address;
+  String? notes;
   String? selectedAddress;
   String? selectedLanguage;
   String? selectedLanguage2;
   bool _isLoading = false;
+  bool _submitted = false;
 
-  final TextEditingController _pagesController = TextEditingController();
+
   final TextEditingController _copiesController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
   TextDirection getTextDirection(BuildContext context) {
@@ -40,22 +45,49 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
     return languageCode == 'ar' ? TextDirection.rtl : TextDirection.ltr;
   }
 
+  @override
+  void initState() {
+    super.initState();
+    fetchDropdownData();
+  }
+
   Future<void> pickFile() async {
     try {
+      if (selectedFiles.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('يجب الضغط على زر الإضافة قبل رفع ملف جديد.')),
+        );
+        return;
+      }
+
       FilePickerResult? result = await FilePicker.platform.pickFiles();
+
       if (result != null && result.files.isNotEmpty) {
         setState(() {
-          if (selectedFiles.length >= 1) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('يمكنك رفع ملف واحد فقط في كل مرة.')),
-            );
-          } else {
-            selectedFiles.add(result.files.first);
-          }
+          selectedFiles.add(result.files.first);
         });
       }
     } catch (e) {
-      print("حدث خطأ أثناء اختيار الملف: $e");
+      print("\u274C خطأ أثناء اختيار الملف: \$e");
+    }
+  }
+
+  Future<void> fetchDropdownData() async {
+    try {
+      final colorResponse = await http.get(Uri.parse("https://wckb4f4m-3000.euw.devtunnels.ms/api/dashboard/color"));
+      final coverResponse = await http.get(Uri.parse("https://wckb4f4m-3000.euw.devtunnels.ms/api/dashboard/cover"));
+
+      if (colorResponse.statusCode == 200) {
+        final body = jsonDecode(colorResponse.body);
+        colorOptions = List<Map<String, dynamic>>.from(body['printingcolors'] ?? []);
+      }
+
+      if (coverResponse.statusCode == 200) {
+        final body = jsonDecode(coverResponse.body);
+        coverOptions = List<Map<String, dynamic>>.from(body['printngcover'] ?? []);
+      }
+    } catch (e) {
+      print('❌ فشل تحميل بيانات القوائم المنسدلة: \$e');
     }
   }
 
@@ -78,7 +110,6 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
         Uri.parse('https://wckb4f4m-3000.euw.devtunnels.ms/api/order/printing'),
       );
 
-      // لا تضف Content-Type يدويًا!
       request.headers['Authorization'] = 'Bearer $token';
 
       List<Map<String, dynamic>> detailsList = [];
@@ -87,26 +118,19 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
         PlatformFile file = fileData['file'];
 
         if (file.path != null && File(file.path!).existsSync()) {
-          request.files.add(await http.MultipartFile.fromPath(
-            'otherDocs',
-            file.path!,
-          ));
+          request.files.add(await http.MultipartFile.fromPath('otherDocs', file.path!));
 
           detailsList.add({
             "color": fileData['color'],
             "cover": fileData['cover'],
-            "pages": fileData['pages'],
             "copies": fileData['copies'],
           });
-
-          print('📤 File added: ${file.name}');
-        } else {
-          print('⚠️ ملف غير موجود فعليًا: ${file.name}');
         }
       }
 
       request.fields['details'] = jsonEncode(detailsList);
-      request.fields['methodOfDelivery'] = deliveryMethod!;
+      request.fields['methodOfDelivery'] = deliveryMethod ?? '';
+      request.fields['notes'] = _notesController.text;
 
       if (selectedAddress != null) {
         request.fields['address'] = selectedAddress!;
@@ -123,10 +147,12 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('تم إرسال الطلب بنجاح')),
         );
-        Navigator.pushReplacement(
+        /*Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => SaveOrder()),
         );
+         */
+        showSuccessBottomSheet(context);
       } else {
         print('🔴 خطأ في الاستجابة: $responseBody');
         ScaffoldMessenger.of(context).showSnackBar(
@@ -152,10 +178,13 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (selectedFiles.isNotEmpty)
+            if (finalizedFiles.isNotEmpty)
               Column(
-                children: List.generate(selectedFiles.length, (index) {
-                  final file = selectedFiles[index];
+                children: List.generate(finalizedFiles.length, (index) {
+                  final file = finalizedFiles[index]['file'] as PlatformFile;
+                  final color = finalizedFiles[index]['color'];
+                  final cover = finalizedFiles[index]['cover'];
+                  final copies = finalizedFiles[index]['copies'].toString();
                   final extension = file.extension ?? "";
                   final iconPath = getFileIcon(extension);
 
@@ -172,12 +201,12 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              if (selectedLanguage != null)
+                              if (color != null)
                                 _buildSummaryItem(
-                                    'لون الطباعة', selectedLanguage!),
-                              if (selectedLanguage2 != null)
+                                    'لون الطباعة', color!),
+                              if (cover != null)
                                 _buildSummaryItem(
-                                    'نوع التغليف', selectedLanguage2!),
+                                    'نوع التغليف', cover!),
                               GestureDetector(
                                 onTap: () => setState(
                                     () => selectedFiles.removeAt(index)),
@@ -192,12 +221,9 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              if (_pagesController.text.isNotEmpty)
+                              if (copies.isNotEmpty)
                                 _buildSummaryItem(
-                                    'عدد الصفحات', _pagesController.text),
-                              if (_copiesController.text.isNotEmpty)
-                                _buildSummaryItem(
-                                    'عدد النسخ', _copiesController.text),
+                                    'عدد النسخ', copies),
                               Image.asset(iconPath, width: 40, height: 40),
                             ],
                           ),
@@ -207,6 +233,80 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                   );
                 }),
               ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void showSuccessBottomSheet(BuildContext context) {
+    final langCode = context.read<LocalizationProvider>().locale.languageCode;
+
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              Translations.getText('order_success', langCode),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              Translations.getText('order_review_msg', langCode),
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HomePage()));
+                    },
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: Color(0xff409EDC)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      Translations.getText('new_service_request', langCode),
+                      style: TextStyle(color: Color(0xff409EDC)),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>OrderChatScreen()));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xff409EDC),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      Translations.getText('follow_request', langCode),
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -258,19 +358,6 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
         ),
       ],
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    fileDetails = selectedFiles
-        .map((file) => {
-      'pages': TextEditingController(),
-      'copies': TextEditingController(),
-      'color': null,
-      'cover': null,
-    })
-        .toList();
   }
 
   @override
@@ -355,61 +442,17 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                   _buildSelectedFilesList(),
                   const SizedBox(height: 16),
                   _buildDropdown(
-                      Translations.getText(
-                        'cho',
-                        context
-                            .read<LocalizationProvider>()
-                            .locale
-                            .languageCode,
-                      ),
-                      availableLanguages,
-                      selectedLanguage, (value) {
-                    setState(() => selectedLanguage = value);
-                  }),
+                    Translations.getText('cho', context.read<LocalizationProvider>().locale.languageCode),
+                    colorOptions.map((e) => e['color'].toString()).toList(),
+                    selectedLanguage,
+                        (value) => setState(() => selectedLanguage = value),
+                  ),
+
                   _buildDropdown(
-                      Translations.getText(
-                        'cho2',
-                        context
-                            .read<LocalizationProvider>()
-                            .locale
-                            .languageCode,
-                      ),
-                      availableLanguages2,
-                      selectedLanguage2, (value) {
-                    setState(() => selectedLanguage2 = value);
-                  }),
-                  const SizedBox(height: 16),
-                  Text(
-                      Translations.getText(
-                        'num',
-                        context
-                            .read<LocalizationProvider>()
-                            .locale
-                            .languageCode,
-                      ),
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  TextField(
-                    controller: _pagesController,
-                    keyboardType: TextInputType.number,
-                    onChanged: (value) => setState(() {}),
-                    decoration: InputDecoration(
-                      hintText: Translations.getText(
-                        'num2',
-                        context
-                            .read<LocalizationProvider>()
-                            .locale
-                            .languageCode,
-                      ),
-                      filled: true,
-                      fillColor: const Color(0xffF2F2F2),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 16),
-                    ),
+                    Translations.getText('cho2', context.read<LocalizationProvider>().locale.languageCode),
+                    coverOptions.map((e) => e['name'].toString()).toList(),
+                    selectedLanguage2,
+                        (value) => setState(() => selectedLanguage2 = value),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -455,32 +498,23 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                    */
                   Align(
                     alignment: Alignment.centerRight,
-                    child: ElevatedButton.icon(
-                      icon: const Icon(Icons.add),
-                      label: const Text("إضافة الملف"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xff409EDC),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
+                    child: ElevatedButton(
                       onPressed: () {
                         if (selectedFiles.isNotEmpty &&
                             selectedLanguage != null &&
                             selectedLanguage2 != null &&
-                            _pagesController.text.isNotEmpty &&
                             _copiesController.text.isNotEmpty) {
                           finalizedFiles.add({
                             "file": selectedFiles.first,
                             "color": selectedLanguage,
                             "cover": selectedLanguage2,
-                            "pages": int.tryParse(_pagesController.text) ?? 0,
-                            "copies": int.tryParse(_copiesController.text) ?? 0,
+                            "copies": int.tryParse(_copiesController.text) ?? 1,
                           });
 
                           setState(() {
                             selectedFiles.clear();
                             selectedLanguage = null;
                             selectedLanguage2 = null;
-                            _pagesController.clear();
                             _copiesController.clear();
                           });
 
@@ -489,22 +523,146 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                           );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('يرجى ملء جميع البيانات قبل الإضافة')),
+                            const SnackBar(content: Text('يرجى ملء بيانات الملف قبل الإضافة')),
                           );
                         }
                       },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xff409EDC),
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(5),
+                        elevation: 4,
+                      ),
+                      child: Container(
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                        child: const Icon(Icons.add, size: 18, color: Colors.white),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
-                  _buildSummaryCard(),
-                  const SizedBox(height: 16),
-                  DeliveryOptions(
-                    onDeliveryMethodSelected: (method) =>
-                        setState(() => deliveryMethod = method),
-                    onAddressSelected: (address) =>
-                        setState(() => selectedAddress = address),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        Translations.getText(
+                          'addressway',
+                          context
+                              .read<LocalizationProvider>()
+                              .locale
+                              .languageCode,
+                        ),
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: RadioListTile<String>(
+                              title: Text('Office'),
+                              value: 'Office',
+                              groupValue: deliveryMethod,
+                              onChanged: (value) =>
+                                  setState(() => deliveryMethod = value),
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
+                          Expanded(
+                            child: RadioListTile<String>(
+                              title: Text('Home'),
+                              value: 'Home',
+                              groupValue: deliveryMethod,
+                              onChanged: (value) =>
+                                  setState(() => deliveryMethod = value),
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (_submitted && deliveryMethod == null)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Text(
+                            'Required',
+                            style: TextStyle(color: Colors.red, fontSize: 12),
+                          ),
+                        ),
+                    ],
                   ),
-                  const SizedBox(height: 16),
+                  if (deliveryMethod == 'Home') ...[
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Address',
+                        prefixIcon: Icon(Icons.home_outlined),
+                        filled: true,
+                        fillColor: Colors.grey.shade200,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.transparent),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.blue, width: 2),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.red),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.red, width: 2),
+                        ),
+                      ),
+                      onChanged: (value) => address = value,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Align(
+                        alignment: Alignment.topLeft,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context, MaterialPageRoute(builder: (context) => SavedAddress()));
+                          },
+                          child: Image.asset("assets/images/img222.png"),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                        height:15
+                    ),
+                  ],
+                  TextFormField(
+                    maxLines: 3,
+                    onChanged: (value) => notes = value,
+                    decoration: InputDecoration(
+                      labelText: Translations.getText(
+                        'notess',
+                        context
+                            .read<LocalizationProvider>()
+                            .locale
+                            .languageCode,
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey.shade200,
+                      contentPadding:
+                      EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.blue, width: 2),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
                   Text(
                       Translations.getText(
                         'no',
@@ -539,6 +697,7 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                   //     ),
                   //   ),
                   // ),
+                  _buildSummaryCard(),
                   const SizedBox(height: 16),
                   _buildSubmitButton(),
                 ],

@@ -1,3 +1,4 @@
+import 'package:engaz_app/features/visitor/view/dialog.dart';
 import 'package:engaz_app/features/visitor/view/home_content_2.dart';
 import 'package:engaz_app/features/visitor/view/order_screen.dart';
 import 'package:engaz_app/features/visitor/view/setting_screen_2.dart';
@@ -26,7 +27,7 @@ class _HomePageState extends State<HomePage2> {
 
   final List<Widget> _pages = [
     HomeContent2(),
-    OrdersScreen(),
+    const LoginRequiredDialog(),
     const SettingsScreen2(),
   ];
 

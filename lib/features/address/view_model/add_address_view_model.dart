@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
@@ -10,7 +9,6 @@ class AddAddressViewModel extends ChangeNotifier {
   TextEditingController locationController = TextEditingController();
   bool isLoading = false;
   LatLng selectedPosition = LatLng(24.7136, 46.6753);
- // String token=  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWJkMWIzNi0xZGQxLTQ2MDktYTE2NC1kZTg5YmM1YWYwMWQiLCJ1c2VybmFtZSI6IkJhc3NlbCBTYWxsYW0iLCJlbWFpbCI6ImJhc3NlbGEuc2FsYW1AZ21haWwuY29tIiwidmVyZmllZCI6dHJ1ZSwiaWF0IjoxNzQyNzY2OTkzfQ.-LuSsU2AombLwf1YUm91fNe_VmXtfIDEn9Z8h3N1PAc';
 
   Future<void> getAddressFromLatLng(LatLng position) async {
     try {
@@ -45,19 +43,27 @@ class AddAddressViewModel extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
+    final token = await _getToken(); // ✅ افصلها هنا
+
+    if (locationController.text.trim().isEmpty || token == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("الرجاء تحديد الموقع أولاً أو تسجيل الدخول")),
+      );
+      isLoading = false;
+      notifyListeners();
+      return;
+    }
+
     final url = 'https://wckb4f4m-3000.euw.devtunnels.ms/api/address';
     final headers = {
       "Content-Type": "application/json",
-      "Authorization": "Bearer ${await _getToken()}",
-      //"Authorization": "Bearer $token",
+      "Authorization": "Bearer $token", // ✅ استخدمها هنا
     };
 
     final Map<String, dynamic> requestBody = {
       "name": "Home",
       "address": locationController.text,
-      "location": locationController.text.isNotEmpty
-          ? locationController.text
-          : null,
+      "location": locationController.text,
     };
 
     try {
@@ -66,6 +72,7 @@ class AddAddressViewModel extends ChangeNotifier {
         headers: headers,
         body: json.encode(requestBody),
       );
+
       print('Status code: ${response.statusCode}');
       print('Response body: ${response.body}');
 
@@ -77,11 +84,7 @@ class AddAddressViewModel extends ChangeNotifier {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("تمت الإضافة بنجاح ✅")),
         );
-      }
-
-      else {
-        print('token${_getToken()}')
-        ;
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("فشل في الإضافة ❌")),
         );
@@ -103,7 +106,6 @@ class AddAddressViewModel extends ChangeNotifier {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String? addressId = prefs.getString('addressId');
     String? token = prefs.getString('token');
-  // String? token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWJkMWIzNi0xZGQxLTQ2MDktYTE2NC1kZTg5YmM1YWYwMWQiLCJ1c2VybmFtZSI6IkJhc3NlbCBTYWxsYW0iLCJlbWFpbCI6ImJhc3NlbGEuc2FsYW1AZ21haWwuY29tIiwidmVyZmllZCI6dHJ1ZSwiaWF0IjoxNzQyNzY2OTkzfQ.-LuSsU2AombLwf1YUm91fNe_VmXtfIDEn9Z8h3N1PAc';
 
     print('addressId: $addressId');
     print('token: $token');
@@ -166,7 +168,6 @@ class AddAddressViewModel extends ChangeNotifier {
 
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String? addressId = prefs.getString('addressId');
-   // String? addressId = '3772252d-57cd-404a-9411-e07da54deeca';
 
     if (addressId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -181,7 +182,6 @@ class AddAddressViewModel extends ChangeNotifier {
     final headers = {
       "Content-Type": "application/json",
      "Authorization": "Bearer ${await _getToken()}",
-    // "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWJkMWIzNi0xZGQxLTQ2MDktYTE2NC1kZTg5YmM1YWYwMWQiLCJ1c2VybmFtZSI6IkJhc3NlbCBTYWxsYW0iLCJlbWFpbCI6ImJhc3NlbGEuc2FsYW1AZ21haWwuY29tIiwidmVyZmllZCI6dHJ1ZSwiaWF0IjoxNzQyNzY2OTkzfQ.-LuSsU2AombLwf1YUm91fNe_VmXtfIDEn9Z8h3N1PAc"
 
     };
 
@@ -214,6 +214,3 @@ class AddAddressViewModel extends ChangeNotifier {
     }
   }
 }
-// String? userId = '6abd1b36-1dd1-4609-a164-de89bc5af01d';
-//    String? token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWJkMWIzNi0xZGQxLTQ2MDktYTE2NC1kZTg5YmM1YWYwMWQiLCJ1c2VybmFtZSI6IkJhc3NlbCBTYWxsYW0iLCJlbWFpbCI6ImJhc3NlbGEuc2FsYW1AZ21haWwuY29tIiwidmVyZmllZCI6dHJ1ZSwiaWF0IjoxNzQyNzY2OTkzfQ.-LuSsU2AombLwf1YUm91fNe_VmXtfIDEn9Z8h3N1PAc';
-//

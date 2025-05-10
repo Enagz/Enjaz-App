@@ -154,13 +154,16 @@ class ChangePhoneScreen extends StatelessWidget {
                                       final data = jsonDecode(response.body);
 
                                       if (response.statusCode == 200) {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => OtpScreen(
-                                              contactInfo: phone,
-                                              contactType: 'phone',
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              "Phone number updated successfully",
+                                              style: const TextStyle(
+                                                  fontFamily:
+                                                  'IBM_Plex_Sans_Arabic'),
                                             ),
+                                            backgroundColor: Colors.green,
                                           ),
                                         );
                                       } else {

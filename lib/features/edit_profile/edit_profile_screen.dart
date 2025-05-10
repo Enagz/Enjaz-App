@@ -1,8 +1,9 @@
 import 'dart:convert';
+import 'package:engaz_app/features/general_settings/general_settings_screen.dart';
+import 'package:engaz_app/features/settings/settings_screen.dart';
+import 'package:engaz_app/features/visitor/view/setting_screen_2.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,11 +15,6 @@ class EditProfileScreen extends StatelessWidget {
   Future<Map<String, String>> fetchUserData() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token') ?? '';
-
-    // final token =
-    //     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWJkMWIzNi0xZGQxLTQ2MDktYTE2NC1kZTg5YmM1YWYwMWQiLCJ1c2VybmFtZSI6IkJhc3NlbCBTYWxsYW0iLCJlbWFpbCI6ImJhc3NlbGEuc2FsYW1AZ21haWwuY29tIiwidmVyZmllZCI6dHJ1ZSwiaWF0IjoxNzQyNzY2OTkzfQ.-LuSsU2AombLwf1YUm91fNe_VmXtfIDEn9Z8h3N1PAc";
-    // final userId = '6abd1b36-1dd1-4609-a164-de89bc5af01d';
-
     final response = await http.get(
       Uri.parse("https://wckb4f4m-3000.euw.devtunnels.ms/api/user"),
       headers: {
@@ -91,7 +87,7 @@ class EditProfileScreen extends StatelessWidget {
                               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                             ),
                           ),
-                          buildTextField("محمد", firstNameController,locale),
+                          buildTextField("", firstNameController,locale),
                           const SizedBox(height: 16),
                           Align(
                             alignment: alignment,
@@ -100,11 +96,16 @@ class EditProfileScreen extends StatelessWidget {
                               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                             ),
                           ),
-                          buildTextField("اشرف", lastNameController,locale),
+                          buildTextField("", lastNameController,locale),
                           const SizedBox(height: 24),
                           ElevatedButton(
                             onPressed: () {
-                              // TODO: handle save
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SettingsScreen(),
+                                ),
+                              );
                             },
                             style: ElevatedButton.styleFrom(
                               minimumSize: const Size(343, 10),
@@ -116,7 +117,7 @@ class EditProfileScreen extends StatelessWidget {
                               elevation: 0,
                             ),
                             child: Text(
-                              Translations.getText('save', locale),
+                              Translations.getText('OK', locale),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
