@@ -198,9 +198,9 @@ class Translations {
       "delete": "Delete Account",
       "new_phone": "New Mobile Number",
       "pls":
-      "Please enter the new mobile number to receive the activation code.",
+          "Please enter the new mobile number to receive the activation code.",
       "pls2":
-      "Please enter the new Email Address to receive the activation code.",
+          "Please enter the new Email Address to receive the activation code.",
       "sure": "Save",
       "enter2": "Enter mobile number",
       "enter3": "Enter Email Address",
@@ -220,7 +220,7 @@ class Translations {
       "pol": "privacy policy",
       "home": "Home",
       "offerr":
-      "We provide the best translation services for more than 10 languages around the world.",
+          "We provide the best translation services for more than 10 languages around the world.",
       "oferrr2": "We offer the best printing quality at competitive prices.",
       "cat": "Categories",
       "req": "Request",
@@ -256,7 +256,6 @@ class Translations {
       'signup': 'Sign Up',
       'google_success': '✅ Signed in with Google successfully',
       'google_error': '❌ Failed to sign in with Google',
-
       "en": "Enter your notes if any.",
       "se": "Send",
       "dis": "Discount code",
@@ -285,37 +284,35 @@ class Translations {
       "chooose": "Choose",
       "notess": "Notes",
       "send_req": "Send Request",
-  "ac":"Activation code",
-  "pleasss":"Please enter the activation code sent",
-  "su":"Sure",
-  "didnt":"Didn't receive the activation code?",
-"reee":"Resend",
+      "ac": "Activation code",
+      "pleasss": "Please enter the activation code sent",
+      "su": "Sure",
+      "didnt": "Didn't receive the activation code?",
+      "reee": "Resend",
+      "orderdetail": "Order details",
+      "ordernumber": "order number ",
+      "ordercal": "Order date ",
+      "ordertime": "Order time ",
+      "ordertype": "Delivery type",
+      "lan1": "Language to be translated",
+      "lan2": "Languages to be translated into",
+      "noo": "Notes",
+      "atta": "Attachments",
+      "canc": "Cancel order",
 
-      "orderdetail":"Order details",
-      "ordernumber":"order number ",
-      "ordercal":"Order date ",
-      "ordertime":"Order time ",
-      "ordertype":"Delivery type",
-      "lan1":"Language to be translated",
-      "lan2":"Languages to be translated into",
-      "noo":"Notes",
-      "atta":"Attachments",
-      "canc":"Cancel order",
-      "pleas":"Please enter the reason for cancellation.",
-      "know":"Explain the reason for cancellation",
-      "tra":"Retreat",
-      "res":"Reason Deletion",
-
-
-      "del":"Delete account",
-      "do":"Do you really want to delete your account?",
-      "ree":"Reason for deleting account *",
-      "pl":"Please explain the reason for deletion.",
-      "del2":"Delete"
-
-
-
-
+      "order_success": "Congratulations! Your request has been sent successfully",
+      "order_review_msg": "Your request will be reviewed and the service will be started",
+      "new_service_request": "New Service Request",
+      "follow_request": "Follow Request",
+      "pleas": "Please enter the reason for cancellation.",
+      "know": "Explain the reason for cancellation",
+      "tra": "Retreat",
+      "res": "Reason Deletion",
+      "del": "Delete account",
+      "do": "Do you really want to delete your account?",
+      "ree": "Reason for deleting account *",
+      "pl": "Please explain the reason for deletion.",
+      "del2": "Delete"
     },
     'ar': {
       'login': 'تسجيل الدخول',
@@ -441,46 +438,34 @@ class Translations {
       "chooose": "اختر",
       "notess": "الملاحظات",
       "send_req": "ارسال الطلب",
-
-
-      "orderdetail":"تفاصيل الطلب",
-      "ordernumber":"رقم الطلب ",
-      "ordercal":"تاريخ الطلب ",
-      "ordertime":"وقت الطلب ",
-      "ordertype":"نوع التوصيل",
-      "lan1":"اللغة المراد ترجمتها",
-      "lan2":"اللغات المراد الترجمة إليها:",
-      "noo":"ملاحظات",
-      "atta":"المرفقات",
-      "canc":"الغاء الطلب",
-      "res":"سبب الالغاء",
-      "pleas":"من فضلك أدخل سبب الإلغاء",
-      "know":"توضيح سبب الالغاء",
-
-
-      "tra":"تراجع",
-
-
-      "del":"حذف الحساب",
-      "do":"هل حقاً تريد حذف حسابك؟",
-      "re":"سبب حذف الحساب *",
-      "pl":"الرجاء توضيح سبب الحذف",
-      "del2":"حذف",
-
-
-
-"ac":"رمز التفعيل",
-      "pleasss":"الرجاء ادخال رمز التفعيل المرسل:",
-      "su":"تأكيد",
-      "didnt":"لم يصلك رمز التفعيل؟",
-
-"reee":"اعد الارسال"
-
-
-
-
-
-
+      "orderdetail": "تفاصيل الطلب",
+      "ordernumber": "رقم الطلب ",
+      "ordercal": "تاريخ الطلب ",
+      "ordertime": "وقت الطلب ",
+      "ordertype": "نوع التوصيل",
+      "lan1": "اللغة المراد ترجمتها",
+      "lan2": "اللغات المراد الترجمة إليها:",
+      "noo": "ملاحظات",
+      "atta": "المرفقات",
+      "canc": "الغاء الطلب",
+      "res": "سبب الالغاء",
+      "pleas": "من فضلك أدخل سبب الإلغاء",
+      "know": "توضيح سبب الالغاء",
+      "tra": "تراجع",
+      "del": "حذف الحساب",
+      "do": "هل حقاً تريد حذف حسابك؟",
+      "re": "سبب حذف الحساب *",
+      "pl": "الرجاء توضيح سبب الحذف",
+      "del2": "حذف",
+      "ac": "رمز التفعيل",
+      "pleasss": "الرجاء ادخال رمز التفعيل المرسل:",
+      "su": "تأكيد",
+      "didnt": "لم يصلك رمز التفعيل؟",
+      "reee": "اعد الارسال",
+  "order_success": "تهانينا ! تم ارسال طلبك بنجاح",
+  "order_review_msg": "سوف يتم مراجعة طلبك من قبلنا و البدء في تنفيذ الخدمة",
+  "new_service_request": "طلب خدمة جديدة",
+  "follow_request": "متابعة الطلب",
     },
   };
 
