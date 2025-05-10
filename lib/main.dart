@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:engaz_app/features/order_details/order_details_page.dart';
+import 'package:engaz_app/features/saved_order/view/saved_order.dart';
 import 'package:engaz_app/features/splash/view/splash_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:engaz_app/features/auth/login/view/login_screen.dart';
@@ -16,7 +18,8 @@ import 'features/address/view_model/add_address_view_model.dart';
 import 'features/auth/forgetPassword/viewmodel/otp_viewmodel.dart';
 import 'features/localization/change_lang.dart';
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 /*Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -62,7 +65,8 @@ Future<void> sendTokenToBackend(String fcmToken) async {
     return;
   }
 
-  final url = Uri.parse('https://wckb4f4m-3000.euw.devtunnels.ms/api/login/token');
+  final url =
+      Uri.parse('https://wckb4f4m-3000.euw.devtunnels.ms/api/login/token');
   try {
     final response = await http.post(
       url,
@@ -89,7 +93,8 @@ void main() async {
   //FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    print("📥 [Foreground] Full message as Map → ${jsonEncode(message.toMap())}");
+    print(
+        "📥 [Foreground] Full message as Map → ${jsonEncode(message.toMap())}");
     print("📦 message.data → ${message.data}");
     _showNotification(message);
   });
@@ -129,7 +134,7 @@ class MyApp extends StatelessWidget {
       home: const SplashScreen(),
       routes: {
         '/login': (context) => const LoginScreen(),
-        '/translate': (context) =>  TranslationOrderApp(),
+        '/translate': (context) => TranslationOrderApp(),
       },
     );
   }
@@ -153,6 +158,7 @@ class TranslationOrderForm extends StatefulWidget {
 class _TranslationOrderFormState extends State<TranslationOrderForm> {
   final _formKey = GlobalKey<FormState>();
   String? fileLanguage;
+
   List<String> translationLanguages = [];
   String? deliveryMethod;
   String? address;
@@ -160,32 +166,106 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
   List<XFile> uploadedFiles = [];
 
   final List<String> allLanguages = ['Arabic', 'English', 'French', 'Dutch'];
+
   Future<String?> _getToken() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
   }
 
-  Future<void> submitOrder() async {
-    final request = http.MultipartRequest(
-        'POST',
-        Uri.parse(
-            'https://wckb4f4m-3000.euw.devtunnels.ms/api/order/translation'));
-    request.headers.addAll({
+  void showSuccessBottomSheet(BuildContext context) {
+    final langCode = context.read<LocalizationProvider>().locale.languageCode;
 
-     // 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWJkMWIzNi0xZGQxLTQ2MDktYTE2NC1kZTg5YmM1YWYwMWQiLCJ1c2VybmFtZSI6IkJhc3NlbCBTYWxsYW0iLCJlbWFpbCI6ImJhc3NlbGEuc2FsYW1AZ21haWwuY29tIiwidmVyZmllZCI6dHJ1ZSwiaWF0IjoxNzQ0OTA0ODYxfQ.VqWDf8dTsutW3qCrALQkI-U_7uZvGzH2Cqs-6v99H5k',
-     "Authorization": "Bearer ${await _getToken()}",
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              Translations.getText('order_success', langCode),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              Translations.getText('order_review_msg', langCode),
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: Color(0xff409EDC)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      Translations.getText('new_service_request', langCode),
+                      style: TextStyle(color: Color(0xff409EDC)),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {/////////////////////////////////////هنا يا هاجر
+                    //  Navigator.push(context, MaterialPageRoute(builder: (context)=>OrderDetailsPage(orderNumber: ,)));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xff409EDC),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      Translations.getText('follow_request', langCode),
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  bool isLoading = false;
+
+  Future<void> submitOrder() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse(
+          'https://wckb4f4m-3000.euw.devtunnels.ms/api/order/translation'),
+    );
+
+    request.headers.addAll({
+      "Authorization": "Bearer ${await _getToken()}",
       'Connection': 'keep-alive',
     });
+
     request.fields['fileLanguge'] = fileLanguage ?? '';
     request.fields['methodOfDelivery'] = deliveryMethod ?? '';
     request.fields['notes'] = notes ?? '';
     request.fields['Address'] = address ?? '';
     request.fields['translationLanguges'] = jsonEncode(translationLanguages);
-    // request.fields['translationLanguges'] = ["English","Dutch",] ?? '';
-    //request.fields.addAll({'translationLanguges':["English",""]});
-    // for (var lang in translationLanguages) {
-    //   request.fields.addAll({'translationLanguges': lang});
-    // }
 
     for (var file in uploadedFiles) {
       if (file.path != null) {
@@ -198,18 +278,32 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
       final response = await request.send();
       final result = await response.stream.bytesToString();
 
+      setState(() {
+        isLoading = false;
+      });
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        showSuccessBottomSheet(context);
+      } else {
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: Text('خطأ'),
+            content: Text('❌ Error: $result'),
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          content: Text(response.statusCode == 200 || response.statusCode == 201
-              ? '✅ Success: $result'
-              : '❌ Error: $result'),
+          title: Text('مشكلة اتصال'),
+          content: Text('❌ Connection error: $e'),
         ),
-      );
-    } catch (e) {
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(content: Text('❌ Connection error: $e')),
       );
     }
   }
@@ -274,10 +368,11 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
             backgroundColor: const Color(0xffF8F8F8),
             appBar: AppBar(
               leading: const Icon(Icons.arrow_back_ios),
-              title:  Text(Translations.getText(
-                'tranthereq',
-                context.read<LocalizationProvider>().locale.languageCode,
-              ),
+              title: Text(
+                  Translations.getText(
+                    'tranthereq',
+                    context.read<LocalizationProvider>().locale.languageCode,
+                  ),
                   style: TextStyle(color: Colors.black)),
               backgroundColor: const Color(0xffF8F8F8),
               elevation: 0,
@@ -290,50 +385,58 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
                 child: Column(
                   children: [
                     Image.asset("assets/images/img_new.png"),
-                    Text(Translations.getText(
-                      'newreq',
-                      context.read<LocalizationProvider>().locale.languageCode,
-                    ),),
-                    Text(Translations.getText(
-                      'langneed',
-                      context.read<LocalizationProvider>().locale.languageCode,
-                    ),),
+                    Text(
+                      Translations.getText(
+                        'newreq',
+                        context
+                            .read<LocalizationProvider>()
+                            .locale
+                            .languageCode,
+                      ),
+                    ),
+                    Text(
+                      Translations.getText(
+                        'langneed',
+                        context
+                            .read<LocalizationProvider>()
+                            .locale
+                            .languageCode,
+                      ),
+                    ),
                     Align(
                       alignment: AlignmentDirectional.topStart,
                       child: Text(
                         Translations.getText(
                           'edjat',
-                          context.read<LocalizationProvider>().locale.languageCode,
+                          context
+                              .read<LocalizationProvider>()
+                              .locale
+                              .languageCode,
                         ),
                         style: TextStyle(fontWeight: FontWeight.bold),
                         textAlign: TextAlign.start,
                       ),
                     ),
-
                     DropdownButtonFormField<String>(
                       decoration: InputDecoration(
-                        labelText:Translations.getText(
+                        labelText: Translations.getText(
                           'chooose',
-                          context.read<LocalizationProvider>().locale.languageCode,
+                          context
+                              .read<LocalizationProvider>()
+                              .locale
+                              .languageCode,
                         ),
                         filled: true,
-
                         fillColor: Colors.grey.shade200,
-
                         contentPadding:
                             EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-
-                          borderSide: BorderSide(
-                              color: Colors
-                                  .transparent),
+                          borderSide: BorderSide(color: Colors.transparent),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                              color: Colors.blue,
-                              width: 2),
+                          borderSide: BorderSide(color: Colors.blue, width: 2),
                         ),
                         errorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -361,7 +464,10 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
                           child: Text(
                             Translations.getText(
                               'attach',
-                              context.read<LocalizationProvider>().locale.languageCode,
+                              context
+                                  .read<LocalizationProvider>()
+                                  .locale
+                                  .languageCode,
                             ),
                             style: TextStyle(fontWeight: FontWeight.bold),
                             textAlign: TextAlign.start,
@@ -373,10 +479,13 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
                           child: AbsorbPointer(
                             child: DropdownButtonFormField<String>(
                               decoration: InputDecoration(
-                             labelText:Translations.getText(
-                                'chooose',
-                                context.read<LocalizationProvider>().locale.languageCode,
-                              ),
+                                labelText: Translations.getText(
+                                  'chooose',
+                                  context
+                                      .read<LocalizationProvider>()
+                                      .locale
+                                      .languageCode,
+                                ),
                                 filled: true,
                                 fillColor: Colors.grey.shade200,
                                 contentPadding: EdgeInsets.symmetric(
@@ -402,7 +511,7 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
                                 ),
                               ),
                               value: null,
-                             // hint: Text("اضغط لاختيار اللغة"),
+                              // hint: Text("اضغط لاختيار اللغة"),
                               items: [],
 
                               onChanged: null,
@@ -430,10 +539,12 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
                         Text(
                           Translations.getText(
                             'addressway',
-                            context.read<LocalizationProvider>().locale.languageCode,
+                            context
+                                .read<LocalizationProvider>()
+                                .locale
+                                .languageCode,
                           ),
-                          style: TextStyle(
-                               fontWeight: FontWeight.bold),
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         SizedBox(height: 8),
                         Row(
@@ -476,28 +587,40 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
                         decoration: InputDecoration(labelText: 'Address'),
                         onChanged: (value) => address = value,
                       ),
+Padding(
+  padding: const EdgeInsets.all(8.0),
+  child: Align(
+    alignment: Alignment.topLeft,
+    child: InkWell(
+    onTap: (){
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>SavedAddress()));
+    }
+    ,child: Image.asset("assets/images/img222.png")),
+  ),
+),
+
                     TextFormField(
                       maxLines: 3,
                       onChanged: (value) => notes = value,
                       decoration: InputDecoration(
                         labelText: Translations.getText(
-                        'notess',
-                        context.read<LocalizationProvider>().locale.languageCode,
-                      ),
+                          'notess',
+                          context
+                              .read<LocalizationProvider>()
+                              .locale
+                              .languageCode,
+                        ),
                         filled: true,
                         fillColor: Colors.grey.shade200,
-
                         contentPadding:
                             EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-
                           borderSide: BorderSide.none,
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                              color: Colors.blue, width: 2),
+                          borderSide: BorderSide(color: Colors.blue, width: 2),
                         ),
                       ),
                     ),
@@ -507,30 +630,32 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
                       child: Text(
                         Translations.getText(
                           'attach',
-                          context.read<LocalizationProvider>().locale.languageCode,
+                          context
+                              .read<LocalizationProvider>()
+                              .locale
+                              .languageCode,
                         ),
                         style: TextStyle(fontWeight: FontWeight.bold),
                         textAlign: TextAlign.start,
                       ),
                     ),
-
                     SizedBox(
                       width: double.infinity,
                       child: Container(
                         padding:
                             EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-
                         color: Colors.grey.shade200,
-
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
                           children: [
                             Expanded(
                               child: Text(
                                 Translations.getText(
                                   'attach2',
-                                  context.read<LocalizationProvider>().locale.languageCode,
+                                  context
+                                      .read<LocalizationProvider>()
+                                      .locale
+                                      .languageCode,
                                 ),
                                 textAlign: TextAlign.right,
                                 style: TextStyle(color: Colors.black),
@@ -552,8 +677,8 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
                                   setState(() => uploadedFiles = files);
                                 }
                               },
-                              child: Icon(Icons.file_upload,
-                                  color: Colors.black),
+                              child:
+                                  Icon(Icons.file_upload, color: Colors.black),
                             ),
                           ],
                         ),
@@ -563,47 +688,63 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
                     Text('${uploadedFiles.length} file(s) selected'),
                     SizedBox(height: 20),
                     SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          bool isValid = _formKey.currentState!.validate();
-                          if (!isValid ||
-                              translationLanguages.isEmpty ||
-                              uploadedFiles.isEmpty) {
-                            if (translationLanguages.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content: Text(
-                                        'Please select at least one translation language.')),
-                              );
-                            }
-                            if (uploadedFiles.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content: Text(
-                                        'Please upload at least one document.')),
-                              );
-                            }
-                            return;
-                          }
-                          submitOrder();
-                        },
-                        child: Text(Translations.getText(
-                          'send_req',
-                          context.read<LocalizationProvider>().locale.languageCode,
-                        ),
-                            style: TextStyle(color: Colors.white)),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xff409EDC),
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(15),
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: isLoading
+                              ? null
+                              : () {
+                                  bool isValid =
+                                      _formKey.currentState!.validate();
+                                  if (!isValid ||
+                                      translationLanguages.isEmpty ||
+                                      uploadedFiles.isEmpty) {
+                                    if (translationLanguages.isEmpty) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                'Please select at least one translation language.')),
+                                      );
+                                    }
+                                    if (uploadedFiles.isEmpty) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                'Please upload at least one document.')),
+                                      );
+                                    }
+                                    return;
+                                  }
+                                  submitOrder();
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xff409EDC),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            padding: EdgeInsets.symmetric(vertical: 14),
                           ),
-                          padding: EdgeInsets.symmetric(
-                              vertical: 14),
-                        ),
-                      ),
-                    )
+                          child: isLoading
+                              ? SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Text(
+                                  Translations.getText(
+                                    'send_req',
+                                    context
+                                        .read<LocalizationProvider>()
+                                        .locale
+                                        .languageCode,
+                                  ),
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                        ))
                   ],
                 ),
               ),
