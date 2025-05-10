@@ -22,8 +22,9 @@ class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
-    final url = Uri.parse(
-        'https://wckb4f4m-3000.euw.devtunnels.ms/api/dashboard/terms/conditions');
+    final url = Uri.parse('https://wckb4f4m-3000.euw.devtunnels.ms/api/dashboard/terms/conditions');
+    print('🔄 [fetchTerms] Trying to fetch terms from: $url');
+    print('🛡️ [fetchTerms] Token used: $token');
 
     try {
       final response = await http.get(
@@ -33,6 +34,9 @@ class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
           'Content-Type': 'application/json',
         },
       );
+
+      print('📥 [fetchTerms] Status Code: ${response.statusCode}');
+      print('📦 [fetchTerms] Raw Response: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -44,19 +48,26 @@ class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
           _termsText = text;
           _isLoading = false;
         });
+
+        print('✅ [fetchTerms] Loaded terms successfully.');
       } else {
         setState(() {
           _termsText = 'فشل تحميل الشروط والأحكام';
           _isLoading = false;
         });
+
+        print('❌ [fetchTerms] Server error: ${response.statusCode}');
       }
     } catch (e) {
       setState(() {
         _termsText = 'حدث خطأ أثناء الاتصال بالسيرفر';
         _isLoading = false;
       });
+
+      print('🚨 [fetchTerms] Exception occurred: $e');
     }
   }
+
 
   @override
   void initState() {

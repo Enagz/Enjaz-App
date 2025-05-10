@@ -1,10 +1,8 @@
+import 'package:engaz_app/features/translation%20_request/view/translation_request_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../main.dart';
 import '../../localization/change_lang.dart';
-import '../../printing_request/view/printer_request_page.dart';
 import '../../printing_with_api/print.dart';
-import '../../translation _request/view/translation_request_page.dart';
 
 class ContentViewModel extends ChangeNotifier {
   final PageController pageController = PageController();

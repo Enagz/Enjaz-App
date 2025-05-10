@@ -1,459 +1,740 @@
-// import 'package:file_picker/file_picker.dart';
-// import 'package:flutter/material.dart';
-// import 'package:open_file/open_file.dart';
-// import 'dart:async';
-// import '../../order_details/order_details_page.dart';
-// import '../../printing_request/widgets/upload_button.dart';
-// import '../../saved_order/view/saved_order.dart';
-// import '../viewmodel/translation_request_viewmodel.dart';
-// import '../widgets/delivery_options.dart';
-//
-//
-// class TranslationRequestPage extends StatefulWidget {
-//   TranslationRequestPage({super.key});
-//
-//   @override
-//   _TranslationRequestPageState createState() => _TranslationRequestPageState();
-// }
-//
-// class _TranslationRequestPageState extends State<TranslationRequestPage> {
-//   //String? deliveryMethod;
-//   String _selectedMethod = ''; // متغير لتخزين الطريقة المختارة
-//
-//   String? selectedAddress;
-//   bool isSubmitting = false;
-//   final List<String> fileTypes = [
-//     'assets/word.png',
-//     'assets/excel.png',
-//     'assets/pdf.png'
-//   ];
-//   List<PlatformFile> selectedFiles = [];
-//   final List<String> availableLanguages = [
-//     'Arabic',
-//     'English',
-//     'Dutch',
-//     'French',
-//
-//   ];
-//   List<String> selectedLanguages = [];
-//   final TextEditingController notesController = TextEditingController();
-//
-//   Future<void> submitTranslationRequest() async {
-//     if (selectedLanguage == null || selectedLanguages.isEmpty) {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         const SnackBar(content: Text('الرجاء اختيار اللغة المصدر واللغات المستهدفة')),
-//       );
-//       return;
-//     }
-//
-//     setState(() => isSubmitting = true);
-//     for (var language in selectedLanguages) {
-//       final success = await ApiService.submitTranslationRequest(
-//           fileLanguage: selectedLanguage!,
-//           translationLanguage: language, // بعتناها كـ String واحدة
-//           notes: notesController.text,
-//           deliveryMethod: _selectedMethod ?? 'استلام من الفرع',
-//           address: _selectedMethod == 'توصيل' ? selectedAddress : null,
-//           files: selectedFiles,
-//           token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWJkMWIzNi0xZGQxLTQ2MDktYTE2NC1kZTg5YmM1YWYwMWQiLCJ1c2VybmFtZSI6IkJhc3NlbCBTYWxsYW0iLCJlbWFpbCI6ImJhc3NlbGEuc2FsYW1AZ21haWwuY29tIiwidmVyZmllZCI6dHJ1ZSwiaWF0IjoxNzQyNzY2OTkzfQ.-LuSsU2AombLwf1YUm91fNe_VmXtfIDEn9Z8h3N1PAc'
-//       );
-//
-//       if (!success) {
-//         ScaffoldMessenger.of(context).showSnackBar(
-//           const SnackBar(content: Text('فشل في إرسال الطلب')),
-//         );
-//         setState(() => isSubmitting = false);
-//         return;
-//       }
-//     }
-//
-//
-//     setState(() => isSubmitting = false);
-//
-//     // إذا كانت جميع الطلبات ناجحة، نعرض رسالة نجاح
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(content: Text('تم إرسال الطلبات بنجاح')),
-//     );
-//   }
-//
-//   Future<void> pickFile() async {
-//     try {
-//       FilePickerResult? result = await FilePicker.platform.pickFiles();
-//
-//       if (result != null && result.files.isNotEmpty) {
-//         PlatformFile file = result.files.first;
-//
-//         setState(() {
-//           selectedFiles.add(file);
-//         });
-//
-//         print("تم اختيار الملف: ${file.name}");
-//       } else {
-//         print("لم يتم اختيار أي ملف.");
-//       }
-//     } catch (e) {
-//       print("حدث خطأ أثناء اختيار الملف: $e");
-//     }
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Directionality(
-//       textDirection: TextDirection.rtl,
-//       child: Scaffold(
-//         backgroundColor: const Color(0xffF8F8F8),
-//         appBar: AppBar(
-//           leading: const Icon(Icons.arrow_back_ios),
-//           title: const Text('طلب ترجمة', style: TextStyle(color: Colors.black)),
-//           backgroundColor: const Color(0xffF8F8F8),
-//           elevation: 0,
-//           iconTheme: const IconThemeData(color: Colors.black),
-//         ),
-//         body: SingleChildScrollView(
-//           child: Padding(
-//             padding: const EdgeInsets.all(16.0),
-//             child: Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 Center(
-//                   child: Image.asset('assets/images/img5.png', height: 100),
-//                 ),
-//                 const SizedBox(height: 16),
-//                 const Center(
-//                   child: Text(
-//                     'طلب ترجمة جديد',
-//                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-//                   ),
-//                 ),
-//                 const SizedBox(height: 4),
-//                 const Center(
-//                   child: Text(
-//                     'الرجاء اختيار اللغة المراد ترجمتها',
-//                     style: TextStyle(fontSize: 14, color: Color(0xffB3B3B3)),
-//                   ),
-//                 ),
-//                 const SizedBox(height: 8),
-//                 _buildDropdown('اللغة المراد ترجمتها'),
-//                 _buildMultiSelectDropdown('اللغات المراد الترجمة إليها'),
-//                 _buildRadioSelection(),
-//                 InkWell(
-//                   onTap: () {
-//                     Navigator.push(
-//                       context,
-//                       MaterialPageRoute(
-//                           builder: (context) => const SavedAddress()),
-//                     );
-//                   },
-//                   child: Align(
-//                       alignment: Alignment.topLeft,
-//                       child: Image.asset("assets/images/img51.png")),
-//                 ),
-//                 const Text(
-//                   'الملاحظات',
-//                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-//                 ),
-//                 _buildTextField('ادخل الملاحظات الخاصة بك ان وجدت'),
-//                 const SizedBox(height: 16),
-//                 const Text(
-//                   'المرفقات المراد ترجمتها',
-//                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-//                 ),
-//                 UploadButton(
-//                   onPressed: () {
-//                     pickFile();
-//                   },
-//                 ),
-//                 const SizedBox(height: 8),
-//                 _buildSelectedFilesList(),
-//                 const SizedBox(height: 16),
-//                 _buildSubmitButton(),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-//
-//   String? selectedLanguage;
-//
-//   Widget _buildDropdown(String label) {
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         Text(label,
-//             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-//         const SizedBox(height: 4),
-//         Container(
-//           width: 343,
-//           height: 48,
-//           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-//           decoration: BoxDecoration(
-//             color: const Color(0xFFF2F2F2),
-//             borderRadius: BorderRadius.circular(16),
-//           ),
-//           child: DropdownButtonHideUnderline(
-//             child: DropdownButton<String>(
-//               hint: Text(selectedLanguage ?? 'اختر'),
-//               isExpanded: true,
-//               icon: const Icon(Icons.keyboard_arrow_down),
-//               items: availableLanguages
-//                   .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-//                   .toList(),
-//               onChanged: (value) {
-//                 setState(() {
-//                   if (value != null) {
-//                     selectedLanguage = value;
-//                     //selectedLanguages.remove(value);
-//                    // selectedLanguages.insert(0, value);
-//                   }
-//                 });
-//               },
-//             ),
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-//
-//   Widget _buildMultiSelectDropdown(String label) {
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         Text(label,
-//             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-//         const SizedBox(height: 4),
-//         Container(
-//           width: 343,
-//           height: 48,
-//           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-//           decoration: BoxDecoration(
-//             color: const Color(0xFFF2F2F2),
-//             borderRadius: BorderRadius.circular(16),
-//           ),
-//           child: DropdownButtonHideUnderline(
-//             child: DropdownButton<String>(
-//               hint: Text(selectedLanguages.isEmpty ? 'اختر' : ''),
-//               isExpanded: true,
-//               icon: const Icon(Icons.keyboard_arrow_down),
-//               items: availableLanguages
-//                   .where((lang) => !selectedLanguages.contains(lang))
-//                   .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-//                   .toList(),
-//               onChanged: (value) {
-//                 if (value != null && !selectedLanguages.contains(value)) {
-//                   setState(() {
-//                     selectedLanguages.add(value);
-//                   });
-//                 }
-//               },
-//
-//             ),
-//           ),
-//         ),
-//         const SizedBox(height: 8),
-//         Wrap(
-//           spacing: 10,
-//           children: selectedLanguages.map((language) {
-//             return Container(
-//               width: 155,
-//               height: 36,
-//               padding: const EdgeInsets.only(right: 8),
-//               decoration: BoxDecoration(
-//                 color: const Color(0xFFF2F2F2),
-//                 borderRadius: BorderRadius.circular(16),
-//               ),
-//               child: Row(
-//                 mainAxisSize: MainAxisSize.min,
-//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                 children: [
-//                   Text(language, style: const TextStyle(fontSize: 9)),
-//                   GestureDetector(
-//                     onTap: () {
-//                       setState(() {
-//                         selectedLanguages.remove(language);
-//                       });
-//                     },
-//                     child: Padding(
-//                       padding: const EdgeInsets.only(left: 8.0),
-//                       child: Container(
-//                         width: 20,
-//                         height: 20,
-//                         decoration: BoxDecoration(
-//                           color: Colors.white,
-//                           shape: BoxShape.circle,
-//                           border: Border.all(color: Colors.red, width: 1.5),
-//                         ),
-//                         child: const Icon(Icons.close,
-//                             size: 16, color: Colors.red),
-//                       ),
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             );
-//           }).toList(),
-//         ),
-//       ],
-//     );
-//   }
-//
-//   Widget _buildRadioSelection() {
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         DeliveryOptions(
-//           onDeliveryMethodSelected: (method) {
-//             setState(() {
-//               _selectedMethod = method!; // تحديث الطريقة المختارة
-//             });
-//             print('تم اختيار طريقة التوصيل: $method');
-//           },
-//           onAddressSelected: (address) {
-//             print('تم اختيار العنوان: $address');
-//           },
-//         ),
-//         SizedBox(height: 20),
-//         Text('طريقة التوصيل المختارة: $_selectedMethod'),
-//       ],
-//     );
-//   }
-//   Widget _buildTextField(String label) {
-//     return Container(
-//       width: 343,
-//       height: 109,
-//       padding: const EdgeInsets.fromLTRB(12, 20, 12, 20),
-//       decoration: BoxDecoration(
-//         color: const Color(0xFFF2F2F2),
-//         borderRadius: BorderRadius.circular(16),
-//       ),
-//       child: Stack(
-//         children: [
-//           Positioned(
-//             top: 0,
-//             right: 5,
-//             child: Text(
-//               label,
-//               style: const TextStyle(
-//                 fontFamily: 'IBM Plex Sans Arabic',
-//                 fontWeight: FontWeight.w500,
-//                 fontSize: 14,
-//                 height: 1.0,
-//                 letterSpacing: 0,
-//                 color: Color(0xFFB3B3B3),
-//               ),
-//             ),
-//           ),
-//           const Padding(
-//             padding: EdgeInsets.only(top: 5),
-//             child: TextField(
-//               maxLines: 3,
-//               decoration: InputDecoration(
-//                 border: InputBorder.none,
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-//
-//
-//   String getFileIcon(String extension) {
-//     switch (extension.toLowerCase()) {
-//       case 'pdf':
-//         return 'assets/images/img10.png';
-//       case 'doc':
-//       case 'docx':
-//         return 'assets/images/img12.png';
-//       case 'xls':
-//       case 'xlsx':
-//         return 'assets/images/img11.png';
-//       default:
-//         return 'assets/file.png';
-//     }
-//   }
-//
-//   Widget _buildSelectedFilesList() {
-//     return SingleChildScrollView(
-//       scrollDirection: Axis.horizontal,
-//       child: Row(
-//         children: selectedFiles.map((file) {
-//           String extension = file.extension ?? "";
-//           String iconPath = getFileIcon(extension);
-//
-//           return Stack(
-//             clipBehavior: Clip.none,
-//             children: [
-//               GestureDetector(
-//                 onTap: () {
-//                   OpenFile.open(file.path);
-//                 },
-//                 child: Padding(
-//                   padding: const EdgeInsets.all(8.0),
-//                   child: Image.asset(iconPath, width: 60, height: 60),
-//                 ),
-//               ),
-//               Positioned(
-//                 top: -5,
-//                 left: -5,
-//                 child: GestureDetector(
-//                   onTap: () {
-//                     setState(() {
-//                       selectedFiles.remove(file);
-//                     });
-//                   },
-//                   child: Container(
-//                     width: 20,
-//                     height: 20,
-//                     decoration: BoxDecoration(
-//                       color: Colors.white,
-//                       shape: BoxShape.circle,
-//                       border: Border.all(color: Colors.red, width: 1.5),
-//                     ),
-//                     child: const Icon(Icons.close, size: 16, color: Colors.red),
-//                   ),
-//                 ),
-//               ),
-//             ],
-//           );
-//         }).toList(),
-//       ),
-//     );
-//   }
-//
-//   void openSelectedFile(String filePath) {
-//     OpenFile.open(filePath);
-//   }
-//
-//   Widget _buildSubmitButton() {
-//     return SizedBox(
-//       width: double.infinity,
-//       height: 50,
-//       child: ElevatedButton(
-//         style: ElevatedButton.styleFrom(
-//           backgroundColor: Colors.blue,
-//           shape: RoundedRectangleBorder(
-//             borderRadius: BorderRadius.circular(8),
-//           ),
-//         ),
-//         onPressed: () async {
-//           if (isSubmitting) return;
-//           setState(() => isSubmitting = true);
-//           await submitTranslationRequest();
-//           setState(() => isSubmitting = false);
-// //Navigator.push(context,MaterialPageRoute(builder: (context)=>OrderDetailsPage()));
-//         },
-//         child: isSubmitting
-//             ? const CircularProgressIndicator(color: Colors.white)
-//             : const Text(
-//           'إرسال الطلب',
-//           style: TextStyle(color: Colors.white, fontSize: 16),
-//         ),
-//       ),
-//     );
-//   }
-// }
-//
-//
-//
+import 'dart:convert';
+import 'package:engaz_app/features/chat_orders/chat_orders_screen.dart';
+import 'package:file_selector/file_selector.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../home_screen/view/home_view.dart';
+import '../../localization/change_lang.dart';
+import '../../saved_order/view/saved_order.dart';
+
+class TranslationOrderApp extends StatelessWidget {
+  const TranslationOrderApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: TranslationOrderForm(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class TranslationOrderForm extends StatefulWidget {
+  const TranslationOrderForm({super.key});
+
+  @override
+  _TranslationOrderFormState createState() => _TranslationOrderFormState();
+}
+
+class _TranslationOrderFormState extends State<TranslationOrderForm> {
+  final _formKey = GlobalKey<FormState>();
+  String? fileLanguage;
+  List<String> translationLanguages = [];
+  String? deliveryMethod;
+  String? address;
+  String? notes;
+  List<XFile> uploadedFiles = [];
+  bool _submitted = false;
+
+  final List<String> allLanguages = ['Arabic', 'English', 'French', 'Dutch'];
+
+  Future<String?> _getToken() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token');
+  }
+
+  void showSuccessBottomSheet(BuildContext context) {
+    final langCode = context.read<LocalizationProvider>().locale.languageCode;
+
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              Translations.getText('order_success', langCode),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              Translations.getText('order_review_msg', langCode),
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HomePage()));
+                    },
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: Color(0xff409EDC)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      Translations.getText('new_service_request', langCode),
+                      style: TextStyle(color: Color(0xff409EDC)),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                       Navigator.push(context, MaterialPageRoute(builder: (context)=>OrderChatScreen()));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xff409EDC),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      Translations.getText('follow_request', langCode),
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  bool isLoading = false;
+
+  Future<void> submitOrder() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse(
+          'https://wckb4f4m-3000.euw.devtunnels.ms/api/order/translation'),
+    );
+
+    request.headers.addAll({
+      "Authorization": "Bearer ${await _getToken()}",
+      'Connection': 'keep-alive',
+    });
+
+    request.fields['fileLanguge'] = fileLanguage ?? '';
+    request.fields['methodOfDelivery'] = deliveryMethod ?? '';
+    request.fields['notes'] = notes ?? '';
+    request.fields['Address'] = address ?? '';
+    request.fields['translationLanguges'] = jsonEncode(translationLanguages);
+
+    for (var file in uploadedFiles) {
+      if (file.path != null) {
+        request.files
+            .add(await http.MultipartFile.fromPath('otherDocs', file.path!));
+      }
+    }
+
+    try {
+      final response = await request.send();
+      final result = await response.stream.bytesToString();
+
+      setState(() {
+        isLoading = false;
+      });
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        showSuccessBottomSheet(context);
+      } else {
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: Text('خطأ'),
+            content: Text('❌ Error: $result'),
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text('مشكلة اتصال'),
+          content: Text('❌ Connection error: $e'),
+        ),
+      );
+    }
+  }
+
+  void _showLanguageDialog() async {
+    final List<String> tempSelected = List.from(translationLanguages);
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: Text('Select Translation Languages'),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: allLanguages.map((lang) {
+                    return CheckboxListTile(
+                      title: Text(lang),
+                      value: tempSelected.contains(lang),
+                      onChanged: (selected) {
+                        setDialogState(() {
+                          selected == true
+                              ? tempSelected.add(lang)
+                              : tempSelected.remove(lang);
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text('Cancel')),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() => translationLanguages = tempSelected);
+                    Navigator.pop(context);
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<LocalizationProvider>(
+        builder: (context, localizationProvider, child) {
+          final locale = localizationProvider.locale.languageCode;
+          final textDirection =
+          locale == 'ar' ? TextDirection.rtl : TextDirection.ltr;
+          return Directionality(
+              textDirection: textDirection,
+              child: Scaffold(
+                backgroundColor: const Color(0xffF8F8F8),
+                appBar: AppBar(
+                  leading: const Icon(Icons.arrow_back_ios),
+                  title: Text(
+                      Translations.getText(
+                        'tranthereq',
+                        context.read<LocalizationProvider>().locale.languageCode,
+                      ),
+                      style: TextStyle(color: Colors.black)),
+                  backgroundColor: const Color(0xffF8F8F8),
+                  elevation: 0,
+                  iconTheme: const IconThemeData(color: Colors.black),
+                ),
+                body: SingleChildScrollView(
+                  padding: EdgeInsets.all(20),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        Image.asset("assets/images/img_new.png"),
+                        Text(
+                          Translations.getText(
+                            'newreq',
+                            context
+                                .read<LocalizationProvider>()
+                                .locale
+                                .languageCode,
+                          ),
+                        ),
+                        Text(
+                          Translations.getText(
+                            'langneed',
+                            context
+                                .read<LocalizationProvider>()
+                                .locale
+                                .languageCode,
+                          ),
+                        ),
+                        Align(
+                          alignment: AlignmentDirectional.topStart,
+                          child: Text(
+                            Translations.getText(
+                              'edjat',
+                              context
+                                  .read<LocalizationProvider>()
+                                  .locale
+                                  .languageCode,
+                            ),
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.start,
+                          ),
+                        ),
+                        DropdownButtonFormField<String>(
+                          decoration: InputDecoration(
+                            labelText: Translations.getText(
+                              'chooose',
+                              context
+                                  .read<LocalizationProvider>()
+                                  .locale
+                                  .languageCode,
+                            ),
+                            filled: true,
+                            fillColor: Colors.grey.shade200,
+                            contentPadding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: Colors.transparent),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: Colors.blue, width: 2),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: Colors.red),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: Colors.red, width: 2),
+                            ),
+                          ),
+                          items: ['Arabic', 'English']
+                              .map((lang) =>
+                              DropdownMenuItem(value: lang, child: Text(lang)))
+                              .toList(),
+                          onChanged: (value) =>
+                              setState(() => fileLanguage = value),
+                          validator: (value) => value == null ? 'مطلوب' : null,
+                        ),
+                        SizedBox(height: 15),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Align(
+                              alignment: AlignmentDirectional.topStart,
+                              child: Text(
+                                Translations.getText(
+                                  'attach',
+                                  context
+                                      .read<LocalizationProvider>()
+                                      .locale
+                                      .languageCode,
+                                ),
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.start,
+                              ),
+                            ),
+
+                            GestureDetector(
+                              onTap: _showLanguageDialog,
+                              child: AbsorbPointer(
+                                child: DropdownButtonFormField<String>(
+                                  decoration: InputDecoration(
+                                    labelText: Translations.getText(
+                                      'chooose',
+                                      context
+                                          .read<LocalizationProvider>()
+                                          .locale
+                                          .languageCode,
+                                    ),
+                                    filled: true,
+                                    fillColor: Colors.grey.shade200,
+                                    contentPadding: EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 14),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide:
+                                      BorderSide(color: Colors.transparent),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide:
+                                      BorderSide(color: Colors.blue, width: 2),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide(color: Colors.red),
+                                    ),
+                                    focusedErrorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide:
+                                      BorderSide(color: Colors.red, width: 2),
+                                    ),
+                                  ),
+                                  value: null,
+                                  // hint: Text("اضغط لاختيار اللغة"),
+                                  items: [],
+
+                                  onChanged: null,
+
+                                  validator: (value) =>
+                                  translationLanguages.isEmpty ? 'مطلوب' : null,
+                                ),
+                              ),
+                            ),
+
+                            SizedBox(height: 5),
+                            // ElevatedButton(onPressed: _showLanguageDialog, child: Text("Select Languages")),
+                            Wrap(
+                              spacing: 6.0,
+                              children: translationLanguages
+                                  .map((lang) => Chip(label: Text(lang)))
+                                  .toList(),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 15),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              Translations.getText(
+                                'addressway',
+                                context
+                                    .read<LocalizationProvider>()
+                                    .locale
+                                    .languageCode,
+                              ),
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: RadioListTile<String>(
+                                    title: Text('Office'),
+                                    value: 'Office',
+                                    groupValue: deliveryMethod,
+                                    onChanged: (value) =>
+                                        setState(() => deliveryMethod = value),
+                                    contentPadding: EdgeInsets.zero,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: RadioListTile<String>(
+                                    title: Text('Home'),
+                                    value: 'Home',
+                                    groupValue: deliveryMethod,
+                                    onChanged: (value) =>
+                                        setState(() => deliveryMethod = value),
+                                    contentPadding: EdgeInsets.zero,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (_submitted && deliveryMethod == null)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                child: Text(
+                                  'Required',
+                                  style: TextStyle(color: Colors.red, fontSize: 12),
+                                ),
+                              ),
+                          ],
+                        ),
+                        if (deliveryMethod == 'Home') ...[
+                          TextFormField(
+                            decoration: InputDecoration(
+                              labelText: 'Address',
+                              prefixIcon: Icon(Icons.home_outlined),
+                              filled: true,
+                              fillColor: Colors.grey.shade200,
+                              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: Colors.transparent),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: Colors.blue, width: 2),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: Colors.red),
+                              ),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: Colors.red, width: 2),
+                              ),
+                            ),
+                            onChanged: (value) => address = value,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Align(
+                              alignment: Alignment.topLeft,
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context, MaterialPageRoute(builder: (context) => SavedAddress()));
+                                },
+                                child: Image.asset("assets/images/img222.png"),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height:15
+                          ),
+                        ],
+                        TextFormField(
+                          maxLines: 3,
+                          onChanged: (value) => notes = value,
+                          decoration: InputDecoration(
+                            labelText: Translations.getText(
+                              'notess',
+                              context
+                                  .read<LocalizationProvider>()
+                                  .locale
+                                  .languageCode,
+                            ),
+                            filled: true,
+                            fillColor: Colors.grey.shade200,
+                            contentPadding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: Colors.blue, width: 2),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        Align(
+                          alignment: AlignmentDirectional.topStart,
+                          child: Text(
+                            Translations.getText(
+                              'attach',
+                              context
+                                  .read<LocalizationProvider>()
+                                  .locale
+                                  .languageCode,
+                            ),
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.start,
+                          ),
+                        ),
+                        SizedBox(
+                          width: double.infinity,
+                          child: Container(
+                            padding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            color: Colors.grey.shade200,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    Translations.getText(
+                                      'attach2',
+                                      context
+                                          .read<LocalizationProvider>()
+                                          .locale
+                                          .languageCode,
+                                    ),
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () async {
+                                    final files =
+                                    await openFiles(acceptedTypeGroups: [
+                                      XTypeGroup(label: 'docs', extensions: [
+                                        'pdf',
+                                        'doc',
+                                        'docx',
+                                        'ppt',
+                                        'pptx'
+                                      ])
+                                    ]);
+                                    if (files.isNotEmpty) {
+                                      setState(() {
+                                        uploadedFiles.addAll(
+                                          files.where((file) => !uploadedFiles.any((f) => f.path == file.path)),
+                                        );
+                                      });
+                                    }
+                                  },
+                                  child:
+                                  Icon(Icons.file_upload, color: Colors.black),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: uploadedFiles.map((file) {
+                            final extension = file.name.split('.').last.toLowerCase();
+                            final isPDF = extension == 'pdf';
+                            final isDOC = ['doc', 'docx'].contains(extension);
+                            final isXLS = ['xls', 'xlsx'].contains(extension);
+
+                            IconData icon;
+                            Color color;
+                            String label;
+
+                            if (isPDF) {
+                              icon = Icons.picture_as_pdf;
+                              color = Colors.red;
+                              label = 'PDF';
+                            } else if (isDOC) {
+                              icon = Icons.description;
+                              color = Colors.blue;
+                              label = 'DOC';
+                            } else if (isXLS) {
+                              icon = Icons.table_chart;
+                              color = Colors.green;
+                              label = 'XLS';
+                            } else {
+                              icon = Icons.insert_drive_file;
+                              color = Colors.grey;
+                              label = extension.toUpperCase();
+                            }
+
+                            return Stack(
+                              children: [
+                                Container(
+                                  width: 80,
+                                  height: 100,
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade100,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(icon, size: 36, color: color),
+                                      SizedBox(height: 8),
+                                      Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
+                                    ],
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 0,
+                                  left: 0,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        uploadedFiles.remove(file);
+                                      });
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.red,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      padding: EdgeInsets.all(4),
+                                      child: Icon(Icons.close, color: Colors.white, size: 14),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }).toList(),
+                        ),
+                        SizedBox(height: 10),
+                        Text('${uploadedFiles.length} file(s) selected'),
+                        SizedBox(height: 20),
+                        SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: isLoading
+                                  ? null
+                                  : () {
+                                setState(() {
+                                  _submitted = true;
+                                });
+
+                                bool isValid = _formKey.currentState!.validate();
+
+                                if (!isValid ||
+                                    translationLanguages.isEmpty ||
+                                    uploadedFiles.isEmpty ||
+                                    deliveryMethod == null) {
+                                  if (translationLanguages.isEmpty) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(
+                                              'Please select at least one translation language.')),
+                                    );
+                                  }
+                                  if (uploadedFiles.isEmpty) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content:
+                                          Text('Please upload at least one document.')),
+                                    );
+                                  }
+                                  return;
+                                }
+
+                                submitOrder();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xff409EDC),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                padding: EdgeInsets.symmetric(vertical: 14),
+                              ),
+                              child: isLoading
+                                  ? SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                                  : Text(
+                                Translations.getText(
+                                  'send_req',
+                                  context
+                                      .read<LocalizationProvider>()
+                                      .locale
+                                      .languageCode,
+                                ),
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ))
+                      ],
+                    ),
+                  ),
+                ),
+              ));
+        });
+  }
+}
