@@ -61,7 +61,7 @@ class AddAddressViewModel extends ChangeNotifier {
     };
 
     final Map<String, dynamic> requestBody = {
-      "name": "Home",
+      "name": locationController.text.substring(0, 10),
       "address": locationController.text,
       "location": locationController.text,
     };

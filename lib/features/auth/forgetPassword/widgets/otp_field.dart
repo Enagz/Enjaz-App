@@ -52,6 +52,7 @@ class _OtpFieldsState extends State<OtpFields> {
             child: TextFormField(
               focusNode: focusNodes[index],
               textAlign: TextAlign.center,
+              textDirection: TextDirection.ltr,
               keyboardType: TextInputType.number,
               textInputAction: index < 3 ? TextInputAction.next : TextInputAction.done,
               maxLength: 1,
