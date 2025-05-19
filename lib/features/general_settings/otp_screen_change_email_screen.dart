@@ -6,6 +6,7 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../auth/login/viewmodel/login_viewmodel.dart';
+import '../localization/change_lang.dart';
 
 class OtpScreenChangeEmailScreen extends StatefulWidget {
   final String phone;
@@ -27,9 +28,7 @@ class _OtpScreenChangeEmailScreenState extends State<OtpScreenChangeEmailScreen>
       final token = prefs.getString('token') ?? '';
       final userId = JwtDecoder.decode(token)['user_id'];
 
-      final url = Uri.parse(
-        'https://b762efea-73b1-4221-8420-90b4e7d17125-00-2mjbzkqtyqqef.janeway.replit.dev/login-account/$userId/code',
-      );
+      final url = Uri.parse('https://backend.enjazkw.com/api/login-account/$userId/code');
 
       final response = await http.post(
         url,
@@ -41,25 +40,27 @@ class _OtpScreenChangeEmailScreenState extends State<OtpScreenChangeEmailScreen>
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(data['message'] ?? "تم التفعيل بنجاح")),
+          SnackBar(content: Text(data['message'] ?? Translations.getText('activation_success', langCode))),
         );
-        Navigator.pop(context); // أو روح للصفحة اللي بعدها
+        Navigator.pop(context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(data['error'] ?? "رمز غير صالح")),
+          SnackBar(content: Text(data['error'] ?? Translations.getText('invalid_code', langCode))),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("خطأ: $e")),
+        SnackBar(content: Text("${Translations.getText('server_error', langCode)}: $e")),
       );
     }
   }
 
+  String get langCode => Localizations.localeOf(context).languageCode;
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => LoginViewModel(),
+      create: (_) => LoginViewModel(),
       child: Scaffold(
         backgroundColor: Colors.white,
         body: LayoutBuilder(
@@ -84,69 +85,34 @@ class _OtpScreenChangeEmailScreenState extends State<OtpScreenChangeEmailScreen>
                               width: imageWidth, height: imageWidth * 0.37),
                         ),
                         const SizedBox(height: 16),
-                        const Text(
-                          "رمز التفعيل",
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'IBM_Plex_Sans_Arabic'),
+                        Center(
+                          child: Text(
+                            Translations.getText('activation_title', langCode),
+                            textDirection: context.read<LocalizationProvider>().locale.languageCode == 'ar'
+                                ? TextDirection.rtl
+                                : TextDirection.ltr,
+                            style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'IBM_Plex_Sans_Arabic'),
+                          ),
                         ),
-                        const Text(
-                          "اختر وسيلة استلام رمز التفعيل الخاص بك لتفعيل حسابك",
-                          style: TextStyle(
+                        Text(
+                          Translations.getText('choose_activation_method', langCode),
+                          style: const TextStyle(
                               fontSize: 12,
                               color: Color(0xffB3B3B3),
                               fontWeight: FontWeight.w500,
                               fontFamily: 'IBM_Plex_Sans_Arabic'),
                         ),
                         const SizedBox(height: 16),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedImageIndex = 1;
-                            });
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.only(right: 60, left: 60),
-                            decoration: BoxDecoration(
-                              border: selectedImageIndex == 1
-                                  ? Border.all(color: const Color(0xff409EDC), width: 1)
-                                  : null,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Image.asset(
-                              'assets/images/img3.png',
-                              width: imageWidth,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedImageIndex = 2;
-                            });
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.only(right: 60, left: 60),
-                            decoration: BoxDecoration(
-                              border: selectedImageIndex == 2
-                                  ? Border.all(color: const Color(0xff409EDC), width: 1)
-                                  : null,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Image.asset(
-                              'assets/images/img4.png',
-                              width: imageWidth,
-                            ),
-                          ),
-                        ),
+                        ..._buildOptions(screenWidth),
                         const SizedBox(height: 16),
                         TextField(
                           controller: codeController,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
-                            hintText: "ادخل رمز التفعيل",
+                            hintText: Translations.getText('enter_code', langCode),
                             filled: true,
                             fillColor: const Color(0xffFAFAFA),
                             border: OutlineInputBorder(
@@ -164,21 +130,21 @@ class _OtpScreenChangeEmailScreenState extends State<OtpScreenChangeEmailScreen>
                             onPressed: () {
                               if (selectedImageIndex == null || codeController.text.isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text("اختر وسيلة وأدخل الرمز")),
+                                  SnackBar(content: Text(Translations.getText('select_method_enter_code', langCode))),
                                 );
                                 return;
                               }
                               verifyCode(codeController.text);
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromRGBO(64, 157, 220, 1),
+                              backgroundColor: const Color(0xff409EDC),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            child: const Text(
-                              "تأكيد",
-                              style: TextStyle(
+                            child: Text(
+                              Translations.getText('confirm', langCode),
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                                 fontFamily: 'IBM_Plex_Sans_Arabic',
@@ -206,9 +172,9 @@ class _OtpScreenChangeEmailScreenState extends State<OtpScreenChangeEmailScreen>
                         ),
                         Row(
                           children: [
-                            const Text(
-                              "رمز التفعيل ",
-                              style: TextStyle(
+                            Text(
+                              Translations.getText('activation_title', langCode),
+                              style: const TextStyle(
                                 color: Color(0xff1D1D1D),
                                 fontWeight: FontWeight.w600,
                                 fontSize: 18,
@@ -233,5 +199,37 @@ class _OtpScreenChangeEmailScreenState extends State<OtpScreenChangeEmailScreen>
         ),
       ),
     );
+  }
+
+  List<Widget> _buildOptions(double imageWidth) {
+    return [
+      GestureDetector(
+        onTap: () => setState(() => selectedImageIndex = 1),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 60),
+          decoration: BoxDecoration(
+            border: selectedImageIndex == 1
+                ? Border.all(color: const Color(0xff409EDC), width: 1)
+                : null,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Image.asset('assets/images/img3.png', width: imageWidth),
+        ),
+      ),
+      const SizedBox(height: 12),
+      GestureDetector(
+        onTap: () => setState(() => selectedImageIndex = 2),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 60),
+          decoration: BoxDecoration(
+            border: selectedImageIndex == 2
+                ? Border.all(color: const Color(0xff409EDC), width: 1)
+                : null,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Image.asset('assets/images/img4.png', width: imageWidth),
+        ),
+      ),
+    ];
   }
 }

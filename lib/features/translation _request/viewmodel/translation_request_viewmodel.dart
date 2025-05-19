@@ -1,14 +1,13 @@
 import 'dart:convert';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String _baseUrl = 'https://wckb4f4m-3000.euw.devtunnels.ms/api';
+  static const String _baseUrl = 'https://backend.enjazkw.com/api';
 
   static Future<bool> submitTranslationRequest({
     required String fileLanguage,
-    required String translationLanguage, // بدل ما تكون List
+    required String translationLanguage,
     required String notes,
     required String deliveryMethod,
     String? address,
@@ -23,7 +22,6 @@ class ApiService {
       request.headers['Authorization'] = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWJkMWIzNi0xZGQxLTQ2MDktYTE2NC1kZTg5YmM1YWYwMWQiLCJ1c2VybmFtZSI6IkJhc3NlbCBTYWxsYW0iLCJlbWFpbCI6ImJhc3NlbGEuc2FsYW1AZ21haWwuY29tIiwidmVyZmllZCI6dHJ1ZSwiaWF0IjoxNzQyNzY2OTkzfQ.-LuSsU2AombLwf1YUm91fNe_VmXtfIDEn9Z8h3N1PAc';
       request.headers['Accept'] = 'application/json';
 
-      // تحويل اللغة المصدر
       final Map<String, String> languageMap = {
         'Arabic': 'Arabic',
         'English': 'English',
@@ -77,7 +75,7 @@ class ApiService {
       case 'توصيل':
         return 'delivery';
       case 'Office':
-        return 'office'; // تأكد من أن الـ API يدعم هذه القيمة
+        return 'office';
       default:
         throw Exception('طريقة التوصيل غير صالحة: $method');
     }

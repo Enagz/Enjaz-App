@@ -2,6 +2,8 @@ import 'package:engaz_app/features/visitor/view/dialog.dart';
 import 'package:engaz_app/features/visitor/view/home_content_2.dart';
 import 'package:engaz_app/features/visitor/view/setting_screen_2.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../localization/change_lang.dart';
 
 class HomePage2 extends StatefulWidget {
   @override
@@ -9,14 +11,6 @@ class HomePage2 extends StatefulWidget {
 }
 
 class _HomePage2State extends State<HomePage2> {
-  final PageController _pageController = PageController();
-
-  final List<String> images = [
-    'assets/images/img7.png',
-    'assets/images/img7.png',
-    'assets/images/img7.png',
-  ];
-
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
@@ -27,8 +21,11 @@ class _HomePage2State extends State<HomePage2> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = context.read<LocalizationProvider>().locale.languageCode;
+    final textDirection = lang == 'ar' ? TextDirection.rtl : TextDirection.ltr;
+
     return Directionality(
-      textDirection: TextDirection.ltr,
+      textDirection: textDirection,
       child: Scaffold(
         backgroundColor: const Color(0xffFDFDFD),
         bottomNavigationBar: BottomNavigationBar(
@@ -37,15 +34,15 @@ class _HomePage2State extends State<HomePage2> {
           items: [
             BottomNavigationBarItem(
               icon: Image.asset('assets/images/img13.png'),
-              label: 'Home',
+              label: Translations.getText('home', lang),
             ),
             BottomNavigationBarItem(
               icon: Image.asset('assets/images/img14.png'),
-              label: 'Orders',
+              label: Translations.getText('orders', lang),
             ),
             BottomNavigationBarItem(
               icon: Image.asset('assets/images/img15.png'),
-              label: 'More',
+              label: Translations.getText('more', lang),
             ),
           ],
           selectedItemColor: Colors.blue,

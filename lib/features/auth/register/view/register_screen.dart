@@ -75,33 +75,31 @@ class RegisterScreen extends StatelessWidget {
                           // First Name
                           _buildLabel(Translations.getText('first_name', langCode), langCode),
                           CustomTextField(
-                            hintText: Translations.getText('enter_first_name', langCode),
-                            onChanged: (value) => context.read<RegisterViewModel>().setFirstName(value),
+                            hintKey: 'enter_first_name',
+                            onChanged: (val) => context.read<RegisterViewModel>().setFirstName(val),
                           ),
                           const SizedBox(height: 8),
 
                           // Last Name
                           _buildLabel(Translations.getText('last_name', langCode), langCode),
                           CustomTextField(
-                            hintText: Translations.getText('enter_last_name', langCode),
-                            onChanged: (value) => context.read<RegisterViewModel>().setLastName(value),
+                            hintKey: 'enter_last_name',
+                            onChanged: (val) => context.read<RegisterViewModel>().setLastName(val),
                           ),
                           const SizedBox(height: 8),
                           _buildLabel(Translations.getText('phone_number', langCode), langCode),
                           CustomTextField(
-                            hintText: Translations.getText('enter_phone', langCode),
-                            onChanged: (value) => context.read<RegisterViewModel>().setPhone(value),
+                            hintKey: 'enter_phone',
+                            onChanged: (val) => context.read<RegisterViewModel>().setPhone(val),
                           ),
                           const SizedBox(height: 8),
-
                           // Email
                           _buildLabel(Translations.getText('email', langCode), langCode),
                           CustomTextField(
-                            hintText: Translations.getText('enter_email', langCode),
-                            onChanged: (value) => context.read<RegisterViewModel>().setEmail(value),
+                            hintKey: 'enter_email',
+                            onChanged: (val) => context.read<RegisterViewModel>().setEmail(val),
                           ),
                           const SizedBox(height: 16),
-
                           Consumer<RegisterViewModel>(
                             builder: (context, viewModel, _) {
                               return SizedBox(
@@ -112,11 +110,10 @@ class RegisterScreen extends StatelessWidget {
                                       ? null
                                       : () async {
                                     if (!formKey.currentState!.validate()) return;
-
                                     if (viewModel.email.isEmpty || viewModel.phone.isEmpty) {
                                       ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text("يرجى إدخال كافة البيانات بشكل صحيح"),
+                                        SnackBar(
+                                          content: Text(Translations.getText('fill_all_fields', langCode)),
                                           backgroundColor: Colors.red,
                                         ),
                                       );
@@ -137,11 +134,9 @@ class RegisterScreen extends StatelessWidget {
                                         ),
                                       );
                                     } else {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text(result['message']),
-                                          backgroundColor: Colors.red,
-                                        ),
+                                      SnackBar(
+                                        content: Text(Translations.getText(result['message'], langCode)),
+                                        backgroundColor: Colors.red,
                                       );
                                     }
                                   },

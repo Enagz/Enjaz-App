@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import '../model/otp_response.dart';
 
 class OtpService {
   Future<OtpResponse> verifyOtp({
@@ -16,7 +15,7 @@ class OtpService {
     }
 
     final url =
-        'https://wckb4f4m-3000.euw.devtunnels.ms/api/login-account/$userId/code';
+        'https://backend.enjazkw.com/api/login-account/$userId/code';
 
     final response = await http.post(
       Uri.parse(url),

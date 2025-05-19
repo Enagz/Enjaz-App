@@ -32,7 +32,7 @@ class _HomeContentState extends State<HomeContent> {
 
     try {
       final response = await http.get(
-        Uri.parse("https://wckb4f4m-3000.euw.devtunnels.ms/api/coustmer/notification"),
+        Uri.parse("https://backend.enjazkw.com/api/coustmer/notification"),
         headers: {'Authorization': 'Bearer $token'},
       );
 

@@ -1,8 +1,11 @@
+import 'package:engaz_app/features/visitor/view/dialog.dart';
+import 'package:engaz_app/features/visitor/view/order_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-
 import '../../home_screen/widgets/category_card.dart';
 import '../home_screen_2.dart';
+import '../../localization/change_lang.dart';
 
 class HomeContent2 extends StatelessWidget {
   final PageController _pageController = PageController();
@@ -15,8 +18,11 @@ class HomeContent2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lang = context.read<LocalizationProvider>().locale.languageCode;
+    final textDirection = lang == 'ar' ? TextDirection.rtl : TextDirection.ltr;
+
     return Directionality(
-      textDirection: TextDirection.ltr,
+      textDirection: textDirection,
       child: Scaffold(
         backgroundColor: const Color(0xffFDFDFD),
         body: SafeArea(
@@ -28,10 +34,10 @@ class HomeContent2 extends StatelessWidget {
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
+                    children: [
                       Text(
-                        'Home',
-                        style: TextStyle(
+                        Translations.getText('home', lang),
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
                           fontFamily: 'IBM_Plex_Sans_Arabic',
@@ -81,9 +87,9 @@ class HomeContent2 extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    'Categories',
-                    style: TextStyle(
+                  Text(
+                    Translations.getText('categories', lang),
+                    style: const TextStyle(
                       fontSize: 16,
                       color: Color(0xff1D1D1D),
                       fontWeight: FontWeight.w600,
@@ -92,17 +98,17 @@ class HomeContent2 extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   CategoryCard(
-                    title: 'Translation',
-                    description: 'We offer top-quality translation services in over 10 languages worldwide.',
+                    title: Translations.getText('translation_title', lang),
+                    description: Translations.getText('translation_desc', lang),
                     image: 'assets/images/img5.png',
-                    destinationPage: HomePage2(),
+                    destinationPage: OrdersScreenVistor(),
                   ),
                   const SizedBox(height: 10),
                   CategoryCard(
-                    title: 'Printing',
-                    description: 'We provide the best printing quality at competitive prices.',
+                    title: Translations.getText('printing_title', lang),
+                    description: Translations.getText('printing_desc', lang),
                     image: 'assets/images/img6.png',
-                    destinationPage: HomePage2(),
+                    destinationPage: OrdersScreenVistor(),
                   ),
                 ],
               ),

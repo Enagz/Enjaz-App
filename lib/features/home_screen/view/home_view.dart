@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../localization/change_lang.dart';
 import '../viewmodel/home_viewmodel.dart';
-import 'home_content.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -15,7 +14,6 @@ class HomePage extends StatelessWidget {
               final locale = localizationProvider.locale.languageCode;
               final textDirection =
                   locale == 'ar' ? TextDirection.rtl : TextDirection.ltr;
-
               return Directionality(
                 textDirection: textDirection,
                 child: Scaffold(
@@ -47,7 +45,7 @@ class HomePage extends StatelessWidget {
                       BottomNavigationBarItem(
                         icon: ImageIcon(AssetImage('assets/images/img15.png')),
                         label: Translations.getText(
-                          'offer',
+                          'more',
                           context
                               .read<LocalizationProvider>()
                               .locale

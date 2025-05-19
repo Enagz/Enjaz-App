@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import '../auth/forgetPassword/view/otp_screen.dart';
@@ -13,113 +12,99 @@ class ChangeEmailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<LocalizationProvider>(
-        builder: (context, localizationProvider, child) {
-      final locale = localizationProvider.locale.languageCode;
-      final textDirection =
-          locale == 'ar' ? TextDirection.rtl : TextDirection.ltr;
+    final langCode = context.watch<LocalizationProvider>().locale.languageCode;
+    final isArabic = langCode == 'ar';
+    final textDirection = isArabic ? TextDirection.rtl : TextDirection.ltr;
 
-      return Directionality(
-          textDirection: textDirection,
-          child: ChangeNotifierProvider(
-            create: (context) => LoginViewModel(),
-            child: Scaffold(
-              backgroundColor: Colors.white,
-              body: LayoutBuilder(
-                builder: (context, constraints) {
-                  double screenWidth = constraints.maxWidth;
-                  double padding = screenWidth > 600 ? 48 : 24;
-                  double imageWidth = screenWidth > 600 ? 250 : 204;
-                  double buttonHeight = screenWidth > 600 ? 60 : 50;
+    return Directionality(
+      textDirection: textDirection,
+      child: ChangeNotifierProvider(
+        create: (context) => LoginViewModel(),
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          body: LayoutBuilder(
+            builder: (context, constraints) {
+              double screenWidth = constraints.maxWidth;
+              double padding = screenWidth > 600 ? 48 : 24;
+              double imageWidth = screenWidth > 600 ? 250 : 204;
+              double buttonHeight = screenWidth > 600 ? 60 : 50;
 
-                  return Stack(
-                    children: [
-                      SingleChildScrollView(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: padding),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
+              return Stack(
+                children: [
+                  SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: padding),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: screenWidth > 600 ? 70 : 50),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              SizedBox(height: screenWidth > 600 ? 70 : 50),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    Translations.getText(
-                                      'change2',
-                                      context
-                                          .read<LocalizationProvider>()
-                                          .locale
-                                          .languageCode,
-                                    ),
-                                    style: TextStyle(
-                                      color: Color(0xff1D1D1D),
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 18,
-                                      fontFamily: 'IBM_Plex_Sans_Arabic',
-                                    ),
-                                  ),
-                                  InkWell(
-                                    onTap: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Icon(Icons.arrow_forward_ios),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: screenWidth > 600 ? 50 : 30),
-                              Image.asset('assets/images/img1.png',
-                                  width: imageWidth, height: imageWidth * 0.37),
-                              const SizedBox(height: 16),
                               Text(
-                                Translations.getText(
-                                  'new_email',
-                                  context
-                                      .read<LocalizationProvider>()
-                                      .locale
-                                      .languageCode,
+                                Translations.getText('change2', langCode),
+                                textDirection: context.read<LocalizationProvider>().locale.languageCode == 'ar'
+                                    ? TextDirection.rtl
+                                    : TextDirection.ltr,
+                                style: const TextStyle(
+                                  color: Color(0xff1D1D1D),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 18,
+                                  fontFamily: 'IBM_Plex_Sans_Arabic',
                                 ),
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: 'IBM_Plex_Sans_Arabic'),
                               ),
-                              Text(
-                                Translations.getText(
-                                  'pls2',
-                                  context
-                                      .read<LocalizationProvider>()
-                                      .locale
-                                      .languageCode,
-                                ),
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    color: Color(0xffB3B3B3),
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily: 'IBM_Plex_Sans_Arabic'),
+                            ],
+                          ),
+                          const SizedBox(height: 30),
+                          Center(
+                            child: Image.asset(
+                              'assets/images/img1.png',
+                              width: imageWidth,
+                              height: imageWidth * 0.37,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Center(
+                            child: Text(
+                              Translations.getText('new_email', langCode),
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'IBM_Plex_Sans_Arabic',
                               ),
-                              const SizedBox(height: 16),
-                              const CustomTextFeild2(),
-                              const SizedBox(height: 16),
-                              SizedBox(
+                            ),
+                          ),
+                          Center(
+                            child: Text(
+                              Translations.getText('pls2', langCode),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Color(0xffB3B3B3),
+                                fontWeight: FontWeight.w500,
+                                fontFamily: 'IBM_Plex_Sans_Arabic',
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          CustomTextFeild2(langCode: langCode),
+                          const SizedBox(height: 16),
+                          Consumer<LoginViewModel>(
+                            builder: (context, viewModel, _) {
+                              return SizedBox(
                                 width: double.infinity,
                                 height: buttonHeight,
                                 child: ElevatedButton(
                                   onPressed: () async {
-                                    final viewModel =
-                                        Provider.of<LoginViewModel>(context,
-                                            listen: false);
                                     final email = viewModel.userInput;
 
                                     if (email.isEmpty) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
                                           content: Text(
-                                            "يرجى إدخال البريد الإلكتروني",
-                                            style: TextStyle(
-                                                fontFamily:
-                                                    'IBM_Plex_Sans_Arabic'),
+                                            Translations.getText('enter_email', langCode),
+                                            style: const TextStyle(
+                                                fontFamily: 'IBM_Plex_Sans_Arabic'),
                                           ),
                                           backgroundColor: Colors.red,
                                         ),
@@ -128,19 +113,11 @@ class ChangeEmailScreen extends StatelessWidget {
                                     }
 
                                     try {
-
-                                      // final token = prefs.getString('authToken') ?? '';
-                                      // final userId = JwtDecoder.decode(token)['user_id'];
-                                      // final token =
-                                      //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWJkMWIzNi0xZGQxLTQ2MDktYTE2NC1kZTg5YmM1YWYwMWQiLCJ1c2VybmFtZSI6IkJhc3NlbCBTYWxsYW0iLCJlbWFpbCI6ImJhc3NlbGEuc2FsYW1AZ21haWwuY29tIiwidmVyZmllZCI6dHJ1ZSwiaWF0IjoxNzQyNzY2OTkzfQ.-LuSsU2AombLwf1YUm91fNe_VmXtfIDEn9Z8h3N1PAc';
-                                      // final userId =
-                                      //     '6abd1b36-1dd1-4609-a164-de89bc5af01d';
                                       final prefs = await SharedPreferences.getInstance();
                                       final token = prefs.getString('token');
 
                                       final response = await http.post(
-                                        Uri.parse(
-                                            'https://wckb4f4m-3000.euw.devtunnels.ms/api/user/chgnageemail'),
+                                        Uri.parse('https://backend.enjazkw.com/api/user/chgnageemail'),
                                         headers: {
                                           'Content-Type': 'application/json',
                                           'Authorization': 'Bearer $token',
@@ -161,29 +138,22 @@ class ChangeEmailScreen extends StatelessWidget {
                                           ),
                                         );
                                       } else {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
+                                        ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(
                                             content: Text(
-                                              data['message'] ??
-                                                  'حدث خطأ غير متوقع',
-                                              style: const TextStyle(
-                                                  fontFamily:
-                                                      'IBM_Plex_Sans_Arabic'),
+                                              data['message'] ?? Translations.getText('unexpected_error', langCode),
+                                              style: const TextStyle(fontFamily: 'IBM_Plex_Sans_Arabic'),
                                             ),
                                             backgroundColor: Colors.red,
                                           ),
                                         );
                                       }
                                     } catch (e) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
+                                      ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
                                           content: Text(
-                                            'فشل الاتصال بالخادم: $e',
-                                            style: const TextStyle(
-                                                fontFamily:
-                                                    'IBM_Plex_Sans_Arabic'),
+                                            '${Translations.getText('server_error', langCode)}: $e',
+                                            style: const TextStyle(fontFamily: 'IBM_Plex_Sans_Arabic'),
                                           ),
                                           backgroundColor: Colors.red,
                                         ),
@@ -197,14 +167,8 @@ class ChangeEmailScreen extends StatelessWidget {
                                     ),
                                   ),
                                   child: Text(
-                                    Translations.getText(
-                                      'sure',
-                                      context
-                                          .read<LocalizationProvider>()
-                                          .locale
-                                          .languageCode,
-                                    ),
-                                    style: TextStyle(
+                                    Translations.getText('sure', langCode),
+                                    style: const TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.w600,
                                       fontFamily: 'IBM_Plex_Sans_Arabic',
@@ -212,78 +176,52 @@ class ChangeEmailScreen extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              );
+                            },
                           ),
-                        ),
+                        ],
                       ),
-                    ],
-                  );
-                },
-              ),
-            ),
-          ));
-    });
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+      ),
+    );
   }
 }
 
-class CustomTextFeild2 extends StatefulWidget {
-  const CustomTextFeild2({super.key});
-
-  @override
-  State<CustomTextFeild2> createState() => _CustomTextFeild2State();
-}
-
-class _CustomTextFeild2State extends State<CustomTextFeild2> {
-  late FocusNode _focusNode;
-  late TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _focusNode = FocusNode();
-    _controller = TextEditingController();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final viewModel = Provider.of<LoginViewModel>(context, listen: false);
-    _controller.addListener(() => viewModel.setUserInput(_controller.text));
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    _focusNode.dispose();
-    super.dispose();
-  }
+class CustomTextFeild2 extends StatelessWidget {
+  final String langCode;
+  const CustomTextFeild2({super.key, required this.langCode});
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: TextField(
-        controller: _controller,
-        focusNode: _focusNode,
-        decoration: InputDecoration(
-          hintText: "ادخل البريد الإلكتروني",
-          hintStyle: const TextStyle(
-            color: Color(0xffB3B3B3),
-            fontWeight: FontWeight.w500,
-            fontSize: 13,
-            fontFamily: 'IBM_Plex_Sans_Arabic',
-          ),
-          filled: true,
-          fillColor: const Color(0xffFAFAFA),
-          border: OutlineInputBorder(
-            borderSide: BorderSide.none,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+    final viewModel = Provider.of<LoginViewModel>(context, listen: false);
+    final controller = TextEditingController();
+    controller.addListener(() => viewModel.setUserInput(controller.text));
+
+    return TextField(
+      controller: controller,
+      keyboardType: TextInputType.emailAddress,
+      textAlign: langCode == 'ar' ? TextAlign.right : TextAlign.left,
+      decoration: InputDecoration(
+        hintText: Translations.getText('enter_email', langCode),
+        hintStyle: const TextStyle(
+          color: Color(0xffB3B3B3),
+          fontWeight: FontWeight.w500,
+          fontSize: 13,
+          fontFamily: 'IBM_Plex_Sans_Arabic',
         ),
-        keyboardType: TextInputType.emailAddress,
+        filled: true,
+        fillColor: const Color(0xffFAFAFA),
+        border: OutlineInputBorder(
+          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       ),
     );
   }

@@ -2,16 +2,13 @@ import 'dart:convert';
 import 'package:engaz_app/features/chat_orders/chat_orders_screen.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:open_file/open_file.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../auth/register/widgets/custom_text_feild.dart';
-import '../home_screen/view/home_view.dart';
 import '../localization/change_lang.dart';
 import '../printing_request/widgets/upload_button.dart';
 import '../saved_order/view/saved_order.dart';
-import '../translation _request/widgets/delivery_options.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 
@@ -35,7 +32,7 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
   String? selectedLanguage;
   String? selectedLanguage2;
   bool _isLoading = false;
-  bool _submitted = false;
+  final bool _submitted = false;
 
 
   final TextEditingController _copiesController = TextEditingController();
@@ -52,10 +49,11 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
   }
 
   Future<void> pickFile() async {
+    final locale = context.read<LocalizationProvider>().locale.languageCode;
     try {
       if (selectedFiles.isNotEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('يجب الضغط على زر الإضافة قبل رفع ملف جديد.')),
+          SnackBar(content: Text(Translations.getText('add_file_before', locale))),
         );
         return;
       }
@@ -74,8 +72,8 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
 
   Future<void> fetchDropdownData() async {
     try {
-      final colorResponse = await http.get(Uri.parse("https://wckb4f4m-3000.euw.devtunnels.ms/api/dashboard/color"));
-      final coverResponse = await http.get(Uri.parse("https://wckb4f4m-3000.euw.devtunnels.ms/api/dashboard/cover"));
+      final colorResponse = await http.get(Uri.parse("https://backend.enjazkw.com/api/dashboard/color"));
+      final coverResponse = await http.get(Uri.parse("https://backend.enjazkw.com/api/dashboard/cover"));
 
       if (colorResponse.statusCode == 200) {
         final body = jsonDecode(colorResponse.body);
@@ -94,10 +92,11 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
   Future<void> _submitOrder() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
+    final locale = context.read<LocalizationProvider>().locale.languageCode;
 
     if (finalizedFiles.isEmpty || deliveryMethod == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('يرجى إضافة الملفات واختيار وسيلة التوصيل')),
+        SnackBar(content: Text(Translations.getText('add_file_and_delivery', locale))),
       );
       return;
     }
@@ -107,7 +106,7 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
     try {
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('https://wckb4f4m-3000.euw.devtunnels.ms/api/order/printing'),
+        Uri.parse('https://backend.enjazkw.com/api/order/printing'),
       );
 
       request.headers['Authorization'] = 'Bearer $token';
@@ -142,27 +141,23 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
 
       var response = await request.send();
       final responseBody = await response.stream.bytesToString();
-
+      final locale = context.read<LocalizationProvider>().locale.languageCode;
       if (response.statusCode == 200 || response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('تم إرسال الطلب بنجاح')),
+          SnackBar(content: Text(Translations.getText('send_success', locale))),
         );
-        /*Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => SaveOrder()),
-        );
-         */
         showSuccessBottomSheet(context);
       } else {
         print('🔴 خطأ في الاستجابة: $responseBody');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('خطأ: ${response.statusCode} - $responseBody')),
+          SnackBar(content: Text('${Translations.getText('send_failed', locale)}: ${response.statusCode}')),
         );
       }
     } catch (e) {
+      final locale = context.read<LocalizationProvider>().locale.languageCode;
       print('❌ استثناء أثناء الإرسال: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('حدث خطأ: $e')),
+        SnackBar(content: Text('${Translations.getText('exception_occurred', locale)}: $e')),
       );
     } finally {
       setState(() => _isLoading = false);
@@ -187,7 +182,7 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                   final copies = finalizedFiles[index]['copies'].toString();
                   final extension = file.extension ?? "";
                   final iconPath = getFileIcon(extension);
-
+                  final locale = context.read<LocalizationProvider>().locale.languageCode;
                   return Card(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),
@@ -203,10 +198,10 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                             children: [
                               if (color != null)
                                 _buildSummaryItem(
-                                    'لون الطباعة', color!),
+                                    Translations.getText('printing_color', locale), color!),
                               if (cover != null)
                                 _buildSummaryItem(
-                                    'نوع التغليف', cover!),
+                                    Translations.getText('cover_type', locale), cover!),
                               GestureDetector(
                                 onTap: () => setState(
                                     () => selectedFiles.removeAt(index)),
@@ -223,7 +218,7 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                             children: [
                               if (copies.isNotEmpty)
                                 _buildSummaryItem(
-                                    'عدد النسخ', copies),
+                                    Translations.getText('copies_count', locale), copies),
                               Image.asset(iconPath, width: 40, height: 40),
                             ],
                           ),
@@ -385,23 +380,21 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
       final locale = localizationProvider.locale.languageCode;
       final textDirection =
           locale == 'ar' ? TextDirection.rtl : TextDirection.ltr;
-
       return Directionality(
         textDirection: textDirection,
         child: Scaffold(
           backgroundColor: const Color(0xffF8F8F8),
           appBar: AppBar(
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios),
-              onPressed: () => Navigator.pop(context),
+            title: Center(
+              child: Text(
+                  Translations.getText(
+                    'tranorder3',
+                    context.read<LocalizationProvider>().locale.languageCode,
+                  ),
+                  style: TextStyle(color: Colors.black)),
             ),
-            title: Text(
-                Translations.getText(
-                  'tranorder3',
-                  context.read<LocalizationProvider>().locale.languageCode,
-                ),
-                style: TextStyle(color: Colors.black)),
             backgroundColor: const Color(0xffF8F8F8),
+            automaticallyImplyLeading: false,
             elevation: 0,
             iconTheme: const IconThemeData(color: Colors.black),
           ),
@@ -537,11 +530,23 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                           });
 
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('تمت إضافة الملف، يمكنك رفع ملف جديد')),
+                            SnackBar(content: Text(
+                              Translations.getText(
+                                'file_added_success',
+                                context.read<LocalizationProvider>().locale.languageCode,
+                              ),
+                            )
+                            ),
                           );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('يرجى ملء بيانات الملف قبل الإضافة')),
+                            SnackBar(content: Text(
+                              Translations.getText(
+                                'fill_file_data_first',
+                                context.read<LocalizationProvider>().locale.languageCode,
+                              ),
+                            )
+                            ),
                           );
                         }
                       },
@@ -581,8 +586,13 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                         children: [
                           Expanded(
                             child: RadioListTile<String>(
-                              title: Text('Office'),
+                              title:  Text(
+                              Translations.getText(
+                              'office',
+                        context.read<LocalizationProvider>().locale.languageCode,
+                      ),),
                               value: 'Office',
+                              activeColor: Colors.blue,
                               groupValue: deliveryMethod,
                               onChanged: (value) =>
                                   setState(() => deliveryMethod = value),
@@ -591,9 +601,15 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                           ),
                           Expanded(
                             child: RadioListTile<String>(
-                              title: Text('Home'),
+                              title: Text(
+                                Translations.getText(
+                                  'home',
+                                  context.read<LocalizationProvider>().locale.languageCode,
+                                ),
+                              ),
                               value: 'Home',
                               groupValue: deliveryMethod,
+                              activeColor: Colors.blue,
                               onChanged: (value) =>
                                   setState(() => deliveryMethod = value),
                               contentPadding: EdgeInsets.zero,
@@ -605,38 +621,49 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: Text(
-                            'Required',
+                            Translations.getText('choose_delivery', locale),
                             style: TextStyle(color: Colors.red, fontSize: 12),
                           ),
                         ),
                     ],
                   ),
                   if (deliveryMethod == 'Home') ...[
-                    TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'Address',
-                        prefixIcon: Icon(Icons.home_outlined),
-                        filled: true,
-                        fillColor: Colors.grey.shade200,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.transparent),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.blue, width: 2),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.red),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.red, width: 2),
+                    Theme(
+                      data: Theme.of(context).copyWith(
+                        textSelectionTheme: const TextSelectionThemeData(
+                          cursorColor: Color.fromRGBO(64, 157, 220, 1), // لون المؤشر
+                          selectionColor:
+                          Color.fromRGBO(64, 157, 220, 1), // لون التحديد
+                          selectionHandleColor: Color.fromRGBO(
+                              64, 157, 220, 1),
                         ),
                       ),
-                      onChanged: (value) => address = value,
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          labelText: Translations.getText('address', locale),
+                          prefixIcon: Icon(Icons.home_outlined),
+                          filled: true,
+                          fillColor: Colors.grey.shade200,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.transparent),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.blue, width: 2),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.red),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.red, width: 2),
+                          ),
+                        ),
+                        onChanged: (value) => address = value,
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -655,28 +682,42 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                         height:15
                     ),
                   ],
-                  TextFormField(
-                    maxLines: 3,
-                    onChanged: (value) => notes = value,
-                    decoration: InputDecoration(
-                      labelText: Translations.getText(
-                        'notess',
-                        context
-                            .read<LocalizationProvider>()
-                            .locale
-                            .languageCode,
+                  Theme(
+                    data: Theme.of(context).copyWith(
+                      textSelectionTheme: const TextSelectionThemeData(
+                        cursorColor: Color.fromRGBO(64, 157, 220, 1), // لون المؤشر
+                        selectionColor:
+                        Color.fromRGBO(64, 157, 220, 1), // لون التحديد
+                        selectionHandleColor: Color.fromRGBO(
+                            64, 157, 220, 1),
                       ),
-                      filled: true,
-                      fillColor: Colors.grey.shade200,
-                      contentPadding:
-                      EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Colors.blue, width: 2),
+                    ),
+                    child: TextFormField(
+                      maxLines: 3,
+                      onChanged: (value) => notes = value,
+                      decoration: InputDecoration(
+                        labelText: Translations.getText(
+                          'notess',
+                          context
+                              .read<LocalizationProvider>()
+                              .locale
+                              .languageCode,
+                        ),
+                        labelStyle: TextStyle(
+                          color : Colors.blue
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey.shade200,
+                        contentPadding:
+                        EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.blue, width: 2),
+                        ),
                       ),
                     ),
                   ),
@@ -810,6 +851,7 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
   }
 
   Widget _buildSubmitButton() {
+    final locale = context.read<LocalizationProvider>().locale.languageCode;
     return SizedBox(
       width: double.infinity,
       height: 50,
@@ -822,28 +864,12 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
         ),
         child: _isLoading
             ? const CircularProgressIndicator(color: Colors.white)
-            : const Text('ارسال الطلب',
+            : Text(Translations.getText('send_request', locale),
                 style: TextStyle(fontSize: 16, color: Colors.white)),
       ),
     );
   }
 
-  Widget _buildPriceRow(String label, String value, {bool isTotal = false}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label),
-          Text(value,
-              style: TextStyle(
-                fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-                color: isTotal ? Colors.blue : Colors.black,
-              )),
-        ],
-      ),
-    );
-  }
 }
 
 class SaveOrder extends StatelessWidget {
@@ -892,13 +918,8 @@ class SaveOrder extends StatelessWidget {
                               fontWeight: FontWeight.bold, fontSize: 15)),
                     ),
                   )),
-              Directionality(
-                textDirection: getTextDirection(context),
-                child: CustomTextField(
-                    hintText: Translations.getText(
-                  'enen',
-                  context.read<LocalizationProvider>().locale.languageCode,
-                )),
+              CustomTextField(
+                hintKey: 'enen',
               ),
               Card(
                 color: Colors.white,

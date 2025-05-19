@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../auth/login/view/login_screen.dart';
+import '../../localization/change_lang.dart';
 
 class LoginRequiredDialog extends StatelessWidget {
   const LoginRequiredDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final lang = context.read<LocalizationProvider>().locale.languageCode;
+
     return AlertDialog(
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(
@@ -15,10 +19,10 @@ class LoginRequiredDialog extends StatelessWidget {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
-            'Oops!',
-            textAlign: TextAlign.right,
-            style: TextStyle(
+          Text(
+            Translations.getText('oops', lang),
+            textAlign: TextAlign.center,
+            style: const TextStyle(
               fontFamily: 'IBMPlexSansArabic',
               fontWeight: FontWeight.w600,
               fontSize: 25,
@@ -28,10 +32,10 @@ class LoginRequiredDialog extends StatelessWidget {
           ),
           const Icon(Icons.warning_amber_rounded, size: 70, color: Colors.red),
           const SizedBox(height: 10),
-          const Text(
-            'Please log in first to access the app services',
+          Text(
+            Translations.getText('please_login_msg', lang),
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontFamily: 'IBMPlexSansArabic',
               fontWeight: FontWeight.w600,
               fontSize: 16,
@@ -46,8 +50,8 @@ class LoginRequiredDialog extends StatelessWidget {
                 child: OutlinedButton(
                   onPressed: () => Navigator.pop(context),
                   child: Text(
-                    'Cancel',
-                    style: TextStyle(
+                    Translations.getText('cancel', lang),
+                    style: const TextStyle(
                       fontFamily: 'IBMPlexSansArabic',
                       fontWeight: FontWeight.w600,
                       fontSize: 15,
@@ -69,12 +73,12 @@ class LoginRequiredDialog extends StatelessWidget {
                     );
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                  child: const Text(
-                    'Log In',
-                    style: TextStyle(
+                  child: Text(
+                    Translations.getText('login', lang),
+                    style: const TextStyle(
                       fontFamily: 'IBMPlexSansArabic',
                       fontWeight: FontWeight.w600,
-                      fontSize: 11.9,
+                      fontSize: 12,
                       height: 1.0,
                       letterSpacing: 0.0,
                       color: Colors.white,

@@ -8,7 +8,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:engaz_app/features/auth/login/view/login_screen.dart';
 import 'package:engaz_app/features/auth/login/viewmodel/login_viewmodel.dart';
 import 'package:engaz_app/features/splash/viewmodel/splash_viewmodel.dart';
-import 'package:file_selector/file_selector.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -21,6 +20,7 @@ import 'features/address/view_model/add_address_view_model.dart';
 import 'features/auth/forgetPassword/viewmodel/otp_viewmodel.dart';
 import 'features/localization/change_lang.dart';
 import 'features/orders/orders_screen.dart';
+import 'features/settings/settings_screen.dart';
 import 'features/translation _request/view/translation_request_page.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -144,6 +144,7 @@ class MyApp extends StatelessWidget {
         '/home':(_)=>HomePage(),
         '/support-chat': (context) => SupportChatScreen(),
         '/order-details': (context) => OrdersScreen(),
+        '/settings': (context) => const SettingsScreen(),
       },
     );
   }

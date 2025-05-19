@@ -38,11 +38,11 @@ class ChangePhoneScreen extends StatelessWidget {
                         child: Padding(
                           padding: EdgeInsets.symmetric(horizontal: padding),
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               SizedBox(height: screenWidth > 600 ? 70 : 50),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
                                     Translations.getText(
@@ -52,18 +52,15 @@ class ChangePhoneScreen extends StatelessWidget {
                                           .locale
                                           .languageCode,
                                     ),
+                                    textDirection: context.read<LocalizationProvider>().locale.languageCode == 'ar'
+                                        ? TextDirection.rtl
+                                        : TextDirection.ltr,
                                     style: TextStyle(
                                       color: Color(0xff1D1D1D),
                                       fontWeight: FontWeight.w600,
                                       fontSize: 18,
                                       fontFamily: 'IBM_Plex_Sans_Arabic',
                                     ),
-                                  ),
-                                  InkWell(
-                                    onTap: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Icon(Icons.arrow_forward_ios),
                                   ),
                                 ],
                               ),
@@ -114,10 +111,10 @@ class ChangePhoneScreen extends StatelessWidget {
                                     if (phone.isEmpty) {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
-                                        const SnackBar(
+                                        SnackBar(
                                           content: Text(
-                                            "يرجى إدخال البيانات المطلوبة",
-                                            style: TextStyle(
+                                              Translations.getText('enter_required_data', locale),
+                                            style: const TextStyle(
                                                 fontFamily:
                                                     'IBM_Plex_Sans_Arabic'),
                                           ),
@@ -131,15 +128,9 @@ class ChangePhoneScreen extends StatelessWidget {
                                       final prefs =
                                           await SharedPreferences.getInstance();
                                        final token = prefs.getString('token') ?? '';
-                                      // final userId = JwtDecoder.decode(token)['id'];
-                                      // final token =
-                                      //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWJkMWIzNi0xZGQxLTQ2MDktYTE2NC1kZTg5YmM1YWYwMWQiLCJ1c2VybmFtZSI6IkJhc3NlbCBTYWxsYW0iLCJlbWFpbCI6ImJhc3NlbGEuc2FsYW1AZ21haWwuY29tIiwidmVyZmllZCI6dHJ1ZSwiaWF0IjoxNzQyNzY2OTkzfQ.-LuSsU2AombLwf1YUm91fNe_VmXtfIDEn9Z8h3N1PAc';
-                                      // final userId =
-                                      //     '6abd1b36-1dd1-4609-a164-de89bc5af01d';
-
                                       final response = await http.put(
                                         Uri.parse(
-                                            "https://wckb4f4m-3000.euw.devtunnels.ms/api/user/changephone"),
+                                            "https://backend.enjazkw.com/api/user/changephone"),
                                         headers: {
                                           "Content-Type": "application/json",
                                           "Authorization": "Bearer $token"
@@ -147,7 +138,6 @@ class ChangePhoneScreen extends StatelessWidget {
                                         body: jsonEncode({
                                           "phone": phone,
                                           "countrycode": "+20",
-                                          // ثابت مؤقتًا، تقدر تخليه قابل للتعديل لو حبيت
                                         }),
                                       );
 
@@ -158,7 +148,7 @@ class ChangePhoneScreen extends StatelessWidget {
                                             .showSnackBar(
                                           SnackBar(
                                             content: Text(
-                                              "Phone number updated successfully",
+                                                Translations.getText('phone_updated_success', locale),
                                               style: const TextStyle(
                                                   fontFamily:
                                                   'IBM_Plex_Sans_Arabic'),
@@ -186,7 +176,7 @@ class ChangePhoneScreen extends StatelessWidget {
                                           .showSnackBar(
                                         SnackBar(
                                           content: Text(
-                                            "فشل الاتصال بالخادم: $e",
+                                              Translations.getText('server_connection_failed', locale),
                                             style: const TextStyle(
                                                 fontFamily:
                                                     'IBM_Plex_Sans_Arabic'),

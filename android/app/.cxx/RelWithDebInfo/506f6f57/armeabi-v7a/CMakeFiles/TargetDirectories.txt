@@ -1,0 +1,2 @@
+D:/Job/enjaz/Enjzaz/android/app/.cxx/RelWithDebInfo/506f6f57/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/Job/enjaz/Enjzaz/android/app/.cxx/RelWithDebInfo/506f6f57/armeabi-v7a/CMakeFiles/rebuild_cache.dir

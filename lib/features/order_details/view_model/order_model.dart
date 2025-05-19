@@ -28,16 +28,16 @@ class OrderModel {
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
       number: json['number']??0,
-      data: json['date'] ?? '',  // هنا إذا كانت null نضع سلسلة فارغة
-      time: json['time'] ?? '',  // هنا إذا كانت null نضع سلسلة فارغة
-      status: json['status'] ?? '',  // هنا إذا كانت null نضع سلسلة فارغة
+      data: json['date'] ?? '',
+      time: json['time'] ?? '',
+      status: json['status'] ?? '',
       delivery: Delivery.fromJson(json['delivery']),
-      translationFrom: json['translationfrom'] ?? '',  // هنا إذا كانت null نضع سلسلة فارغة
+      translationFrom: json['translationfrom'] ?? '',
       translationTo: (json['translationto'] as List)
           .map((item) => TranslationTo.fromJson(item))
           .toList(),
-      notes: json['notes'] ?? '',  // إذا كانت null نضع سلسلة فارغة
-      files: List<String>.from(json['files'] ?? []),  // إذا كانت null نضع قائمة فارغة
+      notes: json['notes'] ?? '',
+      files: List<String>.from(json['files'] ?? []),
     );
   }
 }
@@ -90,7 +90,7 @@ Future<OrderModel> fetchOrderDetails(String orderNumber) async {
   }
 
   final response = await http.get(
-    Uri.parse('https://wckb4f4m-3000.euw.devtunnels.ms/api/order/$orderNumber'),
+    Uri.parse('https://backend.enjazkw.com/api/order/$orderNumber'),
     headers: {
       'Content-Type': 'application/json',
       "Authorization": "Bearer ${await _getToken()}",
@@ -100,6 +100,6 @@ Future<OrderModel> fetchOrderDetails(String orderNumber) async {
   if (response.statusCode == 200) {
     return OrderModel.fromJson(jsonDecode(response.body));
   } else {
-    throw Exception('فشل في تحميل تفاصيل الطلب: ${response.statusCode}');
+    throw Exception('${response.statusCode}');
   }
 }

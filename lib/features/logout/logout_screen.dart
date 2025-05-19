@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../localization/change_lang.dart';
 
 class LogOutModal extends StatelessWidget {
   const LogOutModal({super.key});
@@ -13,8 +14,10 @@ class LogOutModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final langCode = Localizations.localeOf(context).languageCode;
+
     return Directionality(
-      textDirection: TextDirection.rtl,
+      textDirection: langCode == 'ar' ? TextDirection.rtl : TextDirection.ltr,
       child: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
@@ -26,15 +29,16 @@ class LogOutModal extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Align(
-                alignment: Alignment.topRight,
+                alignment: langCode == 'ar' ? Alignment.topRight : Alignment.topLeft,
                 child: Image.asset("assets/images/img23.png", width: 40),
               ),
               const SizedBox(height: 12),
               Image.asset("assets/images/img24.png"),
               const SizedBox(height: 12),
-              const Text(
-                'هل حقاً تريد تسجيل الخروج؟',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text(
+                Translations.getText('logout_confirm', langCode),
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 24),
               Row(
@@ -53,9 +57,9 @@ class LogOutModal extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
-                        'تراجع',
-                        style: TextStyle(fontSize: 16, color: Colors.white),
+                      child: Text(
+                        Translations.getText('cancel', langCode),
+                        style: const TextStyle(fontSize: 16, color: Colors.white),
                       ),
                     ),
                   ),
@@ -72,9 +76,9 @@ class LogOutModal extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
-                        'تسجيل الخروج',
-                        style: TextStyle(
+                      child: Text(
+                        Translations.getText('logout', langCode),
+                        style: const TextStyle(
                           color: Color(0xFFE50930),
                           fontSize: 16,
                         ),

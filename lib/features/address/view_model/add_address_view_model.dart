@@ -4,6 +4,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../localization/change_lang.dart';
 
 class AddAddressViewModel extends ChangeNotifier {
   TextEditingController locationController = TextEditingController();
@@ -19,9 +20,7 @@ class AddAddressViewModel extends ChangeNotifier {
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks.first;
         String address =
-            "${place.name ?? ''}, ${place.street ?? ''}, ${place.locality ??
-            ''}, ${place.country ?? ''}";
-
+            "${place.name ?? ''}, ${place.street ?? ''}, ${place.locality ?? ''}, ${place.country ?? ''}";
         locationController.text = address;
       } else {
         locationController.text = "موقع غير معروف";
@@ -33,7 +32,6 @@ class AddAddressViewModel extends ChangeNotifier {
     }
   }
 
-
   Future<String?> _getToken() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
@@ -43,21 +41,30 @@ class AddAddressViewModel extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    final token = await _getToken(); // ✅ افصلها هنا
-
+    final langCode = Localizations.localeOf(context).languageCode;
+    final token = await _getToken();
     if (locationController.text.trim().isEmpty || token == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("الرجاء تحديد الموقع أولاً أو تسجيل الدخول")),
+        SnackBar(
+          content: Text(
+            Translations.getText('select_location_or_login', langCode),
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              fontFamily: 'IBM_Plex_Sans_Arabic',
+            ),
+          ),
+        ),
       );
       isLoading = false;
       notifyListeners();
       return;
     }
 
-    final url = 'https://wckb4f4m-3000.euw.devtunnels.ms/api/address';
+    final url = 'https://backend.enjazkw.com/api/address';
     final headers = {
       "Content-Type": "application/json",
-      "Authorization": "Bearer $token", // ✅ استخدمها هنا
+      "Authorization": "Bearer $token",
     };
 
     final Map<String, dynamic> requestBody = {
@@ -73,25 +80,29 @@ class AddAddressViewModel extends ChangeNotifier {
         body: json.encode(requestBody),
       );
 
-      print('Status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      final langCode = Localizations.localeOf(context).languageCode;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseBody = json.decode(response.body);
-        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        final prefs = await SharedPreferences.getInstance();
         await prefs.setString('address_id', responseBody['data']['id']);
-
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("تمت الإضافة بنجاح ✅")),
+          SnackBar(
+            content: Text(Translations.getText('add_success', langCode)),
+          ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("فشل في الإضافة ❌")),
+          SnackBar(
+            content: Text(Translations.getText('add_failed', langCode)),
+          ),
         );
       }
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("حدث خطأ أثناء الإضافة ❌")),
+        SnackBar(
+          content: Text(Translations.getText('add_error', langCode)),
+        ),
       );
     } finally {
       isLoading = false;
@@ -103,23 +114,23 @@ class AddAddressViewModel extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final langCode = Localizations.localeOf(context).languageCode;
+    final prefs = await SharedPreferences.getInstance();
     String? addressId = prefs.getString('addressId');
     String? token = prefs.getString('token');
 
-    print('addressId: $addressId');
-    print('token: $token');
-
     if (addressId == null || token == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("العنوان أو التوكن غير موجود ❌")),
+        SnackBar(
+          content: Text(Translations.getText('address_not_found', langCode)),
+        ),
       );
       isLoading = false;
       notifyListeners();
       return;
     }
 
-    final url = 'https://wckb4f4m-3000.euw.devtunnels.ms/api/address/$addressId';
+    final url = 'https://backend.enjazkw.com/api/address/$addressId';
     final headers = {
       "Content-Type": "application/json",
       "Authorization": "Bearer $token",
@@ -142,19 +153,22 @@ class AddAddressViewModel extends ChangeNotifier {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("تم التعديل بنجاح ✅")),
+          SnackBar(
+            content: Text(Translations.getText('update_success', langCode)),
+          ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("فشل في التعديل ❌")),
+          SnackBar(
+            content: Text(Translations.getText('update_failed', langCode)),
+          ),
         );
-        print('Response status: ${response.statusCode}');
-        print('Response body: ${response.body}');
       }
     } catch (error) {
-      print('Error during update: $error');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("حدث خطأ أثناء التعديل ❌")),
+        SnackBar(
+          content: Text(Translations.getText('update_error', langCode)),
+        ),
       );
     } finally {
       isLoading = false;
@@ -166,23 +180,25 @@ class AddAddressViewModel extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final langCode = Localizations.localeOf(context).languageCode;
+    final prefs = await SharedPreferences.getInstance();
     String? addressId = prefs.getString('addressId');
 
     if (addressId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("لم يتم العثور على العنوان ❌")),
+        SnackBar(
+          content: Text(Translations.getText('address_not_found', langCode)),
+        ),
       );
       isLoading = false;
       notifyListeners();
       return;
     }
 
-    final url = 'https://wckb4f4m-3000.euw.devtunnels.ms/api/address/$addressId';
+    final url = 'https://backend.enjazkw.com/api/address/$addressId';
     final headers = {
       "Content-Type": "application/json",
-     "Authorization": "Bearer ${await _getToken()}",
-
+      "Authorization": "Bearer ${await _getToken()}",
     };
 
     try {
@@ -193,20 +209,25 @@ class AddAddressViewModel extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         await prefs.remove('address_id');
-        //await prefs.remove(addressId);
         locationController.clear();
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("تم حذف العنوان بنجاح ✅")),
+          SnackBar(
+            content: Text(Translations.getText('delete_success', langCode)),
+          ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("فشل في حذف العنوان ❌")),
+          SnackBar(
+            content: Text(Translations.getText('delete_failed', langCode)),
+          ),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("حدث خطأ أثناء الحذف ❌")),
+        SnackBar(
+          content: Text(Translations.getText('delete_error', langCode)),
+        ),
       );
     } finally {
       isLoading = false;

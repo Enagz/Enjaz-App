@@ -1,9 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:http/http.dart' as http;
-import 'dart:convert';
+import '../localization/change_lang.dart';
 
 class OrderChatScreen extends StatefulWidget {
   const OrderChatScreen({Key? key}) : super(key: key);
@@ -42,13 +43,11 @@ class _OrderChatScreenState extends State<OrderChatScreen> {
   }
 
   Future<void> fetchChat() async {
-    final url = Uri.parse('https://wckb4f4m-3000.euw.devtunnels.ms/api/chat/order/clitent');
-    final response = await http.get(url,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json'
-      },
-    );
+    final url = Uri.parse('https://backend.enjazkw.com/api/chat/order/clitent');
+    final response = await http.get(url, headers: {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json'
+    });
 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
@@ -66,33 +65,18 @@ class _OrderChatScreenState extends State<OrderChatScreen> {
 
   void setupSocket() {
     socket = IO.io(
-      'https://wckb4f4m-3000.euw.devtunnels.ms',
-      IO.OptionBuilder()
-          .setTransports(['websocket'])
-          .disableAutoConnect()
-          .build(),
+      'https://backend.enjazkw.com',
+      IO.OptionBuilder().setTransports(['websocket']).disableAutoConnect().build(),
     );
 
     socket!.connect();
 
-    socket!.onConnect((_) {
-      print('🟢 Socket connected');
-    });
-
-    socket!.onDisconnect((_) {
-      print('🔌 Socket disconnected');
-    });
-
-    socket!.onConnectError((error) {
-      print('❌ Socket connection error: $error');
-    });
-
-    socket!.onError((error) {
-      print('🛑 General socket error: $error');
-    });
+    socket!.onConnect((_) => print('🟢 Socket connected'));
+    socket!.onDisconnect((_) => print('🔌 Socket disconnected'));
+    socket!.onConnectError((error) => print('❌ Socket connection error: $error'));
+    socket!.onError((error) => print('🛑 General socket error: $error'));
 
     socket!.on("NewEmployeeOrderMessage", (data) {
-      print("📥 Received: $data");
       if (data is Map && data.containsKey('message')) {
         final String message = data['message'];
         setState(() {
@@ -103,15 +87,11 @@ class _OrderChatScreenState extends State<OrderChatScreen> {
           });
         });
         _scrollToBottom();
-      } else {
-        print("⚠️ Unexpected socket data format: $data");
       }
     });
   }
 
   void sendMessage() {
-    print('🔁 Socket status: ${socket?.connected}');
-
     final message = _controller.text.trim();
 
     if (!isReady) {
@@ -120,9 +100,6 @@ class _OrderChatScreenState extends State<OrderChatScreen> {
     }
 
     if (message.isNotEmpty && userId != null && socket?.connected == true) {
-      print('📤 ببعّت للسيرفر: $message');
-      print('👤 userId: $userId');
-
       socket!.emit("OrderCoustmerMessage", {
         "message": message,
         "userId": userId,
@@ -171,15 +148,9 @@ class _OrderChatScreenState extends State<OrderChatScreen> {
         child: Column(
           crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
-            Text(
-              msg['message'],
-              style: const TextStyle(fontSize: 14),
-            ),
+            Text(msg['message'], style: const TextStyle(fontSize: 14)),
             const SizedBox(height: 4),
-            Text(
-              time,
-              style: const TextStyle(fontSize: 10, color: Color(0xFFB3B3B3)),
-            ),
+            Text(time, style: const TextStyle(fontSize: 10, color: Color(0xFFB3B3B3))),
           ],
         ),
       ),
@@ -188,13 +159,18 @@ class _OrderChatScreenState extends State<OrderChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final langCode = Localizations.localeOf(context).languageCode;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
-        title: const Text("المحادثة", style: TextStyle(color: Colors.black)),
+        title: Text(
+          Translations.getText('chat_title', langCode),
+          style: const TextStyle(color: Colors.black),
+        ),
       ),
       body: Column(
         children: [
@@ -219,8 +195,8 @@ class _OrderChatScreenState extends State<OrderChatScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: TextField(
                       controller: _controller,
-                      decoration: const InputDecoration(
-                        hintText: 'رسالتك...',
+                      decoration: InputDecoration(
+                        hintText: Translations.getText('write_message_hint', langCode),
                         border: InputBorder.none,
                       ),
                     ),

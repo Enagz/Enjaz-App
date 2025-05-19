@@ -37,12 +37,13 @@ class OtpViewModel extends ChangeNotifier {
   bool get isLoading => _status == OtpStatus.loading;
 
   final OtpService _otpService = OtpService();
-
-  // Constructor: يبدأ المؤقت تلقائيًا
   OtpViewModel() {
     startTimer();
   }
-
+  void setMessage(String msg) {
+    _message = msg;
+    notifyListeners();
+  }
   Future<void> verifyOtp(BuildContext context) async {
     String otpCode = otpValues.join('');
     print("codeotp: $otpCode");

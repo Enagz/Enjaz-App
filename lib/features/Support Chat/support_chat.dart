@@ -41,7 +41,7 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
   }
 
   Future<void> fetchChat() async {
-    final url = Uri.parse('https://wckb4f4m-3000.euw.devtunnels.ms/api/chat/support/clitent');
+    final url = Uri.parse('https://backend.enjazkw.com/api/chat/support/clitent');
     final response = await http.get(url, headers: {
       'Authorization': 'Bearer $token',
     });
@@ -62,7 +62,7 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
 
   void setupSocket() {
     socket = IO.io(
-      'https://wckb4f4m-3000.euw.devtunnels.ms',
+      'https://backend.enjazkw.com',
       IO.OptionBuilder()
           .setTransports(['websocket'])
           .disableAutoConnect()
@@ -161,11 +161,12 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         title: Text(
-          langCode == 'ar' ? 'خدمة العملاء' : 'Customer Support',
-          style: const TextStyle(color: Colors.black),
-        ),
+          Translations.getText('support_title', langCode),
+      style: const TextStyle(color: Colors.black),
+    ),
         iconTheme: const IconThemeData(color: Colors.black),
         elevation: 0,
       ),
@@ -225,7 +226,7 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
                     child: TextField(
                       controller: messageController,
                       decoration: InputDecoration(
-                        hintText: langCode == 'ar' ? 'رسالتك...' : 'Your message...',
+                        hintText: Translations.getText('support_hint', langCode),
                         border: InputBorder.none,
                       ),
                     ),

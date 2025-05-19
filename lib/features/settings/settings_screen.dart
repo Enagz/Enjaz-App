@@ -1,7 +1,7 @@
+import 'package:engaz_app/features/notifications_history/notifications_history.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-
 import '../contact_us/contactus_screen.dart';
 import '../edit_profile/edit_profile_screen.dart';
 import '../general_settings/general_settings_screen.dart';
@@ -37,7 +37,6 @@ class SettingsScreen extends StatelessWidget {
                       Text(
                         Translations.getText(
                           'more',
-
                           context
                               .read<LocalizationProvider>()
                               .locale
@@ -47,7 +46,14 @@ class SettingsScreen extends StatelessWidget {
                             fontWeight: FontWeight.bold, fontSize: 20),
                       ),
                       const Spacer(),
-                      Image.asset("assets/images/img9.png", height: 40),
+                      InkWell(
+                        onTap: (){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => NotificationsHistoryScreen()));
+                        },
+                          child: Image.asset("assets/images/img9.png", height: 40)),
                     ],
                   ),
                   const SizedBox(height: 24),

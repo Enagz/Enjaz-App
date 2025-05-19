@@ -18,7 +18,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
   final TextEditingController messageController = TextEditingController();
 
   Future<void> sendContactMessage() async {
-    final uri = Uri.parse("http://localhost:3000/api/contactus");
+    final uri = Uri.parse("https://backend.enjazkw.com/api/contactus");
 
     final body = {
       "name": nameController.text.trim(),
@@ -35,19 +35,18 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
         body: jsonEncode(body),
       );
 
-      print("📩 Status: ${response.statusCode}");
-      print("📨 Body: ${response.body}");
+      final lang = Localizations.localeOf(context).languageCode;
 
       if (response.statusCode == 200) {
         final res = jsonDecode(response.body);
         showDialog(
           context: context,
           builder: (_) => AlertDialog(
-            title: const Text("✅ Success"),
+            title: Text(Translations.getText('success', lang)),
             content: Text(res['message']),
             actions: [
               TextButton(
-                child: const Text("OK"),
+                child: Text(Translations.getText('ok', lang)),
                 onPressed: () => Navigator.pop(context),
               )
             ],
@@ -57,15 +56,15 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
         throw Exception("Failed to send message");
       }
     } catch (e) {
-      print("❌ Error: $e");
+      final lang = Localizations.localeOf(context).languageCode;
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: const Text("❌ Failed"),
-          content: const Text("Something went wrong."),
+          title: Text(Translations.getText('error', lang)),
+          content: Text(Translations.getText('error_message', lang)),
           actions: [
             TextButton(
-              child: const Text("Try Again"),
+              child: Text(Translations.getText('try_again', lang)),
               onPressed: () => Navigator.pop(context),
             )
           ],
@@ -77,56 +76,50 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
   @override
   Widget build(BuildContext context) {
     return Consumer<LocalizationProvider>(
-        builder: (context, localizationProvider, child) {
-          final locale = localizationProvider.locale.languageCode;
-          final textDirection =
-          locale == 'ar' ? TextDirection.rtl : TextDirection.ltr;
+      builder: (context, localizationProvider, child) {
+        final locale = localizationProvider.locale.languageCode;
+        final textDirection = locale == 'ar' ? TextDirection.rtl : TextDirection.ltr;
 
-          return Directionality(
-            textDirection: textDirection,
-            child: Scaffold(
+        return Directionality(
+          textDirection: textDirection,
+          child: Scaffold(
+            backgroundColor: Colors.white,
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
               backgroundColor: Colors.white,
-              appBar: AppBar(
-                backgroundColor: Colors.white,
-                title: Text(Translations.getText(
-                  'contactus',
-                  context.read<LocalizationProvider>().locale.languageCode,
-                )),
-                leading: const Icon(Icons.arrow_back_ios),
+              elevation: 0,
+              title: Text(
+                Translations.getText('contactus', locale),
+                style: const TextStyle(color: Colors.black),
               ),
-              body: Padding(
-                padding: const EdgeInsets.all(16),
+              iconTheme: const IconThemeData(color: Colors.black),
+            ),
+            body: Padding(
+              padding: const EdgeInsets.all(16),
+              child: SingleChildScrollView(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment:
+                  locale == 'ar' ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                   children: [
-                    Center(
-                        child: Image.asset('assets/images/img1.png', height: 80)),
+                    Center(child: Image.asset('assets/images/img1.png', height: 80)),
                     const SizedBox(height: 16),
                     Center(
-                        child: Text(
-                            Translations.getText(
-                              'contactus',
-                              context
-                                  .read<LocalizationProvider>()
-                                  .locale
-                                  .languageCode,
-                            ),
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16))),
+                      child: Text(
+                        Translations.getText('contactus', locale),
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ),
                     const SizedBox(height: 8),
                     Center(
-                        child: Text(
-                            Translations.getText(
-                              'through',
-                              context
-                                  .read<LocalizationProvider>()
-                                  .locale
-                                  .languageCode,
-                            ),
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: Color(0xff676767)))),
+                      child: Text(
+                        Translations.getText('through', locale),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Color(0xff676767),
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -140,111 +133,38 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                     ),
                     const SizedBox(height: 8),
                     Center(
-                        child: Text(Translations.getText(
-                          'or',
-                          context.read<LocalizationProvider>().locale.languageCode,
-                        ))),
+                      child: Text(Translations.getText('or', locale)),
+                    ),
                     const SizedBox(height: 16),
                     Text(
-                      Translations.getText(
-                        'name',
-                        context.read<LocalizationProvider>().locale.languageCode,
-                      ),
+                      Translations.getText('name', locale),
                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     ),
-                    Container(
-                      width: 343.24,
-                      height: 48,
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFAFAFA),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: TextField(
-                        controller: nameController,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: Translations.getText(
-                            'name2',
-                            context
-                                .read<LocalizationProvider>()
-                                .locale
-                                .languageCode,
-                          ),
-                        ),
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                    ),
+                    _buildInputField(nameController, 'name2', locale),
                     const SizedBox(height: 10),
                     Text(
-                      Translations.getText(
-                        'address2',
-                        context.read<LocalizationProvider>().locale.languageCode,
-                      ),
+                      Translations.getText('address2', locale),
                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     ),
-                    Container(
-                      width: 343.24,
-                      height: 48,
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFAFAFA),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: TextField(
-                        controller: phoneController,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: Translations.getText(
-                            'plss',
-                            context
-                                .read<LocalizationProvider>()
-                                .locale
-                                .languageCode,
-                          ),
-                        ),
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
+                    _buildInputField(phoneController, 'plss', locale),
+                    const SizedBox(height: 10),
                     Text(
-                      Translations.getText(
-                        'msst',
-                        context.read<LocalizationProvider>().locale.languageCode,
-                      ),
+                      Translations.getText('email', locale),
                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     ),
-                    Container(
-                      width: 343.24,
-                      height: 48,
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFAFAFA),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: TextField(
-                        controller: messageController,
-                        decoration: InputDecoration(
-                          hintText: Translations.getText(
-                            'ent',
-                            context
-                                .read<LocalizationProvider>()
-                                .locale
-                                .languageCode,
-                          ),
-                          border: InputBorder.none,
-                        ),
-                        style: const TextStyle(fontSize: 14),
-                      ),
+                    _buildInputField(emailController, 'email_hint', locale),
+                    const SizedBox(height: 10),
+                    Text(
+                      Translations.getText('msst', locale),
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     ),
+                    _buildInputField(messageController, 'ent', locale, lines: 4),
                     const SizedBox(height: 20),
                     SizedBox(
-                      width: 343.24,
+                      width: double.infinity,
                       height: 48,
                       child: ElevatedButton(
-                        onPressed: () {
-                          sendContactMessage();
-                        },
+                        onPressed: sendContactMessage,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xff409EDC),
                           shape: RoundedRectangleBorder(
@@ -252,13 +172,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                           ),
                         ),
                         child: Text(
-                          Translations.getText(
-                            's',
-                            context
-                                .read<LocalizationProvider>()
-                                .locale
-                                .languageCode,
-                          ),
+                          Translations.getText('s', locale),
                           style: const TextStyle(fontSize: 16, color: Colors.white),
                         ),
                       ),
@@ -267,7 +181,29 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                 ),
               ),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildInputField(TextEditingController controller, String hintKey, String locale, {int lines = 1}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFAFAFA),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: TextField(
+        controller: controller,
+        maxLines: lines,
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          hintText: Translations.getText(hintKey, locale),
+        ),
+        style: const TextStyle(fontSize: 14),
+      ),
+    );
   }
 }

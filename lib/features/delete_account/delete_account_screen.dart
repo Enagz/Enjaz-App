@@ -18,28 +18,43 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
   }
 
   Future<void> deleteUser(String userId) async {
-    final url = Uri.parse('https://wckb4f4m-3000.euw.devtunnels.ms/api/user/$userId/delete');
+    final lang = Localizations.localeOf(context).languageCode;
+    final url = Uri.parse('https://backend.enjazkw.com/api/user/$userId/delete');
+
     try {
       final response = await http.delete(url);
+
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('تم حذف الحساب بنجاح')),
+          SnackBar(
+            content: Text(Translations.getText('account_deleted_success', lang)),
+            backgroundColor: Colors.green,
+          ),
         );
         Navigator.pop(context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('فشل الحذف: ${response.statusCode}')),
+          SnackBar(
+            content: Text('${Translations.getText('delete_failed', lang)}: ${response.statusCode}'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('خطأ في الاتصال: $e')),
+        SnackBar(
+          content: Text('${Translations.getText('connection_error', lang)}: $e'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final locale = Provider.of<LocalizationProvider>(context).locale.languageCode;
+    final textDirection = locale == 'ar' ? TextDirection.rtl : TextDirection.ltr;
+
     return FutureBuilder<String?>(
       future: getUserId(),
       builder: (context, snapshot) {
@@ -48,9 +63,6 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
         }
 
         final userId = snapshot.data!;
-        final locale = Provider.of<LocalizationProvider>(context).locale.languageCode;
-        final textDirection = locale == 'ar' ? TextDirection.rtl : TextDirection.ltr;
-
         return Directionality(
           textDirection: textDirection,
           child: Container(
@@ -71,14 +83,14 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                   Image.asset("assets/images/img24.png"),
                   const SizedBox(height: 12),
                   Text(
-                    Translations.getText('do', locale),
+                    Translations.getText('do', locale), // "هل تريد حذف الحساب؟"
                     style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 12),
                   Align(
                     alignment: Alignment.centerRight,
                     child: Text(
-                      Translations.getText('re', locale),
+                      Translations.getText('re', locale), // "من فضلك اكتب السبب"
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -94,7 +106,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                     child: TextField(
                       maxLines: 3,
                       decoration: InputDecoration(
-                        hintText: Translations.getText('pl', locale),
+                        hintText: Translations.getText('pl', locale), // "سبب حذف الحساب"
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.all(12),
                       ),
@@ -117,7 +129,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                             ),
                           ),
                           child: Text(
-                            Translations.getText('tra', locale),
+                            Translations.getText('tra', locale), // "تراجع"
                             style: const TextStyle(fontSize: 16, color: Colors.white),
                           ),
                         ),
@@ -135,7 +147,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                             ),
                           ),
                           child: Text(
-                            Translations.getText('del2', locale),
+                            Translations.getText('del2', locale), // "حذف الحساب"
                             style: const TextStyle(color: Color(0xFFE50930), fontSize: 16),
                           ),
                         ),

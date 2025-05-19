@@ -4,7 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginService {
-  static const String baseUrl = "https://wckb4f4m-3000.euw.devtunnels.ms/api";
+  static const String baseUrl = "https://backend.enjazkw.com/api";
 
   Future<Map<String, dynamic>> login({required String method, required String id}) async {
     final url = Uri.parse("$baseUrl/login-account");
@@ -39,14 +39,14 @@ class LoginService {
       } else {
         return {
           'success': false,
-          'message': data['message'] ?? 'User not found',
+          'message': data['message_key'] ?? 'user_not_found',
         };
       }
     } catch (e) {
       print("❌ EXCEPTION: $e");
       return {
         'success': false,
-        'message': 'تعذر الاتصال بالخادم',
+        'message': 'server_error',
       };
     }
   }

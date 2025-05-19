@@ -42,7 +42,7 @@ class _LoginTextFieldState extends State<LoginTextField> {
                   selectionColor:
                       Color.fromRGBO(64, 157, 220, 1), // لون التحديد
                   selectionHandleColor: Color.fromRGBO(
-                      64, 157, 220, 1), // لون "اليد" أو مقبض التحديد
+                      64, 157, 220, 1),
                 ),
               ),
               child: TextFormField(
@@ -50,6 +50,9 @@ class _LoginTextFieldState extends State<LoginTextField> {
                 textInputAction: TextInputAction.next,
                 controller: _controller,
                 cursorColor: Color.fromRGBO(64, 157, 220, 1),
+                textAlign: context.read<LocalizationProvider>().locale.languageCode == 'ar'
+                    ? TextAlign.right
+                    : TextAlign.left,
                 autofillHints: viewModel.isPhoneSelected
                     ? const [AutofillHints.telephoneNumber]
                     : const [AutofillHints.email],
@@ -57,7 +60,7 @@ class _LoginTextFieldState extends State<LoginTextField> {
                     ? TextInputType.phone
                     : TextInputType.emailAddress,
                 validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
+                  if (value == null || value.trim().isEmpty){
                     return viewModel.isPhoneSelected
                         ? 'يرجى إدخال رقم الجوال'
                         : 'يرجى إدخال البريد الإلكتروني';
@@ -66,19 +69,13 @@ class _LoginTextFieldState extends State<LoginTextField> {
                 },
                 decoration: InputDecoration(
                   hintText: viewModel.isPhoneSelected
-                      ?  Translations.getText(
+                      ? Translations.getText(
                     'enter2',
-                    context
-                        .read<LocalizationProvider>()
-                        .locale
-                        .languageCode,
+                    context.read<LocalizationProvider>().locale.languageCode,
                   )
-                    : Translations.getText(
+                      : Translations.getText(
                     'enter3',
-                    context
-                        .read<LocalizationProvider>()
-                        .locale
-                        .languageCode,
+                    context.read<LocalizationProvider>().locale.languageCode,
                   ),
                   hintStyle: const TextStyle(
                     color: Color(0xffB3B3B3),
@@ -93,9 +90,10 @@ class _LoginTextFieldState extends State<LoginTextField> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                   contentPadding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 ),
-              ));
+              )
+          );
         },
       ),
     );

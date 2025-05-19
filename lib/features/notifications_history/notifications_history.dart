@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../localization/change_lang.dart';
 
 class NotificationsHistoryScreen extends StatefulWidget {
   static const String routeName = 'Notifications History';
-
   const NotificationsHistoryScreen({super.key});
 
   @override
@@ -19,63 +20,29 @@ class _NotificationsScreenState extends State<NotificationsHistoryScreen> {
   @override
   void initState() {
     super.initState();
-    print("📲 [NotificationsScreen] opened");
     fetchNotifications();
   }
 
   Future<void> fetchNotifications() async {
-    print("📥 [fetchNotifications] called");
     setState(() => loading = true);
-
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
-
-    print("🔐 [Token]: $token");
-
-    if (token == null) {
-      print("❌ [fetchNotifications] No token found.");
-      setState(() => loading = false);
-      return;
-    }
+    if (token == null) return;
 
     try {
       final url = Uri.parse("https://wckb4f4m-3000.euw.devtunnels.ms/api/coustmer/notification");
-      final response = await http.get(url, headers: {
-        'Authorization': 'Bearer $token',
-      });
-
-      print("🌐 [Request] URL: $url");
-      print("📡 [Response] Status Code: ${response.statusCode}");
-      print("📦 [Response] Body: ${response.body}");
-
+      final response = await http.get(url, headers: {'Authorization': 'Bearer $token'});
       if (response.statusCode == 200) {
         final List decoded = jsonDecode(response.body);
-        print("✅ [Success] Notifications count: ${decoded.length}");
-
         setState(() {
           notifications = decoded;
           loading = false;
         });
       } else {
-        print("❌ [Error] Status: ${response.statusCode}, Body: ${response.body}");
         setState(() => loading = false);
       }
-    } catch (e) {
-      print("❌ [Exception] $e");
+    } catch (_) {
       setState(() => loading = false);
-    }
-  }
-
-  IconData getIcon(String? type) {
-    switch (type) {
-      case 'Order Message':
-        return Icons.message;
-      case 'Order Status Changed':
-        return Icons.update;
-      case 'Support Message':
-        return Icons.support_agent;
-      default:
-        return Icons.notifications;
     }
   }
 
@@ -87,23 +54,14 @@ class _NotificationsScreenState extends State<NotificationsHistoryScreen> {
     final url = Uri.parse("https://wckb4f4m-3000.euw.devtunnels.ms/api/coustmer/notification/$id");
 
     try {
-      final response = await http.post(url, headers: {
-        'Authorization': 'Bearer $token',
-      });
-
+      final response = await http.post(url, headers: {'Authorization': 'Bearer $token'});
       if (response.statusCode == 200) {
-        print("✅ Notification $id marked as read");
         setState(() {
           notifications[index]['isRead'] = true;
         });
-      } else {
-        print("❌ Failed to mark as read: ${response.statusCode}");
       }
-    } catch (e) {
-      print("❌ Exception while marking as read: $e");
-    }
+    } catch (_) {}
   }
-
 
   String formatTime(String isoTime) {
     try {
@@ -114,86 +72,82 @@ class _NotificationsScreenState extends State<NotificationsHistoryScreen> {
     }
   }
 
-
+  @override
   Widget build(BuildContext context) {
+    final lang = context.read<LocalizationProvider>().locale.languageCode;
+    final textDir = lang == 'ar' ? TextDirection.rtl : TextDirection.ltr;
+
     return Directionality(
-      textDirection: TextDirection.rtl,
+      textDirection: textDir,
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          title: const Text("الإشعارات"),
+          title: Text(Translations.getText('notifications', lang)),
           actions: [
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: fetchNotifications,
-            ),
-            SizedBox(
-              width: 7,
-            ),
+            IconButton(icon: const Icon(Icons.refresh), onPressed: fetchNotifications),
+            const SizedBox(width: 7),
           ],
+          automaticallyImplyLeading: false,
         ),
         body: loading
             ? const Center(child: CircularProgressIndicator())
             : notifications.isEmpty
-            ? const Center(child: Text("لا يوجد إشعارات"))
+            ? Center(child: Text(Translations.getText('no_notifications', lang)))
             : ListView.builder(
           itemCount: notifications.length,
           padding: const EdgeInsets.all(16),
-            itemBuilder: (context, index) {
-              final item = notifications[index];
-              final isRead = item['isRead'] == true;
+          itemBuilder: (context, index) {
+            final item = notifications[index];
+            final isRead = item['isRead'] == true;
 
-              return GestureDetector(
-                onTap:() async {
-                  if (!isRead) {
-                    await markNotificationAsRead(item['id'], index);
-                  }
-                  final type = item['type'];
-                  final serviceId = item['serviceId'];
-                  if (type == 'Order Message' || type == 'Order Status Changed') {
-                    Navigator.pushNamed(context, '/order-details', arguments: serviceId);
-                  } else if (type == 'Support Message') {
-                    Navigator.pushNamed(context, '/support-chat');
-                  } else {
-                    print("🔔 No action mapped for type: $type");
-                  }
-                },
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      "إنجاز",
-                      style: const TextStyle(
-                        color: Color(0xFF409EDC),
-                        fontWeight: FontWeight.bold,
-                      ),
+            return GestureDetector(
+              onTap: () async {
+                if (!isRead) await markNotificationAsRead(item['id'], index);
+                final type = item['type'];
+                final serviceId = item['serviceId'];
+
+                if (type == 'Order Message' || type == 'Order Status Changed') {
+                  Navigator.pushNamed(context, '/order-details', arguments: serviceId);
+                } else if (type == 'Support Message') {
+                  Navigator.pushNamed(context, '/support-chat');
+                }
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    "إنجاز",
+                    style: const TextStyle(
+                      color: Color(0xFF409EDC),
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(height: 4),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      margin: const EdgeInsets.only(bottom: 4),
-                      decoration: BoxDecoration(
-                        color: isRead ? const Color(0xFFF2F2F2) : const Color(0xFFDCEFFF),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        item['body'] ?? '',
-                        style: const TextStyle(fontSize: 14),
-                      ),
+                  ),
+                  const SizedBox(height: 4),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    margin: const EdgeInsets.only(bottom: 4),
+                    decoration: BoxDecoration(
+                      color: isRead ? const Color(0xFFF2F2F2) : const Color(0xFFDCEFFF),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    Text(
-                      formatTime(item['createdAt']),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
+                    child: Text(
+                      item['body'] ?? '',
+                      style: const TextStyle(fontSize: 14),
                     ),
-                    const SizedBox(height: 24),
-                  ],
-                ),
-              );
-            },
+                  ),
+                  Text(
+                    formatTime(item['createdAt']),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );

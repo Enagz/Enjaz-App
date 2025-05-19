@@ -1,16 +1,13 @@
 import 'dart:convert';
-
 import 'package:engaz_app/features/chat_orders/chat_orders_screen.dart';
 import 'package:engaz_app/features/order_details/view_model/order_model.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../localization/change_lang.dart';
 class OrderDetailsPage extends StatelessWidget {
   final String orderNumber;
-
   const OrderDetailsPage({Key? key, required this.orderNumber}) : super(key: key);
 
   @override
@@ -31,7 +28,6 @@ class OrderDetailsPage extends StatelessWidget {
               'orderdetail',
               context.read<LocalizationProvider>().locale.languageCode,
             )),
-            leading: const Icon(Icons.arrow_back_ios_new),
           ),
           body: FutureBuilder<OrderModel>(
             future: fetchOrderDetails(orderNumber),
@@ -39,11 +35,11 @@ class OrderDetailsPage extends StatelessWidget {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
-                return Center(child: Text('حدث خطأ: ${snapshot.error}'));
+                return Center(child: Text('${Translations.getText('error_occurred', locale)}: ${snapshot.error}'
+                ));
               } else if (!snapshot.hasData) {
-                return const Center(child: Text('لا توجد بيانات'));
+                return Center(child: Text(Translations.getText('no_data', locale)));
               }
-
               final order = snapshot.data!;
               return SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
@@ -228,7 +224,7 @@ class TranslationLanguagesSection extends StatelessWidget {
               style: TextStyle(fontSize: 15, color: Color(0xffB3B3B3))),
           ...to.map(
             (lang) => Text(
-                '${lang.arabicName} (${lang.name}) - ${lang.cost} جنيه',
+                '${lang.arabicName} (${lang.name}) - ${lang.cost}',
                 style: TextStyle(color: Color(0xff409EDC))),
           ),
         ],
@@ -364,7 +360,7 @@ class CancelOrderButton extends StatelessWidget {
 }
 
 class CancelOrder extends StatelessWidget {
-  final String orderId; // ✅ استقبال orderId من الصفحة اللي قبلها
+  final String orderId;
   final TextEditingController _reasonController = TextEditingController();
 
   CancelOrder({Key? key, required this.orderId}) : super(key: key);
@@ -386,16 +382,17 @@ class CancelOrder extends StatelessWidget {
     }
 
     final url = Uri.parse(
-        'https://wckb4f4m-3000.euw.devtunnels.ms/api/order/$orderId');
+        'https://backend.enjazkw.com/api/order/$orderId');
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
+    final locale = context.read<LocalizationProvider>().locale.languageCode;
 
     final response = await http.delete(
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token', // ✅ التوكن الحقيقي
+        'Authorization': 'Bearer $token',
       },
       body: json.encode({'reason': reason}),
     );
@@ -407,7 +404,7 @@ class CancelOrder extends StatelessWidget {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Something went wrong')),
+        SnackBar(content: Text(Translations.getText('something_wrong', locale))),
       );
     }
   }

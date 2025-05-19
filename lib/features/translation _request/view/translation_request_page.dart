@@ -7,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../home_screen/view/home_view.dart';
 import '../../localization/change_lang.dart';
 import '../../saved_order/view/saved_order.dart';
 
@@ -149,7 +148,7 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
     final request = http.MultipartRequest(
       'POST',
       Uri.parse(
-          'https://wckb4f4m-3000.euw.devtunnels.ms/api/order/translation'),
+          'https://backend.enjazkw.com/api/order/translation'),
     );
 
     request.headers.addAll({
@@ -162,6 +161,7 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
     request.fields['notes'] = notes ?? '';
     request.fields['Address'] = address ?? '';
     request.fields['translationLanguges'] = jsonEncode(translationLanguages);
+
 
     for (var file in uploadedFiles) {
       if (file.path != null) {
@@ -181,11 +181,12 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
       if (response.statusCode == 200 || response.statusCode == 201) {
         showSuccessBottomSheet(context);
       } else {
+        final locale = context.read<LocalizationProvider>().locale.languageCode;
         showDialog(
           context: context,
           builder: (_) => AlertDialog(
-            title: Text('خطأ'),
-            content: Text('❌ Error: $result'),
+            title: Text(Translations.getText('error_title', locale)),
+            content: Text('${Translations.getText('error_msg', locale)}: $result'),
           ),
         );
       }
@@ -193,12 +194,12 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
       setState(() {
         isLoading = false;
       });
-
+      final locale = context.read<LocalizationProvider>().locale.languageCode;
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: Text('مشكلة اتصال'),
-          content: Text('❌ Connection error: $e'),
+          title: Text(Translations.getText('connection_title', locale)),
+          content: Text('${Translations.getText('connection_error', locale)}: $e'),
         ),
       );
     }
@@ -206,7 +207,7 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
 
   void _showLanguageDialog() async {
     final List<String> tempSelected = List.from(translationLanguages);
-
+    final locale = context.read<LocalizationProvider>().locale.languageCode;
     await showDialog(
       context: context,
       builder: (context) {
@@ -214,8 +215,8 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
           builder: (context, setDialogState) {
             return AlertDialog(
               backgroundColor: Colors.white,
-              title: Text('Select Translation Languages'),
-              content: SingleChildScrollView(
+              title: Text(Translations.getText('select_translation_languages', locale)),
+            content: SingleChildScrollView(
                 child: Column(
                   children: allLanguages.map((lang) {
                     return CheckboxListTile(
@@ -235,13 +236,13 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
               actions: [
                 TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: Text('Cancel')),
+                    child: Text(Translations.getText('cancel', locale)),),
                 ElevatedButton(
                   onPressed: () {
                     setState(() => translationLanguages = tempSelected);
                     Navigator.pop(context);
                   },
-                  child: Text('OK'),
+                  child: Text(Translations.getText('ok', locale)),
                 ),
               ],
             );
@@ -263,13 +264,14 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
               child: Scaffold(
                 backgroundColor: const Color(0xffF8F8F8),
                 appBar: AppBar(
-                  leading: const Icon(Icons.arrow_back_ios),
-                  title: Text(
-                      Translations.getText(
-                        'tranthereq',
-                        context.read<LocalizationProvider>().locale.languageCode,
-                      ),
-                      style: TextStyle(color: Colors.black)),
+                  title: Center(
+                    child: Text(
+                        Translations.getText(
+                          'tranthereq',
+                          context.read<LocalizationProvider>().locale.languageCode,
+                        ),
+                        style: TextStyle(color: Colors.black)),
+                  ),
                   backgroundColor: const Color(0xffF8F8F8),
                   elevation: 0,
                   iconTheme: const IconThemeData(color: Colors.black),
@@ -349,7 +351,9 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
                               .toList(),
                           onChanged: (value) =>
                               setState(() => fileLanguage = value),
-                          validator: (value) => value == null ? 'مطلوب' : null,
+                          validator: (value) => value == null
+                              ? Translations.getText('required', locale)
+                              : null,
                         ),
                         SizedBox(height: 15),
                         Column(
@@ -412,8 +416,9 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
 
                                   onChanged: null,
 
-                                  validator: (value) =>
-                                  translationLanguages.isEmpty ? 'مطلوب' : null,
+                                  validator: (value) => translationLanguages.isEmpty
+                                      ? Translations.getText('required', locale)
+                                      : null,
                                 ),
                               ),
                             ),
@@ -447,8 +452,9 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
                               children: [
                                 Expanded(
                                   child: RadioListTile<String>(
-                                    title: Text('Office'),
+                                    title: Text(Translations.getText('office', locale)),
                                     value: 'Office',
+                                    activeColor: Colors.blue,
                                     groupValue: deliveryMethod,
                                     onChanged: (value) =>
                                         setState(() => deliveryMethod = value),
@@ -457,8 +463,9 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
                                 ),
                                 Expanded(
                                   child: RadioListTile<String>(
-                                    title: Text('Home'),
+                                    title: Text(Translations.getText('home', locale)),
                                     value: 'Home',
+                                    activeColor: Colors.blue,
                                     groupValue: deliveryMethod,
                                     onChanged: (value) =>
                                         setState(() => deliveryMethod = value),
@@ -471,38 +478,52 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                                 child: Text(
-                                  'Required',
+                                  Translations.getText('required', locale),
                                   style: TextStyle(color: Colors.red, fontSize: 12),
                                 ),
                               ),
                           ],
                         ),
                         if (deliveryMethod == 'Home') ...[
-                          TextFormField(
-                            decoration: InputDecoration(
-                              labelText: 'Address',
-                              prefixIcon: Icon(Icons.home_outlined),
-                              filled: true,
-                              fillColor: Colors.grey.shade200,
-                              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: Colors.transparent),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: Colors.blue, width: 2),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: Colors.red),
-                              ),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: Colors.red, width: 2),
+                          Theme(
+                            data: Theme.of(context).copyWith(
+                              textSelectionTheme: const TextSelectionThemeData(
+                                cursorColor: Color.fromRGBO(64, 157, 220, 1), // لون المؤشر
+                                selectionColor:
+                                Color.fromRGBO(64, 157, 220, 1), // لون التحديد
+                                selectionHandleColor: Color.fromRGBO(
+                                    64, 157, 220, 1),
                               ),
                             ),
-                            onChanged: (value) => address = value,
+                            child: TextFormField(
+                              decoration: InputDecoration(
+                                labelText: Translations.getText('address', locale),
+                                labelStyle: TextStyle(
+                                  color: Colors.blue
+                                ),
+                                prefixIcon: Icon(Icons.home_outlined),
+                                filled: true,
+                                fillColor: Colors.grey.shade200,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(color: Colors.transparent),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(color: Colors.blue, width: 2),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(color: Colors.red),
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(color: Colors.red, width: 2),
+                                ),
+                              ),
+                              onChanged: (value) => address = value,
+                            ),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -521,28 +542,39 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
                             height:15
                           ),
                         ],
-                        TextFormField(
-                          maxLines: 3,
-                          onChanged: (value) => notes = value,
-                          decoration: InputDecoration(
-                            labelText: Translations.getText(
-                              'notess',
-                              context
-                                  .read<LocalizationProvider>()
-                                  .locale
-                                  .languageCode,
+                        Theme(
+                          data: Theme.of(context).copyWith(
+                            textSelectionTheme: const TextSelectionThemeData(
+                              cursorColor: Color.fromRGBO(64, 157, 220, 1),
+                              selectionColor:
+                              Color.fromRGBO(64, 157, 220, 1),
+                              selectionHandleColor: Color.fromRGBO(
+                                  64, 157, 220, 1),
                             ),
-                            filled: true,
-                            fillColor: Colors.grey.shade200,
-                            contentPadding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.blue, width: 2),
+                          ),
+                          child: TextFormField(
+                            maxLines: 3,
+                            onChanged: (value) => notes = value,
+                            decoration: InputDecoration(
+                              labelText: Translations.getText(
+                                'notess',
+                                context
+                                    .read<LocalizationProvider>()
+                                    .locale
+                                    .languageCode,
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey.shade200,
+                              contentPadding:
+                              EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: Colors.blue, width: 2),
+                              ),
                             ),
                           ),
                         ),
@@ -684,7 +716,7 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
                           }).toList(),
                         ),
                         SizedBox(height: 10),
-                        Text('${uploadedFiles.length} file(s) selected'),
+                        Text('${uploadedFiles.length} ${Translations.getText('files_selected', locale)}'),
                         SizedBox(height: 20),
                         SizedBox(
                             width: double.infinity,
@@ -695,25 +727,22 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
                                 setState(() {
                                   _submitted = true;
                                 });
-
                                 bool isValid = _formKey.currentState!.validate();
-
                                 if (!isValid ||
                                     translationLanguages.isEmpty ||
                                     uploadedFiles.isEmpty ||
                                     deliveryMethod == null) {
                                   if (translationLanguages.isEmpty) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content: Text(
-                                              'Please select at least one translation language.')),
-                                    );
+                                        SnackBar(
+                                          content: Text(Translations.getText('select_language_error', locale)),
+                                        ));
                                   }
                                   if (uploadedFiles.isEmpty) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                          content:
-                                          Text('Please upload at least one document.')),
+                                        content: Text(Translations.getText('upload_file_error', locale)),
+                                      ),
                                     );
                                   }
                                   return;

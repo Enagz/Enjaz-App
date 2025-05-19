@@ -1,12 +1,10 @@
-import 'package:flutter/material.dart';
-
+import 'package:engaz_app/features/notifications_history/notifications_history.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../localization/change_lang.dart';
 import '../order_details/order_details_page.dart';
 
@@ -82,7 +80,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
     final response = await http.get(
       Uri.parse(
-        'https://wckb4f4m-3000.euw.devtunnels.ms/api/order?type=$type&status=$statusParam',
+        'https://backend.enjazkw.com/api/order?type=$type&status=$statusParam',
       ),
 
       headers: {
@@ -98,7 +96,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      throw Exception('Failed to load orders: ${response.statusCode}');
+      final langCode = Provider.of<LocalizationProvider>(context, listen: false).locale.languageCode;
+      throw Exception(Translations.getText('orders_failed', langCode));
     }
   }
 
@@ -118,7 +117,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
       final locale = localizationProvider.locale.languageCode;
       final textDirection =
           locale == 'ar' ? TextDirection.rtl : TextDirection.ltr;
-
       return Directionality(
         textDirection: textDirection,
         child: DefaultTabController(
@@ -126,19 +124,25 @@ class _OrdersScreenState extends State<OrdersScreen> {
           child: Scaffold(
             backgroundColor: const Color(0xffFAFAFA),
             appBar: AppBar(
-              leading: Icon(Icons.arrow_back_ios_new),
               backgroundColor: const Color(0xffFAFAFA),
               title: Text(
                   Translations.getText(
                     'ord',
                     context.read<LocalizationProvider>().locale.languageCode,
                   ),
-                  style: TextStyle(color: Colors.black)),
+                  style: const TextStyle(color: Colors.black)),
               elevation: 0,
               actions: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Image.asset("assets/images/img9.png"),
+                  child: InkWell(
+                    onTap: (){
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const NotificationsHistoryScreen()),
+                      );
+                    },
+                      child: Image.asset("assets/images/img9.png")),
                 )
               ],
             ),
@@ -251,14 +255,15 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     future: _ordersFuture,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
+                        return Center(child: CircularProgressIndicator(
+                          color: Colors.blue),
+                        );
                       } else if (snapshot.hasError) {
                         return Center(
-                            child: Text('حدث خطأ: ${snapshot.error}'));
+                            child: Text('${Translations.getText("error", locale)}: ${snapshot.error}'));
                       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Center(child: Text('لا يوجد طلبات'));
+                        return Center(child: Text(Translations.getText('noorders', locale)));
                       }
-
                       final orders = snapshot.data!;
                       return ListView.builder(
                         itemCount: orders.length,
@@ -290,7 +295,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                     Text(
                                       order['delivery'] ?? '',
                                     ),
-                                    Text('اللغه ${order['language'] ?? ''}'),
+                                    Text('${Translations.getText("language", locale)} ${order['language'] ?? ''}'),
                                   ],
                                 ),
                                 Row(
@@ -299,7 +304,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                     Text(
                                       order['filescount'].toString() ?? '',
                                     ),
-                                    Text(":عدد المرفقات"),
+                                    Text('${Translations.getText("attachmentscount", locale)}:')
                                   ],
                                 ),
                                 Row(

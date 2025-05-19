@@ -7,7 +7,7 @@ import '../model/register_model.dart';
 
 class SignUpService {
   Future<Map<String, dynamic>> signUp(BuildContext context, SignUpModel signUpModel) async {
-    final url = Uri.parse('https://wckb4f4m-3000.euw.devtunnels.ms/api/signup');
+    final url = Uri.parse('https://backend.enjazkw.com/api/signup');
 
     try {
       final response = await http.post(

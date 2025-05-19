@@ -1,18 +1,24 @@
+import 'package:engaz_app/features/auth/login/view/login_screen.dart';
+import 'package:engaz_app/features/contact_us/contactus_screen.dart';
+import 'package:engaz_app/features/visitor/view/order_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../privacy_policy/privacy_policy_screen.dart';
 import '../../terms_and_conditions/terms_and_conditions_screen.dart';
 import '../../usage_policy/usage_polict_screen.dart';
-import '../home_screen_2.dart';
-import 'dialog.dart';
+import '../../localization/change_lang.dart';
 
 class SettingsScreen2 extends StatelessWidget {
   const SettingsScreen2({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final lang = context.read<LocalizationProvider>().locale.languageCode;
+    final textDirection = lang == 'ar' ? TextDirection.rtl : TextDirection.ltr;
+
     return Directionality(
-      textDirection: TextDirection.ltr,
+      textDirection: textDirection,
       child: Scaffold(
         backgroundColor: const Color(0xFFF5F5F5),
         body: SafeArea(
@@ -21,30 +27,33 @@ class SettingsScreen2 extends StatelessWidget {
             child: Column(
               children: [
                 Align(
-                  alignment: Alignment.topLeft,
+                  alignment: textDirection == TextDirection.rtl
+                      ? Alignment.topRight
+                      : Alignment.topLeft,
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: const Text(
-                      "More",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                    child: Text(
+                      Translations.getText('more', lang),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 20),
                     ),
                   ),
                 ),
                 const SizedBox(height: 24),
                 buildSection([
-                  buildSettingItem(context, "General Settings", Icons.settings,
-                      "assets/images/img28.png", const LoginRequiredDialog()),
-                  buildSettingItem(context, "Contact Us", Icons.phone,
-                      "assets/images/img29.png", const LoginRequiredDialog()),
+                  buildSettingItem(context, Translations.getText('general_settings', lang),
+                      Icons.settings, "assets/images/img28.png", const OrdersScreenVistor()),
+                  buildSettingItem(context, Translations.getText('contact_us', lang),
+                      Icons.phone, "assets/images/img29.png", const ContactUsScreen()),
                 ]),
                 const SizedBox(height: 12),
                 buildSection([
-                  buildSettingItem(context, "Usage Policy", Icons.security,
-                      "assets/images/img30.png", const UsagePolicyScreen()),
-                  buildSettingItem(context, "Terms & Conditions", Icons.rule,
-                      "assets/images/img31.png", const TermsAndConditionsScreen()),
-                  buildSettingItem(context, "Privacy Policy", Icons.privacy_tip,
-                      "assets/images/img32.png", const PrivacyPolicyScreen()),
+                  buildSettingItem(context, Translations.getText('usage_policy', lang),
+                      Icons.security, "assets/images/img30.png", const UsagePolicyScreen()),
+                  buildSettingItem(context, Translations.getText('terms_conditions', lang),
+                      Icons.rule, "assets/images/img31.png", const TermsAndConditionsScreen()),
+                  buildSettingItem(context, Translations.getText('privacy_policy', lang),
+                      Icons.privacy_tip, "assets/images/img32.png", const PrivacyPolicyScreen()),
                 ]),
                 const SizedBox(height: 16),
                 Container(
@@ -58,23 +67,27 @@ class SettingsScreen2 extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => HomePage2()),
+                        MaterialPageRoute(builder: (context) => const LoginScreen()),
                       );
                     },
                     child: Row(
                       children: [
                         Image.asset("assets/images/img60.png"),
                         const SizedBox(width: 8),
-                        const Text("Log In",
-                            style: TextStyle(color: Color(0xff409EDC))),
+                        Text(
+                          Translations.getText('login', lang),
+                          style: const TextStyle(color: Color(0xff409EDC)),
+                        ),
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 24),
-                const Center(
-                  child: Text("Follow us on",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                Center(
+                  child: Text(
+                    Translations.getText('follow_us', lang),
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Row(
@@ -124,13 +137,7 @@ class SettingsScreen2 extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
-        children: List.generate(items.length, (index) {
-          return Column(
-            children: [
-              items[index],
-            ],
-          );
-        }),
+        children: items,
       ),
     );
   }

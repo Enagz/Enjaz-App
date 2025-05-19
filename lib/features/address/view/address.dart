@@ -38,7 +38,6 @@ class AddAddressScreen extends StatelessWidget {
 
             child: Scaffold(
               appBar: AppBar(
-                leading: const Icon(Icons.arrow_back_ios),
                 title:  Text(
                   Translations.getText(
                     'addadd',

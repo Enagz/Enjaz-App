@@ -271,6 +271,8 @@
 
 
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -301,53 +303,30 @@ class _SavedAddressState extends State<SavedAddress> {
 
   Future<void> _fetchAddresses() async {
     final prefs = await SharedPreferences.getInstance();
-
-    //String? userId = prefs.getString('userId');
-    //String? token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YWJkMWIzNi0xZGQxLTQ2MDktYTE2NC1kZTg5YmM1YWYwMWQiLCJ1c2VybmFtZSI6IkJhc3NlbCBTYWxsYW0iLCJlbWFpbCI6ImJhc3NlbGEuc2FsYW1AZ21haWwuY29tIiwidmVyZmllZCI6dHJ1ZSwiaWF0IjoxNzQyNzY2OTkzfQ.-LuSsU2AombLwf1YUm91fNe_VmXtfIDEn9Z8h3N1PAc';
     String? token = prefs.getString('token');
     String? addressId;
 
-
-    print('token: $token');
-
-
-
     try {
       final response = await http.get(
-        Uri.parse('https://wckb4f4m-3000.euw.devtunnels.ms/api/address'),
+        Uri.parse('https://backend.enjazkw.com/api/address'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token', // إضافة التوكن هنا
+          'Authorization': 'Bearer $token',
         },
       );
 
       if (response.statusCode == 200) {
-        print('success ${response.body}');
         var data = json.decode(response.body);
         setState(() {
           addresses = (data['addresses'] as List)
               .map((item) => AddressModel.fromJson(item))
               .toList();
-          print('addresses set in state. Length: ${addresses.length}');
-
-          // خزن أول addressId لو فيه بيانات
           if (addresses.isNotEmpty) {
             addressId = addresses.first.id;
-            print('Saved addressId: $addressId');
           }
         });
         await prefs.setString('addressId', addressId!);
-
-        // اطبع كل عنوان
-        for (var address in addresses) {
-          print('Address: ${address.address}');
-          print('Name: ${address.name}');
-          print('Location: ${address.location}');
-          print('ID: ${address.id}');
-          print('------------------------');
-        }
-      }
-      else {
+      } else {
         print('Failed to load addresses: ${response.statusCode}');
       }
     } catch (e) {
@@ -358,83 +337,75 @@ class _SavedAddressState extends State<SavedAddress> {
   @override
   Widget build(BuildContext context) {
     return Consumer<LocalizationProvider>(
-        builder: (context, localizationProvider, child) {
-          final locale = localizationProvider.locale.languageCode;
-          final textDirection =
-          locale == 'ar' ? TextDirection.rtl : TextDirection.ltr;
+      builder: (context, localizationProvider, child) {
+        final locale = localizationProvider.locale.languageCode;
+        final textDirection =
+        locale == 'ar' ? TextDirection.rtl : TextDirection.ltr;
 
-          return Directionality(
-            textDirection: textDirection,
-            child: Scaffold(
-              backgroundColor: const Color(0xffF8F8F8),
-              appBar: AppBar(
-                leading: const Icon(Icons.arrow_back_ios),
-                title:  Text(Translations.getText(
-                  'saved_address',
-                  context
-                      .read<LocalizationProvider>()
-                      .locale
-                      .languageCode,
-                ),
-                    style: TextStyle(color: Colors.black)),
-                backgroundColor: const Color(0xffF8F8F8),
-                elevation: 0,
-                iconTheme: const IconThemeData(color: Colors.black),
+        return Directionality(
+          textDirection: textDirection,
+          child: Scaffold(
+            backgroundColor: const Color(0xffF8F8F8),
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              title: Text(
+                Translations.getText('saved_address', locale),
+                style: const TextStyle(color: Colors.black),
               ),
-              body: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Center(
-                              child: Image.asset('assets/images/img52.png',
-                                  height: 100)),
-                          const SizedBox(height: 20),
-                          Center(
-                            child: Text(
-                              Translations.getText(
-                                'choose',
-                                context
-                                    .read<LocalizationProvider>()
-                                    .locale
-                                    .languageCode,
-                              ),
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          ...addresses.map((address) => _buildAddressCard(
-                            address.name,
-                            address.address,
-                          )).toList(),
-
-                          const SizedBox(height: 10),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Padding(
+              backgroundColor: const Color(0xffF8F8F8),
+              elevation: 0,
+              iconTheme: const IconThemeData(color: Colors.black),
+            ),
+            body: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
                     padding: const EdgeInsets.all(16),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (selectedAddress != null) _buildDeliveryButton(),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: _buildAddAddressButton(),
+                        Center(
+                            child: Image.asset('assets/images/img52.png',
+                                height: 100)),
+                        const SizedBox(height: 20),
+                        Center(
+                          child: Text(
+                            Translations.getText('choose', locale),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
                         ),
+                        const SizedBox(height: 20),
+                        ...addresses.map((address) => _buildAddressCard(
+                          address.name,
+                          address.address,
+                          locale,
+                        )),
+                        const SizedBox(height: 10),
                       ],
                     ),
-                  )
-                ],
-              ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      if (selectedAddress != null) _buildDeliveryButton(locale),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: _buildAddAddressButton(locale),
+                      ),
+                    ],
+                  ),
+                )
+              ],
             ),
-          );
-        }
-    );}
-  Widget _buildAddressCard(String title, String address) {
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildAddressCard(String title, String address, String locale) {
     bool isSelected = selectedAddress == title;
 
     return GestureDetector(
@@ -468,15 +439,18 @@ class _SavedAddressState extends State<SavedAddress> {
                 Row(
                   children: [
                     InkWell(
-
-                        onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>EditAddressScreen()));
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => EditAddressScreen()));
                         },
                         child: Image.asset("assets/images/img54.png")),
                     const SizedBox(width: 10),
                     InkWell(
                       onTap: () {
-                        Provider.of<AddAddressViewModel>(context, listen: false).deleteAddress(context);
+                        Provider.of<AddAddressViewModel>(context, listen: false)
+                            .deleteAddress(context);
                       },
                       child: Image.asset("assets/images/img53.png"),
                     ),
@@ -489,9 +463,9 @@ class _SavedAddressState extends State<SavedAddress> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "الموقع :",
-                    style: TextStyle(
+                  Text(
+                    '${Translations.getText('location', locale)} :',
+                    style: const TextStyle(
                       color: Colors.grey,
                       fontSize: 12,
                     ),
@@ -515,7 +489,7 @@ class _SavedAddressState extends State<SavedAddress> {
     );
   }
 
-  Widget _buildDeliveryButton() {
+  Widget _buildDeliveryButton(String locale) {
     return SizedBox(
       width: double.infinity,
       height: 50,
@@ -530,24 +504,22 @@ class _SavedAddressState extends State<SavedAddress> {
         ),
         onPressed: () {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('تم اختيار التوصيل إلى $selectedAddress')),
+            SnackBar(
+              content: Text(
+                '${Translations.getText('delivery_to', locale)} $selectedAddress',
+              ),
+            ),
           );
         },
-        child:  Text(
-          Translations.getText(
-            'dilvery',
-            context
-                .read<LocalizationProvider>()
-                .locale
-                .languageCode,
-          ),
-          style: TextStyle(fontSize: 16),
+        child: Text(
+          Translations.getText('dilvery', locale),
+          style: const TextStyle(fontSize: 16),
         ),
       ),
     );
   }
 
-  Widget _buildAddAddressButton() {
+  Widget _buildAddAddressButton(String locale) {
     return SizedBox(
       width: double.infinity,
       height: 50,
@@ -558,23 +530,16 @@ class _SavedAddressState extends State<SavedAddress> {
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
         onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>  AddAddressScreen()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => AddAddressScreen()));
         },
-        child:  Text(Translations.getText(
-          'add_to_address',
-          context
-              .read<LocalizationProvider>()
-              .locale
-              .languageCode,
+        child: Text(
+          Translations.getText('add_to_address', locale),
+          style: const TextStyle(color: Colors.white, fontSize: 16),
         ),
-            style: TextStyle(color: Colors.white, fontSize: 16)),
       ),
     );
   }
-
 }
 
 class AddressModel {
@@ -592,10 +557,10 @@ class AddressModel {
 
   factory AddressModel.fromJson(Map<String, dynamic> json) {
     return AddressModel(
-      id: json['id']??'',
-      name: json['name']??'',
-      address: json['address']??'',
-      location: json['location']??'',
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      address: json['address'] ?? '',
+      location: json['location'] ?? '',
     );
   }
 }

@@ -109,13 +109,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final storedToken = prefs.getString('token');
     print("📦 Stored Token from SharedPreferences: $storedToken");
-
-    // ✅ ابعت FCM Token للباك إند
     final fcmToken = await FirebaseMessaging.instance.getToken();
     if (fcmToken != null) {
       try {
         final response = await http.post(
-          Uri.parse('https://wckb4f4m-3000.euw.devtunnels.ms/api/login/token'),
+          Uri.parse('https://backend.enjazkw.com/api/login/token'),
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $signedToken',
@@ -130,6 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return userCredential;
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -217,14 +216,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                         final result =
                                             await viewModel.loginUser();
                                         if (result['success']) {
-                                          /*ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              content: Text(result['message']),
-                                              backgroundColor: Colors.green,
-                                            ),
-                                          );
-                                           */
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
@@ -242,9 +233,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                           QuickAlert.show(
                                             context: context,
                                             type: QuickAlertType.error,
-                                            title: 'Oops...',
-                                            text: 'Sorry, something went wrong',
-                                            confirmBtnText : 'Try Again',
+                                            title: Translations.getText('error_title', langCode),
+                                            text: Translations.getText(result['message'], langCode),
+                                            confirmBtnText: Translations.getText('try_again', langCode),
                                           );
                                           /*ScaffoldMessenger.of(context)
                                               .showSnackBar(
@@ -300,9 +291,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               side: const BorderSide(
                                   color: Color(0xff409EDC), width: 1),
                             ),
-                            child: const Text(
-                              "الاستمرار كزائر",
-                              style: TextStyle(
+                            child: Text(
+                              Translations.getText('continue_as_guest', langCode),
+                              style: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
                                 fontFamily: 'IBM_Plex_Sans_Arabic',
@@ -333,16 +324,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 QuickAlert.show(
                                   context: context,
                                   type: QuickAlertType.error,
-                                  title: 'Oops...',
-                                  text: 'Sorry, something went wrong',
-                                  confirmBtnText : 'Try Again',
+                                  title: Translations.getText('error_title', langCode),
+                                  text: Translations.getText('google_signin_failed', langCode),
+                                  confirmBtnText: Translations.getText('try_again', langCode),
                                 );
-                                /*ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content:
-                                          Text("❌ فشل تسجيل الدخول بجوجل")),
-                                );
-                                 */
                               }
                             },
                             style: OutlinedButton.styleFrom(

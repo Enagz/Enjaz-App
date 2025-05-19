@@ -2,11 +2,13 @@ import 'package:engaz_app/features/auth/login/viewmodel/login_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../localization/change_lang.dart';
+
 class CustomTextField extends StatefulWidget {
-  final String hintText;
+  final String hintKey;
   final Function(String)? onChanged;
 
-  const CustomTextField({Key? key, required this.hintText, this.onChanged})
+  const CustomTextField({Key? key, required this.hintKey, this.onChanged})
       : super(key: key);
 
   @override
@@ -30,47 +32,47 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
+    final langCode = Localizations.localeOf(context).languageCode;
+    final translatedHint = Translations.getText(widget.hintKey, langCode);
+
     return Directionality(
-        textDirection: TextDirection.rtl,
-        child: Consumer<LoginViewModel>(
-        builder: (context, viewModel, child) {
-      return Theme(
+      textDirection: langCode == 'ar' ? TextDirection.rtl : TextDirection.ltr,
+      child: Theme(
         data: Theme.of(context).copyWith(
           textSelectionTheme: const TextSelectionThemeData(
             cursorColor: Color.fromRGBO(64, 157, 220, 1),
-            selectionColor:
-            Color.fromRGBO(64, 157, 220, 1),
-            selectionHandleColor: Color.fromRGBO(
-                64, 157, 220, 1),
+            selectionColor: Color.fromRGBO(64, 157, 220, 1),
+            selectionHandleColor: Color.fromRGBO(64, 157, 220, 1),
           ),
         ),
         child: TextFormField(
           controller: _controller,
-          cursorColor: Color.fromRGBO(64, 157, 220, 1),
+          cursorColor: const Color.fromRGBO(64, 157, 220, 1),
           textInputAction: TextInputAction.next,
+          textAlign: langCode == 'ar' ? TextAlign.right : TextAlign.left,
+          textDirection: langCode == 'ar' ? TextDirection.rtl : TextDirection.ltr,
           onChanged: (value) {
-            viewModel.setUserInput(value);
             if (widget.onChanged != null) {
               widget.onChanged!(value);
             }
           },
           validator: (value) {
             if (value == null || value.trim().isEmpty) {
-              if (widget.hintText.contains('الاسم الاول')) {
-                return 'يرجى إدخال الاسم الأول';
-              } else if (widget.hintText.contains('اسم العائلة')) {
-                return 'يرجى إدخال اسم العائلة';
-              } else if (widget.hintText.contains('رقم الجوال')) {
-                return 'يرجى إدخال رقم الجوال';
-              } else if (widget.hintText.contains('البريد الإلكتروني') || widget.hintText.contains('البريد الالكتروني')) {
-                return 'يرجى إدخال البريد الإلكتروني';
+              if (widget.hintKey == 'first_name') {
+                return Translations.getText('enter_first_name', langCode);
+              } else if (widget.hintKey == 'last_name') {
+                return Translations.getText('enter_last_name', langCode);
+              } else if (widget.hintKey == 'phone') {
+                return Translations.getText('enter_phone', langCode);
+              } else if (widget.hintKey == 'email') {
+                return Translations.getText('enter_email', langCode);
               }
-              return 'هذا الحقل مطلوب';
+              return Translations.getText('required_field', langCode);
             }
             return null;
           },
           decoration: InputDecoration(
-            hintText: widget.hintText,
+            hintText: translatedHint,
             hintStyle: const TextStyle(
               color: Color(0xffB3B3B3),
               fontWeight: FontWeight.w500,
@@ -87,9 +89,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           ),
         ),
-      );
-    },
-  ),
-  );
-}
+      ),
+    );
+  }
 }
