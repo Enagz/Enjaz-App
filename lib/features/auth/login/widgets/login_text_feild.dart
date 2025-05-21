@@ -46,31 +46,34 @@ class _LoginTextFieldState extends State<LoginTextField> {
           ),
         ),
         child: viewModel.isPhoneSelected
-            ? IntlPhoneField(
-          controller: _controller,
-          decoration: InputDecoration(
-            hintText: Translations.getText('enter2', localeCode),
-            hintStyle: const TextStyle(
-              color: Color(0xffB3B3B3),
-              fontWeight: FontWeight.w500,
-              fontSize: 14,
-              fontFamily: 'IBM_Plex_Sans_Arabic',
-            ),
-            filled: true,
-            fillColor: const Color(0xffFAFAFA),
-            border: OutlineInputBorder(
-              borderSide: BorderSide.none,
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
-          initialCountryCode: 'EG',
-          onChanged: (phone) {
-            viewModel.setUserInput(phone.completeNumber);
-          },
-          dropdownIcon: const Icon(Icons.arrow_drop_down, color: Color(0xff409EDC)),
-          style: const TextStyle(color: Colors.black),
-          cursorColor: const Color(0xff409EDC),
-        )
+            ? Directionality(
+          textDirection: localeCode == 'ar' ? TextDirection.rtl : TextDirection.ltr,
+          child: IntlPhoneField(
+                        controller: _controller,
+                        decoration: InputDecoration(
+              hintText: Translations.getText('enter2', localeCode),
+              hintStyle: const TextStyle(
+                color: Color(0xffB3B3B3),
+                fontWeight: FontWeight.w500,
+                fontSize: 14,
+                fontFamily: 'IBM_Plex_Sans_Arabic',
+              ),
+              filled: true,
+              fillColor: const Color(0xffFAFAFA),
+              border: OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.circular(16),
+              ),
+                        ),
+                        initialCountryCode: 'EG',
+                        onChanged: (phone) {
+              viewModel.setUserInput(phone.completeNumber);
+                        },
+                        dropdownIcon: const Icon(Icons.arrow_drop_down, color: Color(0xff409EDC)),
+                        style: const TextStyle(color: Colors.black),
+                        cursorColor: const Color(0xff409EDC),
+                      ),
+            )
             : TextFormField(
           key: ValueKey(viewModel.isPhoneSelected),
           textInputAction: TextInputAction.next,

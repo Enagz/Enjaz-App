@@ -596,44 +596,62 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
                                         return GestureDetector(
                                           onTap: () {
                                             setState(() {
-                                              selectedAddressId == address.id;
-                                              selectedAddressName =
-                                                  address.name;
+                                              selectedAddressId = address.id;
+                                              selectedAddressName = address.name;
                                             });
                                           },
                                           child: Container(
-                                            margin: const EdgeInsets.only(
-                                                bottom: 8),
+                                            margin: const EdgeInsets.only(bottom: 12),
                                             padding: const EdgeInsets.all(12),
                                             decoration: BoxDecoration(
                                               color: Colors.white,
+                                              borderRadius: BorderRadius.circular(12),
                                               border: Border.all(
-                                                color: selectedAddressId ==
-                                                        address.id
+                                                color: selectedAddressId == address.id
                                                     ? Color(0xff409EDC)
                                                     : Colors.transparent,
-                                                width: 1,
+                                                width: 1.5,
                                               ),
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
                                             ),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
-                                                Text(
-                                                  '${address.name}',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Color(0xff409EDC)),
+                                                /// ✅ العنوان الكامل
+                                                Expanded(
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        '${address.name}',
+                                                        style: const TextStyle(
+                                                          fontWeight: FontWeight.bold,
+                                                          color: Color(0xff409EDC),
+                                                          fontSize: 14,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 4),
+                                                      Text(
+                                                        '${Translations.getText('address', locale)}: ${address.address}',
+                                                        style: const TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 13,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
-                                                const SizedBox(height: 4),
-                                                Text(
-                                                  '${Translations.getText('address', locale)}: ${address.address}',
-                                                  style: TextStyle(
-                                                      color: Colors.black87,
-                                                      fontSize: 13),
+
+                                                /// ✅ زر التحديد
+                                                Radio<String>(
+                                                  value: address.id,
+                                                  groupValue: selectedAddressId,
+                                                  onChanged: (value) {
+                                                    setState(() {
+                                                      selectedAddressId = value!;
+                                                      selectedAddressName = address.name;
+                                                    });
+                                                  },
+                                                  activeColor: Color(0xff409EDC),
                                                 ),
                                               ],
                                             ),

@@ -30,7 +30,7 @@ class _OtpFieldsState extends State<OtpFields> {
   Widget build(BuildContext context) {
     final otpProvider = context.read<OtpViewModel>();
     final langCode = Localizations.localeOf(context).languageCode;
-    final textDirection = TextDirection.rtl;
+    final textDirection = TextDirection.ltr;
 
     return Directionality(
       textDirection: textDirection,

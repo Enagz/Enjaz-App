@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../auth/login/viewmodel/login_viewmodel.dart';
 import '../localization/change_lang.dart';
 
@@ -106,8 +105,6 @@ class _OtpScreenChangeEmailScreenState extends State<OtpScreenChangeEmailScreen>
                               fontFamily: 'IBM_Plex_Sans_Arabic'),
                         ),
                         const SizedBox(height: 16),
-                        ..._buildOptions(screenWidth),
-                        const SizedBox(height: 16),
                         TextField(
                           controller: codeController,
                           keyboardType: TextInputType.number,
@@ -128,12 +125,6 @@ class _OtpScreenChangeEmailScreenState extends State<OtpScreenChangeEmailScreen>
                           height: buttonHeight,
                           child: ElevatedButton(
                             onPressed: () {
-                              if (selectedImageIndex == null || codeController.text.isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(Translations.getText('select_method_enter_code', langCode))),
-                                );
-                                return;
-                              }
                               verifyCode(codeController.text);
                             },
                             style: ElevatedButton.styleFrom(
@@ -201,7 +192,7 @@ class _OtpScreenChangeEmailScreenState extends State<OtpScreenChangeEmailScreen>
     );
   }
 
-  List<Widget> _buildOptions(double imageWidth) {
+  /*List<Widget> _buildOptions(double imageWidth) {
     return [
       GestureDetector(
         onTap: () => setState(() => selectedImageIndex = 1),
@@ -232,4 +223,5 @@ class _OtpScreenChangeEmailScreenState extends State<OtpScreenChangeEmailScreen>
       ),
     ];
   }
+   */
 }

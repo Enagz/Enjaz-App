@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:engaz_app/features/auth/forgetPassword/widgets/otp_field.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -93,7 +92,6 @@ class _OtpScreenState extends State<OtpScreen> {
                 double padding = screenWidth > 600 ? 48 : 24;
                 double imageWidth = screenWidth > 600 ? 250 : 204;
                 double buttonHeight = screenWidth > 600 ? 60 : 50;
-
                 return Stack(
                   children: [
                     SingleChildScrollView(
