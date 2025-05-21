@@ -3,6 +3,7 @@ import 'package:engaz_app/features/home_screen/view/home_view.dart';
 import 'package:engaz_app/features/notifications_history/notifications_history.dart';
 
 import 'package:engaz_app/features/splash/view/splash_screen.dart';
+import 'package:engaz_app/firebase_options.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:engaz_app/features/auth/login/view/login_screen.dart';
 import 'package:engaz_app/features/auth/login/viewmodel/login_viewmodel.dart';
@@ -87,23 +88,42 @@ Future<void> sendTokenToBackend(String fcmToken) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
-  const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
-  const initSettings = InitializationSettings(android: androidSettings);
+  const AndroidInitializationSettings androidSettings =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+
+  const DarwinInitializationSettings iosSettings = DarwinInitializationSettings(
+    requestAlertPermission: true,
+    requestBadgePermission: true,
+    requestSoundPermission: true,
+  );
+
+  const InitializationSettings initSettings = InitializationSettings(
+    android: androidSettings,
+    iOS: iosSettings,
+  );
+
   await flutterLocalNotificationsPlugin.initialize(initSettings);
 
-  //FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    debugPrint(
-        "📥 [Foreground] Full message as Map → ${jsonEncode(message.toMap())}");
-    debugPrint("📦 message.data → ${message.data}");
     _showNotification(message);
   });
 
-  final token = await FirebaseMessaging.instance.getToken();
-  debugPrint("📱 FCM Token: $token");
+  final settings = await FirebaseMessaging.instance.requestPermission();
+
+  if (settings.authorizationStatus == AuthorizationStatus.authorized ||
+      settings.authorizationStatus == AuthorizationStatus.provisional) {
+    final apnsToken = await FirebaseMessaging.instance.getAPNSToken();
+    print("🍎 APNS Token: $apnsToken");
+
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+    print("📱 FCM Token: $fcmToken");
+  } else {
+    print("❌ Notifications not allowed.");
+  }
 
   runApp(MultiProvider(
     providers: [
