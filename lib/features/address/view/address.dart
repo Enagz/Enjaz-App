@@ -1,50 +1,39 @@
-import 'dart:async';
-import 'dart:convert';
-
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:http/http.dart' as http;
+
 import 'package:provider/provider.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:open_file/open_file.dart';
-import 'package:geolocator/geolocator.dart';
 
 import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:geocoding/geocoding.dart';
 
 import '../../localization/change_lang.dart';
 import '../view_model/add_address_view_model.dart';
 
-
 class AddAddressScreen extends StatelessWidget {
+  const AddAddressScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => AddAddressViewModel(),
-      child: Consumer<LocalizationProvider>(
-        builder: (context, localizationProvider, child) {
+        create: (_) => AddAddressViewModel(),
+        child: Consumer<LocalizationProvider>(
+            builder: (context, localizationProvider, child) {
           final locale = localizationProvider.locale.languageCode;
           final textDirection =
-          locale == 'ar' ? TextDirection.rtl : TextDirection.ltr;
+              locale == 'ar' ? TextDirection.rtl : TextDirection.ltr;
           return Directionality(
             textDirection: textDirection,
             child: Scaffold(
               appBar: AppBar(
-                leading: IconButton(onPressed: (){
-                  Navigator.pop(context);
-                }, icon: const Icon(Icons.arrow_back_ios)),
-                title:  Text(
+                leading: IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(Icons.arrow_back_ios)),
+                title: Text(
                   Translations.getText(
                     'addadd',
                     context.read<LocalizationProvider>().locale.languageCode,
                   ),
-                  style: TextStyle(color: Colors.black),
+                  style: const TextStyle(color: Colors.black),
                 ),
                 backgroundColor: Colors.white,
                 elevation: 0,
@@ -65,8 +54,8 @@ class AddAddressScreen extends StatelessWidget {
                         children: [
                           TileLayer(
                             urlTemplate:
-                            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                            subdomains: ['a', 'b', 'c'],
+                                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                            subdomains: const ['a', 'b', 'c'],
                           ),
                           MarkerLayer(
                             markers: [
@@ -101,12 +90,15 @@ class AddAddressScreen extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                               Text(
-                                 Translations.getText(
-                                   'locname',
-                                   context.read<LocalizationProvider>().locale.languageCode,
-                                 ),
-                                style: TextStyle(
+                              Text(
+                                Translations.getText(
+                                  'locname',
+                                  context
+                                      .read<LocalizationProvider>()
+                                      .locale
+                                      .languageCode,
+                                ),
+                                style: const TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 8),
@@ -137,16 +129,21 @@ class AddAddressScreen extends StatelessWidget {
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           Translations.getText(
                                             'locname',
-                                            context.read<LocalizationProvider>().locale.languageCode,
+                                            context
+                                                .read<LocalizationProvider>()
+                                                .locale
+                                                .languageCode,
                                           ),
-                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold),
                                         ),
-                                        SizedBox(width: 5),
+                                        const SizedBox(width: 5),
                                         Expanded(
                                           child: Text(
                                             model.locationController.text,
@@ -162,7 +159,6 @@ class AddAddressScreen extends StatelessWidget {
                                       ],
                                     ),
                                   ),
-
                                 ],
                               ),
                               const SizedBox(height: 12),
@@ -170,29 +166,36 @@ class AddAddressScreen extends StatelessWidget {
                                 width: double.infinity,
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xff409EDC),
+                                    backgroundColor: const Color(0xff409EDC),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 14),
                                   ),
-                                  onPressed: model.isLoading || model.locationController.text.trim().isEmpty
+                                  onPressed: model.isLoading ||
+                                          model.locationController.text
+                                              .trim()
+                                              .isEmpty
                                       ? null
                                       : () {
-                                    model.addAddress(context);
-                                  },
+                                          model.addAddress(context);
+                                        },
                                   child: model.isLoading
                                       ? const CircularProgressIndicator(
-                                      color: Colors.white)
-                                      :  Text(
-                                      Translations.getText(
-                                        'addadd',
-                                        context.read<LocalizationProvider>().locale.languageCode,
-                                      ),
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 16),
-                                  ),
+                                          color: Colors.white)
+                                      : Text(
+                                          Translations.getText(
+                                            'addadd',
+                                            context
+                                                .read<LocalizationProvider>()
+                                                .locale
+                                                .languageCode,
+                                          ),
+                                          style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16),
+                                        ),
                                 ),
                               ),
                             ],
@@ -205,6 +208,6 @@ class AddAddressScreen extends StatelessWidget {
               ),
             ),
           );
-        })  );
+        }));
   }
 }

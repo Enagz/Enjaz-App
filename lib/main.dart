@@ -70,8 +70,7 @@ Future<void> sendTokenToBackend(String fcmToken) async {
     return;
   }
 
-  final url =
-      Uri.parse('https://backend.enjazkw.com/api/login/token');
+  final url = Uri.parse('https://backend.enjazkw.com/api/login/token');
   try {
     final response = await http.post(
       url,
@@ -139,9 +138,9 @@ class MyApp extends StatelessWidget {
       home: const SplashScreen(),
       routes: {
         '/login': (context) => const LoginScreen(),
-        '/translate': (context) => TranslationOrderApp(),
-        'notifications':(_)=>NotificationsHistoryScreen(),
-        '/home':(_)=>HomePage(),
+        '/translate': (context) => const TranslationOrderApp(),
+        'notifications': (_) => const NotificationsHistoryScreen(),
+        '/home': (_) => const HomePage(),
         '/support-chat': (context) => SupportChatScreen(),
         '/order-details': (context) => OrdersScreen(),
         '/settings': (context) => const SettingsScreen(),
@@ -149,4 +148,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
