@@ -37,6 +37,13 @@
             {
               "client_id": "516153415128-ifac12mkt4n41e175b58itbmtl2tm5sk.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "516153415128-9dq1a1id5ad4hngoviddg4m4amk8tnup.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.engazApp"
+              }
             }
           ]
         }

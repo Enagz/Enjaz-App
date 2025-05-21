@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'package:engaz_app/features/home_screen/view/home_view.dart';
 import 'package:engaz_app/features/notifications_history/notifications_history.dart';
-import 'package:engaz_app/features/order_details/order_details_page.dart';
-import 'package:engaz_app/features/saved_order/view/saved_order.dart';
+
 import 'package:engaz_app/features/splash/view/splash_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:engaz_app/features/auth/login/view/login_screen.dart';
@@ -28,8 +27,8 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 
 /*Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print("📥 [Background] Full message as Map → ${jsonEncode(message.toMap())}");
-  print("📦 message.data → ${message.data}");
+  debugPrint("📥 [Background] Full message as Map → ${jsonEncode(message.toMap())}");
+  debugPrint("📦 message.data → ${message.data}");
   _showNotification(message);
 }
  */
@@ -57,8 +56,8 @@ void _showNotification(RemoteMessage message) {
     );
   }
 
-  print("🔔 Title: $title");
-  print("📃 Body: $body");
+  debugPrint("🔔 Title: $title");
+  debugPrint("📃 Body: $body");
 }
 
 Future<void> sendTokenToBackend(String fcmToken) async {
@@ -66,7 +65,7 @@ Future<void> sendTokenToBackend(String fcmToken) async {
   final authToken = prefs.getString('fcm_token');
 
   if (authToken == null) {
-    print("⚠️ No auth token saved, skipping FCM token upload.");
+    debugPrint("⚠️ No auth token saved, skipping FCM token upload.");
     return;
   }
 
@@ -80,9 +79,9 @@ Future<void> sendTokenToBackend(String fcmToken) async {
       },
       body: jsonEncode({"token": fcmToken}),
     );
-    print("✅ Token sent → ${response.statusCode}: ${response.body}");
+    debugPrint("✅ Token sent → ${response.statusCode}: ${response.body}");
   } catch (e) {
-    print("❌ Failed to send token: $e");
+    debugPrint("❌ Failed to send token: $e");
   }
 }
 
@@ -97,14 +96,14 @@ void main() async {
   //FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    print(
+    debugPrint(
         "📥 [Foreground] Full message as Map → ${jsonEncode(message.toMap())}");
-    print("📦 message.data → ${message.data}");
+    debugPrint("📦 message.data → ${message.data}");
     _showNotification(message);
   });
 
   final token = await FirebaseMessaging.instance.getToken();
-  print("📱 FCM Token: $token");
+  debugPrint("📱 FCM Token: $token");
 
   runApp(MultiProvider(
     providers: [
