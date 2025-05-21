@@ -359,6 +359,11 @@ class _OtpScreen2State extends State<OtpScreen2> {
   Timer? _timer;
   String message = "";
   bool isLoading = false;
+  final TextEditingController otp1 = TextEditingController();
+  final TextEditingController otp2 = TextEditingController();
+  final TextEditingController otp3 = TextEditingController();
+  final TextEditingController otp4 = TextEditingController();
+
 
   Future<void> verifyOtp() async {
     setState(() => isLoading = true);
@@ -604,6 +609,10 @@ class _OtpScreen2State extends State<OtpScreen2> {
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () {
                                         if (seconds == 0) resendOtp();
+                                        otp1.clear();
+                                        otp2.clear();
+                                        otp3.clear();
+                                        otp4.clear();
                                       },
                                   ),
                                 ],

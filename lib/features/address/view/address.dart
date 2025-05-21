@@ -32,12 +32,13 @@ class AddAddressScreen extends StatelessWidget {
           final locale = localizationProvider.locale.languageCode;
           final textDirection =
           locale == 'ar' ? TextDirection.rtl : TextDirection.ltr;
-
           return Directionality(
             textDirection: textDirection,
-
             child: Scaffold(
               appBar: AppBar(
+                leading: IconButton(onPressed: (){
+                  Navigator.pop(context);
+                }, icon: const Icon(Icons.arrow_back_ios)),
                 title:  Text(
                   Translations.getText(
                     'addadd',
@@ -145,7 +146,7 @@ class AddAddressScreen extends StatelessWidget {
                                           ),
                                           style: TextStyle(fontWeight: FontWeight.bold),
                                         ),
-                                        SizedBox(width: 5), // مسافة بسيطة بين الترجمة والنص
+                                        SizedBox(width: 5),
                                         Expanded(
                                           child: Text(
                                             model.locationController.text,
@@ -154,7 +155,7 @@ class AddAddressScreen extends StatelessWidget {
                                               color: Colors.black54,
                                             ),
                                             softWrap: true,
-                                            maxLines: null, // يسمح للنص يلف
+                                            maxLines: null,
                                             overflow: TextOverflow.visible,
                                           ),
                                         ),

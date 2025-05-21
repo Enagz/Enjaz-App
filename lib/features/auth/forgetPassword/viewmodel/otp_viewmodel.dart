@@ -68,7 +68,7 @@ class OtpViewModel extends ChangeNotifier {
 
         final fcmToken = await FirebaseMessaging.instance.getToken();
         if (fcmToken != null) {
-          final url = Uri.parse('https://wckb4f4m-3000.euw.devtunnels.ms/api/login/token');
+          final url = Uri.parse('https://backend.enjazkw.com/api/login/token');
           final fcmResponse = await http.post(
             url,
             headers: {

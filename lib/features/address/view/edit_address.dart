@@ -37,6 +37,9 @@ class EditAddressScreen extends StatelessWidget {
         textDirection: textDirection,
         child: Scaffold(
           appBar: AppBar(
+            leading: IconButton(onPressed: (){
+              Navigator.pop(context);
+            }, icon: const Icon(Icons.arrow_back_ios)),
             title: Text(
               Translations.getText(
                 'editadd',
@@ -156,7 +159,6 @@ class EditAddressScreen extends StatelessWidget {
                                           fontWeight: FontWeight.bold),
                                     ),
                                     SizedBox(width: 5),
-                                    // مسافة بسيطة بين الترجمة والنص
                                     Expanded(
                                       child: Text(
                                         model.locationController.text,
@@ -165,7 +167,7 @@ class EditAddressScreen extends StatelessWidget {
                                           color: Colors.black54,
                                         ),
                                         softWrap: true,
-                                        maxLines: null, // يسمح للنص يلف
+                                        maxLines: null,
                                         overflow: TextOverflow.visible,
                                       ),
                                     ),

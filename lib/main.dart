@@ -71,7 +71,7 @@ Future<void> sendTokenToBackend(String fcmToken) async {
   }
 
   final url =
-      Uri.parse('https://wckb4f4m-3000.euw.devtunnels.ms/api/login/token');
+      Uri.parse('https://backend.enjazkw.com/api/login/token');
   try {
     final response = await http.post(
       url,

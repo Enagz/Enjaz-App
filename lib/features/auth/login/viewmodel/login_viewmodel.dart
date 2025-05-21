@@ -61,7 +61,7 @@ class LoginViewModel extends ChangeNotifier {
 
     final result = await signupService.signUp(context, signUpModel);
 
-    print('Full result: $result'); // اطبع الريسبونس كله هنا
+    print('Full result: $result');
 
     if (result.containsKey('user')) {
       registerState = RegisterState.success;

@@ -294,6 +294,7 @@ class SavedAddress extends StatefulWidget {
 class _SavedAddressState extends State<SavedAddress> {
   String? selectedAddress;
   List<dynamic> addresses = [];
+  String? selectedAddressId;
 
   @override
   void initState() {
@@ -341,13 +342,14 @@ class _SavedAddressState extends State<SavedAddress> {
         final locale = localizationProvider.locale.languageCode;
         final textDirection =
         locale == 'ar' ? TextDirection.rtl : TextDirection.ltr;
-
         return Directionality(
           textDirection: textDirection,
           child: Scaffold(
             backgroundColor: const Color(0xffF8F8F8),
             appBar: AppBar(
-              automaticallyImplyLeading: false,
+              leading: IconButton(onPressed: (){
+                  Navigator.pop(context);
+              }, icon: const Icon(Icons.arrow_back_ios)),
               title: Text(
                 Translations.getText('saved_address', locale),
                 style: const TextStyle(color: Colors.black),
@@ -375,11 +377,7 @@ class _SavedAddressState extends State<SavedAddress> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        ...addresses.map((address) => _buildAddressCard(
-                          address.name,
-                          address.address,
-                          locale,
-                        )),
+                        ...addresses.map((address) => _buildAddressCard(address, locale)).toList(),
                         const SizedBox(height: 10),
                       ],
                     ),
@@ -405,13 +403,16 @@ class _SavedAddressState extends State<SavedAddress> {
     );
   }
 
-  Widget _buildAddressCard(String title, String address, String locale) {
-    bool isSelected = selectedAddress == title;
+  Widget _buildAddressCard(AddressModel address, String locale) {
+    //bool isSelected = selectedAddress == title;
+    bool isSelected = selectedAddressId == address.id;
 
     return GestureDetector(
       onTap: () {
         setState(() {
-          selectedAddress = title;
+          //selectedAddress = title;
+          selectedAddress = address.name;
+          selectedAddressId = address.id;
         });
       },
       child: Container(
@@ -431,7 +432,7 @@ class _SavedAddressState extends State<SavedAddress> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(title,
+                Text(address.name,
                     style: const TextStyle(
                         color: Color(0xff409EDC),
                         fontSize: 14,
@@ -473,7 +474,7 @@ class _SavedAddressState extends State<SavedAddress> {
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
-                      address,
+                      address.address,
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 12,

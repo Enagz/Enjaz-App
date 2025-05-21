@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../auth/register/widgets/custom_text_feild.dart';
 import '../localization/change_lang.dart';
+import '../orders/orders_screen.dart';
 import '../printing_request/widgets/upload_button.dart';
 import '../saved_order/view/saved_order.dart';
 import 'package:http/http.dart' as http;
@@ -28,17 +29,18 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
   String? deliveryMethod;
   String? address;
   String? notes;
-  String? selectedAddress;
+  String? selectedAddressId;
+  String? selectedAddressName;
   String? selectedLanguage;
   String? selectedLanguage2;
   bool _isLoading = false;
   final bool _submitted = false;
 
-
   final TextEditingController _copiesController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
   TextDirection getTextDirection(BuildContext context) {
-    String languageCode = context.read<LocalizationProvider>().locale.languageCode;
+    String languageCode =
+        context.read<LocalizationProvider>().locale.languageCode;
     return languageCode == 'ar' ? TextDirection.rtl : TextDirection.ltr;
   }
 
@@ -53,7 +55,8 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
     try {
       if (selectedFiles.isNotEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(Translations.getText('add_file_before', locale))),
+          SnackBar(
+              content: Text(Translations.getText('add_file_before', locale))),
         );
         return;
       }
@@ -72,17 +75,21 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
 
   Future<void> fetchDropdownData() async {
     try {
-      final colorResponse = await http.get(Uri.parse("https://backend.enjazkw.com/api/dashboard/color"));
-      final coverResponse = await http.get(Uri.parse("https://backend.enjazkw.com/api/dashboard/cover"));
+      final colorResponse = await http
+          .get(Uri.parse("https://backend.enjazkw.com/api/dashboard/color"));
+      final coverResponse = await http
+          .get(Uri.parse("https://backend.enjazkw.com/api/dashboard/cover"));
 
       if (colorResponse.statusCode == 200) {
         final body = jsonDecode(colorResponse.body);
-        colorOptions = List<Map<String, dynamic>>.from(body['printingcolors'] ?? []);
+        colorOptions =
+            List<Map<String, dynamic>>.from(body['printingcolors'] ?? []);
       }
 
       if (coverResponse.statusCode == 200) {
         final body = jsonDecode(coverResponse.body);
-        coverOptions = List<Map<String, dynamic>>.from(body['printngcover'] ?? []);
+        coverOptions =
+            List<Map<String, dynamic>>.from(body['printngcover'] ?? []);
       }
     } catch (e) {
       print('❌ فشل تحميل بيانات القوائم المنسدلة: \$e');
@@ -96,13 +103,14 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
 
     if (finalizedFiles.isEmpty || deliveryMethod == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(Translations.getText('add_file_and_delivery', locale))),
+        SnackBar(
+            content:
+                Text(Translations.getText('add_file_and_delivery', locale))),
       );
       return;
     }
 
     setState(() => _isLoading = true);
-
     try {
       var request = http.MultipartRequest(
         'POST',
@@ -117,7 +125,8 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
         PlatformFile file = fileData['file'];
 
         if (file.path != null && File(file.path!).existsSync()) {
-          request.files.add(await http.MultipartFile.fromPath('otherDocs', file.path!));
+          request.files
+              .add(await http.MultipartFile.fromPath('otherDocs', file.path!));
 
           detailsList.add({
             "color": fileData['color'],
@@ -131,8 +140,8 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
       request.fields['methodOfDelivery'] = deliveryMethod ?? '';
       request.fields['notes'] = _notesController.text;
 
-      if (selectedAddress != null) {
-        request.fields['address'] = selectedAddress!;
+      if (selectedAddressId != null) {
+        request.fields['address'] = selectedAddressId!;
       }
 
       if (_notesController.text.isNotEmpty) {
@@ -150,14 +159,19 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
       } else {
         print('🔴 خطأ في الاستجابة: $responseBody');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${Translations.getText('send_failed', locale)}: ${response.statusCode}')),
+          SnackBar(
+              content: Text(
+                  '${Translations.getText('send_failed', locale)}: ${response.statusCode}')),
         );
       }
     } catch (e) {
+      print("Exception while sending order: $e");
       final locale = context.read<LocalizationProvider>().locale.languageCode;
-      print('❌ استثناء أثناء الإرسال: $e');
+      print(' استثناء أثناء الإرسال: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${Translations.getText('exception_occurred', locale)}: $e')),
+        SnackBar(
+            content: Text(
+                '${Translations.getText('exception_occurred', locale)}: $e')),
       );
     } finally {
       setState(() => _isLoading = false);
@@ -182,7 +196,8 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                   final copies = finalizedFiles[index]['copies'].toString();
                   final extension = file.extension ?? "";
                   final iconPath = getFileIcon(extension);
-                  final locale = context.read<LocalizationProvider>().locale.languageCode;
+                  final locale =
+                      context.read<LocalizationProvider>().locale.languageCode;
                   return Card(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),
@@ -198,10 +213,13 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                             children: [
                               if (color != null)
                                 _buildSummaryItem(
-                                    Translations.getText('printing_color', locale), color!),
+                                    Translations.getText(
+                                        'printing_color', locale),
+                                    color!),
                               if (cover != null)
                                 _buildSummaryItem(
-                                    Translations.getText('cover_type', locale), cover!),
+                                    Translations.getText('cover_type', locale),
+                                    cover!),
                               GestureDetector(
                                 onTap: () => setState(
                                     () => selectedFiles.removeAt(index)),
@@ -218,7 +236,9 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                             children: [
                               if (copies.isNotEmpty)
                                 _buildSummaryItem(
-                                    Translations.getText('copies_count', locale), copies),
+                                    Translations.getText(
+                                        'copies_count', locale),
+                                    copies),
                               Image.asset(iconPath, width: 40, height: 40),
                             ],
                           ),
@@ -232,6 +252,27 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
         ),
       ),
     );
+  }
+
+  Future<List<AddressModel>> fetchAddresses() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    final response = await http.get(
+      Uri.parse('https://backend.enjazkw.com/api/address'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return List<AddressModel>.from(
+          data['addresses'].map((e) => AddressModel.fromJson(e)));
+    } else {
+      throw Exception('Failed to load addresses');
+    }
   }
 
   void showSuccessBottomSheet(BuildContext context) {
@@ -281,7 +322,8 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                       style: TextStyle(color: Color(0xff409EDC)),
                     ),
                   ),
-                 */ OutlinedButton(
+                 */
+                      OutlinedButton(
                     onPressed: () {
                       Navigator.push(
                           context,
@@ -304,7 +346,10 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>OrderChatScreen()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => OrdersScreen()));
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xff409EDC),
@@ -353,7 +398,7 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
           height: 48,
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
-            color: const Color(0xFFF2F2F2),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(16),
           ),
           child: DropdownButtonHideUnderline(
@@ -366,6 +411,7 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                   .toList(),
               onChanged: onChanged,
               hint: Text('$label'),
+              focusColor: Colors.white,
             ),
           ),
         ),
@@ -451,19 +497,29 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                   ),
                   const SizedBox(height: 8),
                   _buildSelectedFilesList(),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 4),
                   _buildDropdown(
-                    Translations.getText('cho', context.read<LocalizationProvider>().locale.languageCode),
+                    Translations.getText(
+                        'cho',
+                        context
+                            .read<LocalizationProvider>()
+                            .locale
+                            .languageCode),
                     colorOptions.map((e) => e['color'].toString()).toList(),
                     selectedLanguage,
-                        (value) => setState(() => selectedLanguage = value),
+                    (value) => setState(() => selectedLanguage = value),
                   ),
-
+                  const SizedBox(height: 16),
                   _buildDropdown(
-                    Translations.getText('cho2', context.read<LocalizationProvider>().locale.languageCode),
+                    Translations.getText(
+                        'cho2',
+                        context
+                            .read<LocalizationProvider>()
+                            .locale
+                            .languageCode),
                     coverOptions.map((e) => e['name'].toString()).toList(),
                     selectedLanguage2,
-                        (value) => setState(() => selectedLanguage2 = value),
+                    (value) => setState(() => selectedLanguage2 = value),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -499,14 +555,6 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  /*InkWell(
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const SavedAddress())),
-                    child: Image.asset("assets/images/img51.png"),
-                  ),
-                   */
                   Align(
                     alignment: Alignment.centerRight,
                     child: ElevatedButton(
@@ -530,23 +578,29 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                           });
 
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(
+                            SnackBar(
+                                content: Text(
                               Translations.getText(
                                 'file_added_success',
-                                context.read<LocalizationProvider>().locale.languageCode,
+                                context
+                                    .read<LocalizationProvider>()
+                                    .locale
+                                    .languageCode,
                               ),
-                            )
-                            ),
+                            )),
                           );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(
+                            SnackBar(
+                                content: Text(
                               Translations.getText(
                                 'fill_file_data_first',
-                                context.read<LocalizationProvider>().locale.languageCode,
+                                context
+                                    .read<LocalizationProvider>()
+                                    .locale
+                                    .languageCode,
                               ),
-                            )
-                            ),
+                            )),
                           );
                         }
                       },
@@ -563,7 +617,8 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.white, width: 2),
                         ),
-                        child: const Icon(Icons.add, size: 18, color: Colors.white),
+                        child: const Icon(Icons.add,
+                            size: 18, color: Colors.white),
                       ),
                     ),
                   ),
@@ -586,11 +641,15 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                         children: [
                           Expanded(
                             child: RadioListTile<String>(
-                              title:  Text(
-                              Translations.getText(
-                              'office',
-                        context.read<LocalizationProvider>().locale.languageCode,
-                      ),),
+                              title: Text(
+                                Translations.getText(
+                                  'office',
+                                  context
+                                      .read<LocalizationProvider>()
+                                      .locale
+                                      .languageCode,
+                                ),
+                              ),
                               value: 'Office',
                               activeColor: Colors.blue,
                               groupValue: deliveryMethod,
@@ -601,12 +660,13 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                           ),
                           Expanded(
                             child: RadioListTile<String>(
-                              title: Text(
-                                Translations.getText(
-                                  'home',
-                                  context.read<LocalizationProvider>().locale.languageCode,
-                                ),
-                              ),
+                              title: Text(Translations.getText(
+                                'home_value',
+                                context
+                                    .read<LocalizationProvider>()
+                                    .locale
+                                    .languageCode,
+                              )),
                               value: 'Home',
                               groupValue: deliveryMethod,
                               activeColor: Colors.blue,
@@ -628,68 +688,172 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                     ],
                   ),
                   if (deliveryMethod == 'Home') ...[
-                    Theme(
-                      data: Theme.of(context).copyWith(
-                        textSelectionTheme: const TextSelectionThemeData(
-                          cursorColor: Color.fromRGBO(64, 157, 220, 1), // لون المؤشر
-                          selectionColor:
-                          Color.fromRGBO(64, 157, 220, 1), // لون التحديد
-                          selectionHandleColor: Color.fromRGBO(
-                              64, 157, 220, 1),
+                    Column(
+                      children: [
+                        TextFormField(
+                          decoration: InputDecoration(
+                            labelText: Translations.getText('address', locale),
+                            labelStyle: TextStyle(color: Colors.blue),
+                            prefixIcon: Icon(Icons.home_outlined),
+                            filled: true,
+                            fillColor: Colors.grey.shade200,
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 14),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: Colors.transparent),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide:
+                                  BorderSide(color: Colors.blue, width: 2),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: Colors.red),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide:
+                                  BorderSide(color: Colors.red, width: 2),
+                            ),
+                          ),
+                          onChanged: (value) => address = value,
                         ),
-                      ),
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          labelText: Translations.getText('address', locale),
-                          prefixIcon: Icon(Icons.home_outlined),
-                          filled: true,
-                          fillColor: Colors.grey.shade200,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.transparent),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.blue, width: 2),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.red),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.red, width: 2),
-                          ),
+                        SizedBox(
+                          height: 5,
                         ),
-                        onChanged: (value) => address = value,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Align(
-                        alignment: Alignment.topLeft,
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context, MaterialPageRoute(builder: (context) => SavedAddress()));
+                        FutureBuilder(
+                          future: fetchAddresses(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(
+                                  child: CircularProgressIndicator(
+                                color: Colors.blue,
+                              ));
+                            } else if (snapshot.hasError) {
+                              /*return Text(Translations.getText(
+                                    'fetch_error', locale));
+                                 */
+                              return Text('');
+                            } else {
+                              final addresses = snapshot.data!;
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    Translations.getText(
+                                        'choose_address', locale),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemCount: addresses.length,
+                                    itemBuilder: (context, index) {
+                                      final address = addresses[index];
+                                      return GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            selectedAddressId == address.id;
+                                            selectedAddressName = address.name;
+                                          });
+                                        },
+                                        child: Container(
+                                          margin:
+                                              const EdgeInsets.only(bottom: 8),
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            border: Border.all(
+                                              color: selectedAddressId ==
+                                                      address.id
+                                                  ? Color(0xff409EDC)
+                                                  : Colors.transparent,
+                                              width: 1,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                '${address.name}',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color(0xff409EDC)),
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                '${Translations.getText('address', locale)}: ${address.address}',
+                                                style: TextStyle(
+                                                    color: Colors.black87,
+                                                    fontSize: 13),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              );
+                            }
                           },
-                          child: Image.asset("assets/images/img222.png"),
                         ),
-                      ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Align(
+                          alignment:
+                              Directionality.of(context) == TextDirection.rtl
+                                  ? Alignment.centerLeft
+                                  : Alignment.centerRight,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => SavedAddress()));
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xff409EDC),
+                              shape: const CircleBorder(),
+                              padding: const EdgeInsets.all(5),
+                              elevation: 4,
+                            ),
+                            child: Container(
+                              width: 30,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border:
+                                    Border.all(color: Colors.white, width: 2),
+                              ),
+                              child: const Icon(Icons.add,
+                                  size: 18, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(
-                        height:15
-                    ),
+                    const SizedBox(height: 15),
                   ],
+                  SizedBox(height: 10),
                   Theme(
                     data: Theme.of(context).copyWith(
                       textSelectionTheme: const TextSelectionThemeData(
-                        cursorColor: Color.fromRGBO(64, 157, 220, 1), // لون المؤشر
+                        cursorColor:
+                            Color.fromRGBO(64, 157, 220, 1), // لون المؤشر
                         selectionColor:
-                        Color.fromRGBO(64, 157, 220, 1), // لون التحديد
-                        selectionHandleColor: Color.fromRGBO(
-                            64, 157, 220, 1),
+                            Color.fromRGBO(64, 157, 220, 1), // لون التحديد
+                        selectionHandleColor: Color.fromRGBO(64, 157, 220, 1),
                       ),
                     ),
                     child: TextFormField(
@@ -703,13 +867,11 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                               .locale
                               .languageCode,
                         ),
-                        labelStyle: TextStyle(
-                          color : Colors.blue
-                        ),
+                        labelStyle: TextStyle(color: Colors.blue),
                         filled: true,
                         fillColor: Colors.grey.shade200,
                         contentPadding:
-                        EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -722,7 +884,7 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                     ),
                   ),
                   SizedBox(height: 20),
-                  Text(
+                  /*Text(
                       Translations.getText(
                         'no',
                         context
@@ -756,6 +918,7 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
                   //     ),
                   //   ),
                   // ),
+                   */
                   _buildSummaryCard(),
                   const SizedBox(height: 16),
                   _buildSubmitButton(),
@@ -856,7 +1019,11 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
-        onPressed: _isLoading ? null : _submitOrder,
+        onPressed: () {
+          if (!_isLoading) {
+            _submitOrder();
+          }
+        },
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xff409EDC),
           shape:
@@ -869,7 +1036,6 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
       ),
     );
   }
-
 }
 
 class SaveOrder extends StatelessWidget {
@@ -1060,15 +1226,16 @@ class SaveOrder extends StatelessWidget {
   }
 
   TextDirection getTextDirection(BuildContext context) {
-    String languageCode = context.read<LocalizationProvider>().locale.languageCode;
+    String languageCode =
+        context.read<LocalizationProvider>().locale.languageCode;
     return languageCode == 'ar' ? TextDirection.rtl : TextDirection.ltr;
   }
 
   Alignment getTextAlignment(BuildContext context) {
-    String languageCode = context.read<LocalizationProvider>().locale.languageCode;
+    String languageCode =
+        context.read<LocalizationProvider>().locale.languageCode;
     return languageCode == 'ar' ? Alignment.topRight : Alignment.topLeft;
   }
-
 }
 
 class SuccessOrder extends StatelessWidget {
@@ -1076,95 +1243,91 @@ class SuccessOrder extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<LocalizationProvider>(
         builder: (context, localizationProvider, child) {
-          final locale = localizationProvider.locale.languageCode;
-          final textDirection =
+      final locale = localizationProvider.locale.languageCode;
+      final textDirection =
           locale == 'ar' ? TextDirection.rtl : TextDirection.ltr;
 
-          return Directionality(
-            textDirection: textDirection,
-            child: Scaffold(
-              backgroundColor: Colors.white,
-              body: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                     Text( Translations.getText(
+      return Directionality(
+        textDirection: textDirection,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                    Translations.getText(
                       'ordsuc',
-                      context
-                          .read<LocalizationProvider>()
-                          .locale
-                          .languageCode,
+                      context.read<LocalizationProvider>().locale.languageCode,
                     ),
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                const SizedBox(
+                  height: 60,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xff409EDC),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 12),
+                        minimumSize: const Size(164, 5),
+                      ),
+                      child: Text(
+                        Translations.getText(
+                          'ff',
+                          context
+                              .read<LocalizationProvider>()
+                              .locale
+                              .languageCode,
+                        ),
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 15)),
-                    const SizedBox(
-                      height: 60,
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xff409EDC),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 12),
-                            minimumSize: const Size(164, 5),
-                          ),
-                          child: Text(
-                            Translations.getText(
-                              'ff',
-                              context
-                                  .read<LocalizationProvider>()
-                                  .locale
-                                  .languageCode,
-                            ),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                            ),
-                          ),
+                    OutlinedButton(
+                      onPressed: () {},
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(
+                            color: Color(0xFF409EDC), width: 1),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        OutlinedButton(
-                          onPressed: () {},
-                          style: OutlinedButton.styleFrom(
-                            side:
-                            const BorderSide(
-                                color: Color(0xFF409EDC), width: 1),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 12),
-                            minimumSize: const Size(164, 5),
-                            foregroundColor: Colors.white,
-                          ),
-                          child: Text(
-                            Translations.getText(
-                              'nnn',
-                              context
-                                  .read<LocalizationProvider>()
-                                  .locale
-                                  .languageCode,
-                            ),
-                            style: TextStyle(
-                              color: Color(0xFF409EDC),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 12),
+                        minimumSize: const Size(164, 5),
+                        foregroundColor: Colors.white,
+                      ),
+                      child: Text(
+                        Translations.getText(
+                          'nnn',
+                          context
+                              .read<LocalizationProvider>()
+                              .locale
+                              .languageCode,
                         ),
-                      ],
+                        style: TextStyle(
+                          color: Color(0xFF409EDC),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
                     ),
                   ],
                 ),
-              ),
+              ],
             ),
-          );
-        }); }
+          ),
+        ),
+      );
+    });
+  }
 }

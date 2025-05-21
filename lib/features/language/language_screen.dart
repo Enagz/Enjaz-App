@@ -1,6 +1,7 @@
 import 'package:engaz_app/features/settings/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../home_screen/view/home_view.dart';
 import '../localization/change_lang.dart';
 
 class LanguageScreen extends StatefulWidget {
@@ -74,7 +75,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => const SettingsScreen()),
+                        MaterialPageRoute(builder: (context) => HomePage()),
                       );
                     });
                   },

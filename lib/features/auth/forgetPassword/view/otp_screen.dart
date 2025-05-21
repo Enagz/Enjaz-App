@@ -20,6 +20,11 @@ class OtpScreen extends StatefulWidget {
 }
 
 class _OtpScreenState extends State<OtpScreen> {
+  final TextEditingController otp1 = TextEditingController();
+  final TextEditingController otp2 = TextEditingController();
+  final TextEditingController otp3 = TextEditingController();
+  final TextEditingController otp4 = TextEditingController();
+
   void resendOtp() async {
     print("🔄 جاري تحميل userId من SharedPreferences...");
     final prefs = await SharedPreferences.getInstance();
@@ -240,6 +245,10 @@ class _OtpScreenState extends State<OtpScreen> {
                                               ..onTap = () {
                                                 if (viewModel.seconds == 0) {
                                                   resendOtp();
+                                                  otp1.clear();
+                                                  otp2.clear();
+                                                  otp3.clear();
+                                                  otp4.clear();
                                                 }
                                               },
                                           ),

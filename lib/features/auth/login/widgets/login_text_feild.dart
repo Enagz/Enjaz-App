@@ -62,8 +62,8 @@ class _LoginTextFieldState extends State<LoginTextField> {
                 validator: (value) {
                   if (value == null || value.trim().isEmpty){
                     return viewModel.isPhoneSelected
-                        ? 'يرجى إدخال رقم الجوال'
-                        : 'يرجى إدخال البريد الإلكتروني';
+                        ? Translations.getText('enter_phone', context.read<LocalizationProvider>().locale.languageCode)
+                        : Translations.getText('enter_email', context.read<LocalizationProvider>().locale.languageCode);
                   }
                   return null;
                 },

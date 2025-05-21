@@ -78,7 +78,7 @@ class LoginRequiredDialog extends StatelessWidget {
                     style: const TextStyle(
                       fontFamily: 'IBMPlexSansArabic',
                       fontWeight: FontWeight.w600,
-                      fontSize: 12,
+                      fontSize: 10.5,
                       height: 1.0,
                       letterSpacing: 0.0,
                       color: Colors.white,

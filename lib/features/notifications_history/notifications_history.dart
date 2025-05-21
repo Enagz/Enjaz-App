@@ -30,7 +30,7 @@ class _NotificationsScreenState extends State<NotificationsHistoryScreen> {
     if (token == null) return;
 
     try {
-      final url = Uri.parse("https://wckb4f4m-3000.euw.devtunnels.ms/api/coustmer/notification");
+      final url = Uri.parse("https://backend.enjazkw.com/api/coustmer/notification");
       final response = await http.get(url, headers: {'Authorization': 'Bearer $token'});
       if (response.statusCode == 200) {
         final List decoded = jsonDecode(response.body);
@@ -50,8 +50,7 @@ class _NotificationsScreenState extends State<NotificationsHistoryScreen> {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
     if (token == null) return;
-
-    final url = Uri.parse("https://wckb4f4m-3000.euw.devtunnels.ms/api/coustmer/notification/$id");
+    final url = Uri.parse("https://backend.enjazkw.com/api/coustmer/notification/$id");
 
     try {
       final response = await http.post(url, headers: {'Authorization': 'Bearer $token'});

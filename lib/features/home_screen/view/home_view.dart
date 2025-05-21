@@ -4,6 +4,8 @@ import '../../localization/change_lang.dart';
 import '../viewmodel/home_viewmodel.dart';
 
 class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
