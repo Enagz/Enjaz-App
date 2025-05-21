@@ -89,14 +89,19 @@ class RegisterScreen extends StatelessWidget {
                           const SizedBox(height: 8),
                           _buildLabel(Translations.getText('phone_number', langCode), langCode),
                           CustomTextField(
-                            hintKey: 'enter_phone',
-                            onChanged: (val) => context.read<RegisterViewModel>().setPhone(val),
+                            hintKey: 'Enter phone number',
+                            isPhoneField: true,
+                            onChanged: (val) {
+                              context.read<RegisterViewModel>().setPhone(val);
+                            },
+                            onCountryCodeChanged: (code) {
+                              context.read<RegisterViewModel>().setCountryCode(code);
+                            },
                           ),
                           const SizedBox(height: 8),
-                          // Email
                           _buildLabel(Translations.getText('email', langCode), langCode),
                           CustomTextField(
-                            hintKey: 'enter_email',
+                            hintKey: 'Enter email',
                             onChanged: (val) => context.read<RegisterViewModel>().setEmail(val),
                           ),
                           const SizedBox(height: 16),
@@ -119,7 +124,6 @@ class RegisterScreen extends StatelessWidget {
                                       );
                                       return;
                                     }
-
                                     final result = await viewModel.registerUser(context);
                                     if (result['success']) {
                                       final userId = result['user'];

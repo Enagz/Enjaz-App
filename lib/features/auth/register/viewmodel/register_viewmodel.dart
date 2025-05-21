@@ -11,7 +11,7 @@ class RegisterViewModel extends ChangeNotifier {
   String _firstName = '';
   String _lastName = '';
   String _phone = '';
-  String _countryCode = '+20';
+  String _countryCode = '';
   String _email = '';
 
   RegisterState _registerState = RegisterState.idle;
@@ -72,7 +72,7 @@ class RegisterViewModel extends ChangeNotifier {
     _firstName = '';
     _lastName = '';
     _phone = '';
-    _countryCode = '+20';
+    _countryCode = '';
     _email = '';
     _registerState = RegisterState.idle;
     notifyListeners();
