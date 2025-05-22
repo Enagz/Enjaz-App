@@ -29,44 +29,46 @@ class OrderDetailsPage extends StatelessWidget {
               context.read<LocalizationProvider>().locale.languageCode,
             )),
           ),
-          body: FutureBuilder<OrderModel>(
-            future: fetchOrderDetails(orderNumber),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('${Translations.getText('error_occurred', locale)}: ${snapshot.error}'
-                ));
-              } else if (!snapshot.hasData) {
-                return Center(child: Text(Translations.getText('no_data', locale)));
-              }
-              final order = snapshot.data!;
-              return SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    OrderInfoSection(order: order),
-                    const SizedBox(height: 16.0),
-                    DeliveryInfoSection(
-                      delivery: order.delivery,
-                      order: order,
-                    ),
-                    const SizedBox(height: 16.0),
-                    TranslationLanguagesSection(
-                      from: order.translationFrom,
-                      to: order.translationTo,
-                    ),
-                    const SizedBox(height: 16.0),
-                    NotesSection(notes: order.notes),
-                    const SizedBox(height: 16.0),
-                    AttachmentsSection(files: order.files),
-                    const SizedBox(height: 16.0),
-                    CancelOrderButton(orderId: orderNumber,),
-                  ],
-                ),
-              );
-            },
+          body: SafeArea(
+            child: FutureBuilder<OrderModel>(
+              future: fetchOrderDetails(orderNumber),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('${Translations.getText('error_occurred', locale)}: ${snapshot.error}'
+                  ));
+                } else if (!snapshot.hasData) {
+                  return Center(child: Text(Translations.getText('no_data', locale)));
+                }
+                final order = snapshot.data!;
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      OrderInfoSection(order: order),
+                      const SizedBox(height: 16.0),
+                      DeliveryInfoSection(
+                        delivery: order.delivery,
+                        order: order,
+                      ),
+                      const SizedBox(height: 16.0),
+                      TranslationLanguagesSection(
+                        from: order.translationFrom,
+                        to: order.translationTo,
+                      ),
+                      const SizedBox(height: 16.0),
+                      NotesSection(notes: order.notes),
+                      const SizedBox(height: 16.0),
+                      AttachmentsSection(files: order.files),
+                      const SizedBox(height: 16.0),
+                      CancelOrderButton(orderId: orderNumber,),
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
         ),
       );

@@ -89,64 +89,66 @@ class _NotificationsScreenState extends State<NotificationsHistoryScreen> {
           ],
           automaticallyImplyLeading: false,
         ),
-        body: loading
-            ? const Center(child: CircularProgressIndicator())
-            : notifications.isEmpty
-            ? Center(child: Text(Translations.getText('no_notifications', lang)))
-            : ListView.builder(
-          itemCount: notifications.length,
-          padding: const EdgeInsets.all(16),
-          itemBuilder: (context, index) {
-            final item = notifications[index];
-            final isRead = item['isRead'] == true;
-
-            return GestureDetector(
-              onTap: () async {
-                if (!isRead) await markNotificationAsRead(item['id'], index);
-                final type = item['type'];
-                final serviceId = item['serviceId'];
-
-                if (type == 'Order Message' || type == 'Order Status Changed') {
-                  Navigator.pushNamed(context, '/order-details', arguments: serviceId);
-                } else if (type == 'Support Message') {
-                  Navigator.pushNamed(context, '/support-chat');
-                }
-              },
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    "إنجاز",
-                    style: const TextStyle(
-                      color: Color(0xFF409EDC),
-                      fontWeight: FontWeight.bold,
+        body: SafeArea(
+          child: loading
+              ? const Center(child: CircularProgressIndicator())
+              : notifications.isEmpty
+              ? Center(child: Text(Translations.getText('no_notifications', lang)))
+              : ListView.builder(
+            itemCount: notifications.length,
+            padding: const EdgeInsets.all(16),
+            itemBuilder: (context, index) {
+              final item = notifications[index];
+              final isRead = item['isRead'] == true;
+          
+              return GestureDetector(
+                onTap: () async {
+                  if (!isRead) await markNotificationAsRead(item['id'], index);
+                  final type = item['type'];
+                  final serviceId = item['serviceId'];
+          
+                  if (type == 'Order Message' || type == 'Order Status Changed') {
+                    Navigator.pushNamed(context, '/order-details', arguments: serviceId);
+                  } else if (type == 'Support Message') {
+                    Navigator.pushNamed(context, '/support-chat');
+                  }
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      "إنجاز",
+                      style: const TextStyle(
+                        color: Color(0xFF409EDC),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    margin: const EdgeInsets.only(bottom: 4),
-                    decoration: BoxDecoration(
-                      color: isRead ? const Color(0xFFF2F2F2) : const Color(0xFFDCEFFF),
-                      borderRadius: BorderRadius.circular(12),
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.only(bottom: 4),
+                      decoration: BoxDecoration(
+                        color: isRead ? const Color(0xFFF2F2F2) : const Color(0xFFDCEFFF),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        item['body'] ?? '',
+                        style: const TextStyle(fontSize: 14),
+                      ),
                     ),
-                    child: Text(
-                      item['body'] ?? '',
-                      style: const TextStyle(fontSize: 14),
+                    Text(
+                      formatTime(item['createdAt']),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
                     ),
-                  ),
-                  Text(
-                    formatTime(item['createdAt']),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                ],
-              ),
-            );
-          },
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

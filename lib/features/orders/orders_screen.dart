@@ -146,203 +146,206 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 )
               ],
             ),
-            body: Column(
-              children: [
-                Container(
-                  width: 360,
-                  height: 56,
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF2F2F2),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      GestureDetector(
-                        onTap: () => setState(() {
-                          isTranslationSelected = true;
-                          _ordersFuture = _fetchOrders('جديد');
-                        }),
-                        child: _buildTabButton(
-                            Translations.getText(
-                              'tranorder',
-                              context
-                                  .read<LocalizationProvider>()
-                                  .locale
-                                  .languageCode,
-                            ),
-                            isTranslationSelected),
-                      ),
-                      GestureDetector(
-                        onTap: () => setState(() {
-                          isTranslationSelected = false;
-                          _ordersFuture = _fetchOrders('جديد');
-                        }),
-                        child: _buildTabButton(
-                            Translations.getText(
-                              'tranorder2',
-                              context
-                                  .read<LocalizationProvider>()
-                                  .locale
-                                  .languageCode,
-                            ),
-                            !isTranslationSelected),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 10),
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xffF2F2F2),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: TabBar(
-                    onTap: (index) {
-                      setState(() {
-                        _selectedTabIndex = index;
-                        _ordersFuture = _fetchOrders(_getTabStatus(index));
-                      });
-                    },
-                    labelColor: Color(0xff409EDC),
-                    unselectedLabelColor: Color(0xffB3B3B3),
-                    indicatorColor: Colors.transparent,
-                    tabs: [
-                      Tab(
-                        text: Translations.getText(
-                          'new',
-                          context
-                              .read<LocalizationProvider>()
-                              .locale
-                              .languageCode,
+            body: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  Container(
+                    width: 360,
+                    height: 56,
+                    margin:
+                        const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF2F2F2),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        GestureDetector(
+                          onTap: () => setState(() {
+                            isTranslationSelected = true;
+                            _ordersFuture = _fetchOrders('جديد');
+                          }),
+                          child: _buildTabButton(
+                              Translations.getText(
+                                'tranorder',
+                                context
+                                    .read<LocalizationProvider>()
+                                    .locale
+                                    .languageCode,
+                              ),
+                              isTranslationSelected),
                         ),
-                      ),
-                      Tab(
-                        text: Translations.getText(
-                          'current',
-                          context
-                              .read<LocalizationProvider>()
-                              .locale
-                              .languageCode,
+                        GestureDetector(
+                          onTap: () => setState(() {
+                            isTranslationSelected = false;
+                            _ordersFuture = _fetchOrders('جديد');
+                          }),
+                          child: _buildTabButton(
+                              Translations.getText(
+                                'tranorder2',
+                                context
+                                    .read<LocalizationProvider>()
+                                    .locale
+                                    .languageCode,
+                              ),
+                              !isTranslationSelected),
                         ),
-                      ),
-                      Tab(
-                        text: Translations.getText(
-                          'finish',
-                          context
-                              .read<LocalizationProvider>()
-                              .locale
-                              .languageCode,
-                        ),
-                      ),
-                      Tab(
-                        text: Translations.getText(
-                          'expire',
-                          context
-                              .read<LocalizationProvider>()
-                              .locale
-                              .languageCode,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: FutureBuilder<List<dynamic>>(
-                    future: _ordersFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator(
-                          color: Colors.blue),
-                        );
-                      } else if (snapshot.hasError) {
-                        return Center(
-                            child: Text('${Translations.getText("error", locale)}: ${snapshot.error}'));
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Center(child: Text(Translations.getText('noorders', locale)));
-                      }
-                      final orders = snapshot.data!;
-                      return ListView.builder(
-                        itemCount: orders.length,
-                        itemBuilder: (context, index) {
-                          final order = orders[index];
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      order['createdAt'] ?? '',
-                                    ),
-                                    Text(
-                                      '#' + order['number'].toString() ?? '',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      order['delivery'] ?? '',
-                                    ),
-                                    Text('${Translations.getText("language", locale)} ${order['language'] ?? ''}'),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      order['filescount'].toString() ?? '',
-                                    ),
-                                    Text('${Translations.getText("attachmentscount", locale)}:')
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                OrderDetailsPage(
-                                              orderNumber:
-                                                  order['number'].toString(),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: Image.asset(
-                                          "assets/images/img17.png"),
-                                    ),
-                                    Align(
-                                        alignment: Alignment.topRight,
-                                        child: Text(
-                                          order['status'] ?? '',
-                                        )),
-                                  ],
-                                ),
-                              ],
-                            ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xffF2F2F2),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: TabBar(
+                      onTap: (index) {
+                        setState(() {
+                          _selectedTabIndex = index;
+                          _ordersFuture = _fetchOrders(_getTabStatus(index));
+                        });
+                      },
+                      labelColor: Color(0xff409EDC),
+                      unselectedLabelColor: Color(0xffB3B3B3),
+                      indicatorColor: Colors.transparent,
+                      tabs: [
+                        Tab(
+                          text: Translations.getText(
+                            'new',
+                            context
+                                .read<LocalizationProvider>()
+                                .locale
+                                .languageCode,
+                          ),
+                        ),
+                        Tab(
+                          text: Translations.getText(
+                            'current',
+                            context
+                                .read<LocalizationProvider>()
+                                .locale
+                                .languageCode,
+                          ),
+                        ),
+                        Tab(
+                          text: Translations.getText(
+                            'finish',
+                            context
+                                .read<LocalizationProvider>()
+                                .locale
+                                .languageCode,
+                          ),
+                        ),
+                        Tab(
+                          text: Translations.getText(
+                            'expire',
+                            context
+                                .read<LocalizationProvider>()
+                                .locale
+                                .languageCode,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: FutureBuilder<List<dynamic>>(
+                      future: _ordersFuture,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator(
+                            color: Colors.blue),
                           );
-                        },
-                      );
-                    },
+                        } else if (snapshot.hasError) {
+                          return Center(
+                              child: Text('${Translations.getText("error", locale)}: ${snapshot.error}'));
+                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return Center(child: Text(Translations.getText('noorders', locale)));
+                        }
+                        final orders = snapshot.data!;
+                        return ListView.builder(
+                          itemCount: orders.length,
+                          itemBuilder: (context, index) {
+                            final order = orders[index];
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        order['createdAt'] ?? '',
+                                      ),
+                                      Text(
+                                        '#' + order['number'].toString() ?? '',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        order['delivery'] ?? '',
+                                      ),
+                                      Text('${Translations.getText("language", locale)} ${order['language'] ?? ''}'),
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        order['filescount'].toString() ?? '',
+                                      ),
+                                      Text('${Translations.getText("attachmentscount", locale)}:')
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  OrderDetailsPage(
+                                                orderNumber:
+                                                    order['number'].toString(),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Image.asset(
+                                            "assets/images/img17.png"),
+                                      ),
+                                      Align(
+                                          alignment: Alignment.topRight,
+                                          child: Text(
+                                            order['status'] ?? '',
+                                          )),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

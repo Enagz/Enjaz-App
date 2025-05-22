@@ -38,61 +38,63 @@ class _LanguageScreenState extends State<LanguageScreen> {
         appBar: AppBar(
           title: Center(child: Text(Translations.getText('language', langCode))),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildLanguageOption(
-                      context,
-                      'English',
-                      'assets/images/img46.png',
-                      selectedLang == 'en',
-                          () => changeLanguage('en'),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _buildLanguageOption(
-                      context,
-                      'العربية',
-                      'assets/images/img47.png',
-                      selectedLang == 'ar',
-                          () => changeLanguage('ar'),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: () {
-                    context.read<LocalizationProvider>().setLocale(Locale(selectedLang));
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      Navigator.pushReplacement(
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildLanguageOption(
                         context,
-                        MaterialPageRoute(builder: (context) => HomePage()),
-                      );
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xff28C1ED),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                        'English',
+                        'assets/images/img46.png',
+                        selectedLang == 'en',
+                            () => changeLanguage('en'),
+                      ),
                     ),
-                    elevation: 0,
-                  ),
-                  child: Text(
-                    Translations.getText('confirm', langCode),
-                    style: const TextStyle(fontSize: 18, color: Colors.white),
-                  ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _buildLanguageOption(
+                        context,
+                        'العربية',
+                        'assets/images/img47.png',
+                        selectedLang == 'ar',
+                            () => changeLanguage('ar'),
+                      ),
+                    ),
+                  ],
                 ),
-              )
-            ],
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      context.read<LocalizationProvider>().setLocale(Locale(selectedLang));
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => HomePage()),
+                        );
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xff28C1ED),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      Translations.getText('confirm', langCode),
+                      style: const TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),

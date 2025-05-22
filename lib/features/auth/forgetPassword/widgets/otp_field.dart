@@ -64,10 +64,9 @@ class _OtpFieldsState extends State<OtpFields> {
                 style: const TextStyle(fontSize: 24),
                 cursorColor: Color.fromRGBO(64, 157, 220, 1),
                 onChanged: (value) {
-                  otpProvider.otpValues[index] = value;
+                  context.read<OtpViewModel>().otpValues[index] = value;
                   if (value.isNotEmpty && index < 3) {
-                    FocusScope.of(context)
-                        .requestFocus(focusNodes[index + 1]);
+                    FocusScope.of(context).requestFocus(focusNodes[index + 1]);
                   }
                 },
                 decoration: const InputDecoration(

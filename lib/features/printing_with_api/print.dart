@@ -444,505 +444,507 @@ class _PrinterRequestPageState extends State<PrinterRequestPageWithApi> {
             elevation: 0,
             iconTheme: const IconThemeData(color: Colors.black),
           ),
-          body: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Image.asset('assets/images/img56.png', height: 100),
-                  ),
-                  const SizedBox(height: 16),
-                  Center(
-                    child: Text(
+          body: SafeArea(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Image.asset('assets/images/img56.png', height: 100),
+                    ),
+                    const SizedBox(height: 16),
+                    Center(
+                      child: Text(
+                          Translations.getText(
+                            'nn',
+                            context
+                                .read<LocalizationProvider>()
+                                .locale
+                                .languageCode,
+                          ),
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
+                    ),
+                    const SizedBox(height: 4),
+                    Center(
+                      child: Text(
                         Translations.getText(
-                          'nn',
+                          'please',
                           context
                               .read<LocalizationProvider>()
                               .locale
                               .languageCode,
                         ),
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
-                  ),
-                  const SizedBox(height: 4),
-                  Center(
-                    child: Text(
-                      Translations.getText(
-                        'please',
-                        context
-                            .read<LocalizationProvider>()
-                            .locale
-                            .languageCode,
+                        style: TextStyle(fontSize: 14, color: Color(0xffB3B3B3)),
                       ),
-                      style: TextStyle(fontSize: 14, color: Color(0xffB3B3B3)),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                      Translations.getText(
-                        'att',
-                        context
-                            .read<LocalizationProvider>()
-                            .locale
-                            .languageCode,
-                      ),
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  UploadButton(
-                    onPressed: () {
-                      pickFile();
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  _buildSelectedFilesList(),
-                  const SizedBox(height: 4),
-                  _buildDropdown(
-                    Translations.getText(
-                        'cho',
-                        context
-                            .read<LocalizationProvider>()
-                            .locale
-                            .languageCode),
-                    colorOptions.map((e) => e['color'].toString()).toList(),
-                    selectedLanguage,
-                    (value) => setState(() => selectedLanguage = value),
-                  ),
-                  const SizedBox(height: 16),
-                  _buildDropdown(
-                    Translations.getText(
-                        'cho2',
-                        context
-                            .read<LocalizationProvider>()
-                            .locale
-                            .languageCode),
-                    coverOptions.map((e) => e['name'].toString()).toList(),
-                    selectedLanguage2,
-                    (value) => setState(() => selectedLanguage2 = value),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                      Translations.getText(
-                        'num3',
-                        context
-                            .read<LocalizationProvider>()
-                            .locale
-                            .languageCode,
-                      ),
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  TextField(
-                    controller: _copiesController,
-                    keyboardType: TextInputType.number,
-                    onChanged: (value) => setState(() {}),
-                    decoration: InputDecoration(
-                      hintText: Translations.getText(
-                        'num4',
-                        context
-                            .read<LocalizationProvider>()
-                            .locale
-                            .languageCode,
-                      ),
-                      filled: true,
-                      fillColor: const Color(0xffF2F2F2),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 16),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: ElevatedButton(
+                    const SizedBox(height: 8),
+                    Text(
+                        Translations.getText(
+                          'att',
+                          context
+                              .read<LocalizationProvider>()
+                              .locale
+                              .languageCode,
+                        ),
+                        style:
+                            TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    UploadButton(
                       onPressed: () {
-                        if (selectedFiles.isNotEmpty &&
-                            selectedLanguage != null &&
-                            selectedLanguage2 != null &&
-                            _copiesController.text.isNotEmpty) {
-                          finalizedFiles.add({
-                            "file": selectedFiles.first,
-                            "color": selectedLanguage,
-                            "cover": selectedLanguage2,
-                            "copies": int.tryParse(_copiesController.text) ?? 1,
-                          });
-
-                          setState(() {
-                            selectedFiles.clear();
-                            selectedLanguage = null;
-                            selectedLanguage2 = null;
-                            _copiesController.clear();
-                          });
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                                content: Text(
-                              Translations.getText(
-                                'file_added_success',
-                                context
-                                    .read<LocalizationProvider>()
-                                    .locale
-                                    .languageCode,
-                              ),
-                            )),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                                content: Text(
-                              Translations.getText(
-                                'fill_file_data_first',
-                                context
-                                    .read<LocalizationProvider>()
-                                    .locale
-                                    .languageCode,
-                              ),
-                            )),
-                          );
-                        }
+                        pickFile();
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xff409EDC),
-                        shape: const CircleBorder(),
-                        padding: const EdgeInsets.all(5),
-                        elevation: 4,
-                      ),
-                      child: Container(
-                        width: 30,
-                        height: 30,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2),
-                        ),
-                        child: const Icon(Icons.add,
-                            size: 18, color: Colors.white),
-                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
+                    const SizedBox(height: 8),
+                    _buildSelectedFilesList(),
+                    const SizedBox(height: 4),
+                    _buildDropdown(
+                      Translations.getText(
+                          'cho',
+                          context
+                              .read<LocalizationProvider>()
+                              .locale
+                              .languageCode),
+                      colorOptions.map((e) => e['color'].toString()).toList(),
+                      selectedLanguage,
+                      (value) => setState(() => selectedLanguage = value),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildDropdown(
+                      Translations.getText(
+                          'cho2',
+                          context
+                              .read<LocalizationProvider>()
+                              .locale
+                              .languageCode),
+                      coverOptions.map((e) => e['name'].toString()).toList(),
+                      selectedLanguage2,
+                      (value) => setState(() => selectedLanguage2 = value),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
                         Translations.getText(
-                          'addressway',
+                          'num3',
                           context
                               .read<LocalizationProvider>()
                               .locale
                               .languageCode,
                         ),
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style:
+                            TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    TextField(
+                      controller: _copiesController,
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) => setState(() {}),
+                      decoration: InputDecoration(
+                        hintText: Translations.getText(
+                          'num4',
+                          context
+                              .read<LocalizationProvider>()
+                              .locale
+                              .languageCode,
+                        ),
+                        filled: true,
+                        fillColor: const Color(0xffF2F2F2),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
                       ),
-                      SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: RadioListTile<String>(
-                              title: Text(
+                    ),
+                    const SizedBox(height: 16),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (selectedFiles.isNotEmpty &&
+                              selectedLanguage != null &&
+                              selectedLanguage2 != null &&
+                              _copiesController.text.isNotEmpty) {
+                            finalizedFiles.add({
+                              "file": selectedFiles.first,
+                              "color": selectedLanguage,
+                              "cover": selectedLanguage2,
+                              "copies": int.tryParse(_copiesController.text) ?? 1,
+                            });
+
+                            setState(() {
+                              selectedFiles.clear();
+                              selectedLanguage = null;
+                              selectedLanguage2 = null;
+                              _copiesController.clear();
+                            });
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text(
                                 Translations.getText(
-                                  'office',
+                                  'file_added_success',
                                   context
                                       .read<LocalizationProvider>()
                                       .locale
                                       .languageCode,
                                 ),
+                              )),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text(
+                                Translations.getText(
+                                  'fill_file_data_first',
+                                  context
+                                      .read<LocalizationProvider>()
+                                      .locale
+                                      .languageCode,
+                                ),
+                              )),
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xff409EDC),
+                          shape: const CircleBorder(),
+                          padding: const EdgeInsets.all(5),
+                          elevation: 4,
+                        ),
+                        child: Container(
+                          width: 30,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 2),
+                          ),
+                          child: const Icon(Icons.add,
+                              size: 18, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          Translations.getText(
+                            'addressway',
+                            context
+                                .read<LocalizationProvider>()
+                                .locale
+                                .languageCode,
+                          ),
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: RadioListTile<String>(
+                                title: Text(
+                                  Translations.getText(
+                                    'office',
+                                    context
+                                        .read<LocalizationProvider>()
+                                        .locale
+                                        .languageCode,
+                                  ),
+                                ),
+                                value: 'Office',
+                                activeColor: Colors.blue,
+                                groupValue: deliveryMethod,
+                                onChanged: (value) =>
+                                    setState(() => deliveryMethod = value),
+                                contentPadding: EdgeInsets.zero,
                               ),
-                              value: 'Office',
-                              activeColor: Colors.blue,
-                              groupValue: deliveryMethod,
-                              onChanged: (value) =>
-                                  setState(() => deliveryMethod = value),
-                              contentPadding: EdgeInsets.zero,
+                            ),
+                            Expanded(
+                              child: RadioListTile<String>(
+                                title: Text(Translations.getText(
+                                  'home_value',
+                                  context
+                                      .read<LocalizationProvider>()
+                                      .locale
+                                      .languageCode,
+                                )),
+                                value: 'Home',
+                                groupValue: deliveryMethod,
+                                activeColor: Colors.blue,
+                                onChanged: (value) =>
+                                    setState(() => deliveryMethod = value),
+                                contentPadding: EdgeInsets.zero,
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (_submitted && deliveryMethod == null)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text(
+                              Translations.getText('choose_delivery', locale),
+                              style: TextStyle(color: Colors.red, fontSize: 12),
                             ),
                           ),
-                          Expanded(
-                            child: RadioListTile<String>(
-                              title: Text(Translations.getText(
-                                'home_value',
-                                context
-                                    .read<LocalizationProvider>()
-                                    .locale
-                                    .languageCode,
-                              )),
-                              value: 'Home',
-                              groupValue: deliveryMethod,
-                              activeColor: Colors.blue,
-                              onChanged: (value) =>
-                                  setState(() => deliveryMethod = value),
-                              contentPadding: EdgeInsets.zero,
+                      ],
+                    ),
+                    if (deliveryMethod == 'Home') ...[
+                      Column(
+                        children: [
+                          TextFormField(
+                            decoration: InputDecoration(
+                              labelText: Translations.getText('address', locale),
+                              labelStyle: TextStyle(color: Colors.blue),
+                              prefixIcon: Icon(Icons.home_outlined),
+                              filled: true,
+                              fillColor: Colors.grey.shade200,
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 14),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: Colors.transparent),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide:
+                                    BorderSide(color: Colors.blue, width: 2),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: Colors.red),
+                              ),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide:
+                                    BorderSide(color: Colors.red, width: 2),
+                              ),
+                            ),
+                            onChanged: (value) => address = value,
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          FutureBuilder(
+                            future: fetchAddresses(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                    child: CircularProgressIndicator(
+                                  color: Colors.blue,
+                                ));
+                              } else if (snapshot.hasError) {
+                                /*return Text(Translations.getText(
+                                      'fetch_error', locale));
+                                   */
+                                return Text('');
+                              } else {
+                                final addresses = snapshot.data!;
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      Translations.getText(
+                                          'choose_address', locale),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount: addresses.length,
+                                      itemBuilder: (context, index) {
+                                        final address = addresses[index];
+                                        return GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              selectedAddressId = address.id;
+                                              selectedAddressName = address.name;
+                                            });
+                                          },
+                                          child: Container(
+                                            margin: const EdgeInsets.only(bottom: 12),
+                                            padding: const EdgeInsets.all(12),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius: BorderRadius.circular(12),
+                                              border: Border.all(
+                                                color: selectedAddressId == address.id
+                                                    ? Color(0xff409EDC)
+                                                    : Colors.transparent,
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                /// ✅ العنوان الكامل
+                                                Expanded(
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        '${address.name}',
+                                                        style: const TextStyle(
+                                                          fontWeight: FontWeight.bold,
+                                                          color: Color(0xff409EDC),
+                                                          fontSize: 14,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 4),
+                                                      Text(
+                                                        '${Translations.getText('address', locale)}: ${address.address}',
+                                                        style: const TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 13,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+
+                                                /// ✅ زر التحديد
+                                                Radio<String>(
+                                                  value: address.id,
+                                                  groupValue: selectedAddressId,
+                                                  onChanged: (value) {
+                                                    setState(() {
+                                                      selectedAddressId = value!;
+                                                      selectedAddressName = address.name;
+                                                    });
+                                                  },
+                                                  activeColor: Color(0xff409EDC),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                );
+                              }
+                            },
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Align(
+                            alignment:
+                                Directionality.of(context) == TextDirection.rtl
+                                    ? Alignment.centerLeft
+                                    : Alignment.centerRight,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => SavedAddress()));
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xff409EDC),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(5),
+                                elevation: 4,
+                              ),
+                              child: Container(
+                                width: 30,
+                                height: 30,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border:
+                                      Border.all(color: Colors.white, width: 2),
+                                ),
+                                child: const Icon(Icons.add,
+                                    size: 18, color: Colors.white),
+                              ),
                             ),
                           ),
                         ],
                       ),
-                      if (_submitted && deliveryMethod == null)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Text(
-                            Translations.getText('choose_delivery', locale),
-                            style: TextStyle(color: Colors.red, fontSize: 12),
-                          ),
-                        ),
+                      const SizedBox(height: 15),
                     ],
-                  ),
-                  if (deliveryMethod == 'Home') ...[
-                    Column(
-                      children: [
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: Translations.getText('address', locale),
-                            labelStyle: TextStyle(color: Colors.blue),
-                            prefixIcon: Icon(Icons.home_outlined),
-                            filled: true,
-                            fillColor: Colors.grey.shade200,
-                            contentPadding: EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 14),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.transparent),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide:
-                                  BorderSide(color: Colors.blue, width: 2),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.red),
-                            ),
-                            focusedErrorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide:
-                                  BorderSide(color: Colors.red, width: 2),
-                            ),
+                    SizedBox(height: 10),
+                    Theme(
+                      data: Theme.of(context).copyWith(
+                        textSelectionTheme: const TextSelectionThemeData(
+                          cursorColor:
+                              Color.fromRGBO(64, 157, 220, 1), // لون المؤشر
+                          selectionColor:
+                              Color.fromRGBO(64, 157, 220, 1), // لون التحديد
+                          selectionHandleColor: Color.fromRGBO(64, 157, 220, 1),
+                        ),
+                      ),
+                      child: TextFormField(
+                        maxLines: 3,
+                        onChanged: (value) => notes = value,
+                        decoration: InputDecoration(
+                          labelText: Translations.getText(
+                            'notess',
+                            context
+                                .read<LocalizationProvider>()
+                                .locale
+                                .languageCode,
                           ),
-                          onChanged: (value) => address = value,
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        FutureBuilder(
-                          future: fetchAddresses(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return Center(
-                                  child: CircularProgressIndicator(
-                                color: Colors.blue,
-                              ));
-                            } else if (snapshot.hasError) {
-                              /*return Text(Translations.getText(
-                                    'fetch_error', locale));
-                                 */
-                              return Text('');
-                            } else {
-                              final addresses = snapshot.data!;
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    Translations.getText(
-                                        'choose_address', locale),
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  ListView.builder(
-                                    shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    itemCount: addresses.length,
-                                    itemBuilder: (context, index) {
-                                      final address = addresses[index];
-                                      return GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            selectedAddressId = address.id;
-                                            selectedAddressName = address.name;
-                                          });
-                                        },
-                                        child: Container(
-                                          margin: const EdgeInsets.only(bottom: 12),
-                                          padding: const EdgeInsets.all(12),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(12),
-                                            border: Border.all(
-                                              color: selectedAddressId == address.id
-                                                  ? Color(0xff409EDC)
-                                                  : Colors.transparent,
-                                              width: 1.5,
-                                            ),
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              /// ✅ العنوان الكامل
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      '${address.name}',
-                                                      style: const TextStyle(
-                                                        fontWeight: FontWeight.bold,
-                                                        color: Color(0xff409EDC),
-                                                        fontSize: 14,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 4),
-                                                    Text(
-                                                      '${Translations.getText('address', locale)}: ${address.address}',
-                                                      style: const TextStyle(
-                                                        color: Colors.black,
-                                                        fontSize: 13,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-
-                                              /// ✅ زر التحديد
-                                              Radio<String>(
-                                                value: address.id,
-                                                groupValue: selectedAddressId,
-                                                onChanged: (value) {
-                                                  setState(() {
-                                                    selectedAddressId = value!;
-                                                    selectedAddressName = address.name;
-                                                  });
-                                                },
-                                                activeColor: Color(0xff409EDC),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ],
-                              );
-                            }
-                          },
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Align(
-                          alignment:
-                              Directionality.of(context) == TextDirection.rtl
-                                  ? Alignment.centerLeft
-                                  : Alignment.centerRight,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => SavedAddress()));
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xff409EDC),
-                              shape: const CircleBorder(),
-                              padding: const EdgeInsets.all(5),
-                              elevation: 4,
-                            ),
-                            child: Container(
-                              width: 30,
-                              height: 30,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border:
-                                    Border.all(color: Colors.white, width: 2),
-                              ),
-                              child: const Icon(Icons.add,
-                                  size: 18, color: Colors.white),
-                            ),
+                          labelStyle: TextStyle(color: Colors.blue),
+                          filled: true,
+                          fillColor: Colors.grey.shade200,
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.blue, width: 2),
                           ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 15),
-                  ],
-                  SizedBox(height: 10),
-                  Theme(
-                    data: Theme.of(context).copyWith(
-                      textSelectionTheme: const TextSelectionThemeData(
-                        cursorColor:
-                            Color.fromRGBO(64, 157, 220, 1), // لون المؤشر
-                        selectionColor:
-                            Color.fromRGBO(64, 157, 220, 1), // لون التحديد
-                        selectionHandleColor: Color.fromRGBO(64, 157, 220, 1),
                       ),
                     ),
-                    child: TextFormField(
-                      maxLines: 3,
-                      onChanged: (value) => notes = value,
-                      decoration: InputDecoration(
-                        labelText: Translations.getText(
-                          'notess',
+                    SizedBox(height: 20),
+                    /*Text(
+                        Translations.getText(
+                          'no',
                           context
                               .read<LocalizationProvider>()
                               .locale
                               .languageCode,
                         ),
-                        labelStyle: TextStyle(color: Colors.blue),
-                        filled: true,
-                        fillColor: Colors.grey.shade200,
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.blue, width: 2),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  /*Text(
-                      Translations.getText(
-                        'no',
-                        context
-                            .read<LocalizationProvider>()
-                            .locale
-                            .languageCode,
-                      ),
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  _buildTextField(Translations.getText(
-                    'en',
-                    context.read<LocalizationProvider>().locale.languageCode,
-                  )),
-                  const SizedBox(height: 16),
-                  // Card(
-                  //   color: Colors.white,
-                  //   child: Padding(
-                  //     padding: const EdgeInsets.all(12.0),
-                  //     child: Column(
-                  //       children: [
-                  //         const Text('قيمه الطلب',
-                  //             style: TextStyle(
-                  //                 fontSize: 16, fontWeight: FontWeight.bold)),
-                  //         const Divider(),
-                  //         _buildPriceRow('قيمه الخدمات', '70'),
-                  //         const Divider(),
-                  //         _buildPriceRow('الضريبه', '15'),
-                  //         const Divider(),
-                  //         _buildPriceRow('الاجمالي', '85', isTotal: true),
-                  //       ],
-                  //     ),
-                  //   ),
-                  // ),
-                   */
-                  _buildSummaryCard(),
-                  const SizedBox(height: 16),
-                  _buildSubmitButton(),
-                ],
+                        style:
+                            TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    _buildTextField(Translations.getText(
+                      'en',
+                      context.read<LocalizationProvider>().locale.languageCode,
+                    )),
+                    const SizedBox(height: 16),
+                    // Card(
+                    //   color: Colors.white,
+                    //   child: Padding(
+                    //     padding: const EdgeInsets.all(12.0),
+                    //     child: Column(
+                    //       children: [
+                    //         const Text('قيمه الطلب',
+                    //             style: TextStyle(
+                    //                 fontSize: 16, fontWeight: FontWeight.bold)),
+                    //         const Divider(),
+                    //         _buildPriceRow('قيمه الخدمات', '70'),
+                    //         const Divider(),
+                    //         _buildPriceRow('الضريبه', '15'),
+                    //         const Divider(),
+                    //         _buildPriceRow('الاجمالي', '85', isTotal: true),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
+                     */
+                    _buildSummaryCard(),
+                    const SizedBox(height: 16),
+                    _buildSubmitButton(),
+                  ],
+                ),
               ),
             ),
           ),

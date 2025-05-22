@@ -22,156 +22,158 @@ class EnterNewEmail extends StatelessWidget {
         textDirection: textDirection,
         child: Scaffold(
           backgroundColor: Colors.white,
-          body: LayoutBuilder(
-            builder: (context, constraints) {
-              double screenWidth = constraints.maxWidth;
-              double padding = screenWidth > 600 ? 48 : 24;
-              double imageWidth = screenWidth > 600 ? 250 : 204;
-              double buttonHeight = screenWidth > 600 ? 60 : 50;
-
-              return Stack(
-                children: [
-                  SingleChildScrollView(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: padding),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(height: screenWidth > 600 ? 70 : 50),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                Translations.getText('change2', langCode),
-                                textDirection: context.read<LocalizationProvider>().locale.languageCode == 'ar'
-                                    ? TextDirection.rtl
-                                    : TextDirection.ltr,
-                                style: const TextStyle(
-                                  color: Color(0xff1D1D1D),
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 18,
-                                  fontFamily: 'IBM_Plex_Sans_Arabic',
+          body: SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                double screenWidth = constraints.maxWidth;
+                double padding = screenWidth > 600 ? 48 : 24;
+                double imageWidth = screenWidth > 600 ? 250 : 204;
+                double buttonHeight = screenWidth > 600 ? 60 : 50;
+            
+                return Stack(
+                  children: [
+                    SingleChildScrollView(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: padding),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(height: screenWidth > 600 ? 70 : 50),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  Translations.getText('change2', langCode),
+                                  textDirection: context.read<LocalizationProvider>().locale.languageCode == 'ar'
+                                      ? TextDirection.rtl
+                                      : TextDirection.ltr,
+                                  style: const TextStyle(
+                                    color: Color(0xff1D1D1D),
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 18,
+                                    fontFamily: 'IBM_Plex_Sans_Arabic',
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: screenWidth > 600 ? 50 : 30),
-                          Image.asset(
-                            'assets/images/img1.png',
-                            width: imageWidth,
-                            height: imageWidth * 0.37,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            Translations.getText('new_email', langCode),
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'IBM_Plex_Sans_Arabic',
+                              ],
                             ),
-                          ),
-                          const CustomTextFeild2(),
-                          const SizedBox(height: 16),
-                          SizedBox(
-                            width: double.infinity,
-                            height: buttonHeight,
-                            child: ElevatedButton(
-                              onPressed: () async {
-                                final viewModel = Provider.of<LoginViewModel>(context, listen: false);
-                                final email = viewModel.userInput;
-
-                                if (email.isEmpty) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        Translations.getText('email_empty', langCode),
-                                        style: const TextStyle(fontFamily: 'IBM_Plex_Sans_Arabic'),
-                                      ),
-                                      backgroundColor: Colors.red,
-                                    ),
-                                  );
-                                  return;
-                                }
-
-                                try {
-                                  final prefs = await SharedPreferences.getInstance();
-                                  final token = prefs.getString('authToken') ?? '';
-                                  final userId = JwtDecoder.decode(token)['user_id'];
-
-                                  final response = await http.post(
-                                    Uri.parse('https://backend.enjazkw.com/api/user/$userId/chgnageemail'),
-                                    headers: {
-                                      'Content-Type': 'application/json',
-                                      'Authorization': 'Bearer $token',
-                                    },
-                                    body: jsonEncode({"email": email}),
-                                  );
-
-                                  final data = jsonDecode(response.body);
-
-                                  if (response.statusCode == 200) {
+                            SizedBox(height: screenWidth > 600 ? 50 : 30),
+                            Image.asset(
+                              'assets/images/img1.png',
+                              width: imageWidth,
+                              height: imageWidth * 0.37,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              Translations.getText('new_email', langCode),
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'IBM_Plex_Sans_Arabic',
+                              ),
+                            ),
+                            const CustomTextFeild2(),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              width: double.infinity,
+                              height: buttonHeight,
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  final viewModel = Provider.of<LoginViewModel>(context, listen: false);
+                                  final email = viewModel.userInput;
+            
+                                  if (email.isEmpty) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(
-                                          data['message'] ?? Translations.getText('email_changed_success', langCode),
+                                          Translations.getText('email_empty', langCode),
                                           style: const TextStyle(fontFamily: 'IBM_Plex_Sans_Arabic'),
                                         ),
-                                        backgroundColor: Colors.green,
+                                        backgroundColor: Colors.red,
                                       ),
                                     );
-                                    Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => const LoginScreen()),
-                                          (route) => false,
+                                    return;
+                                  }
+            
+                                  try {
+                                    final prefs = await SharedPreferences.getInstance();
+                                    final token = prefs.getString('authToken') ?? '';
+                                    final userId = JwtDecoder.decode(token)['user_id'];
+            
+                                    final response = await http.post(
+                                      Uri.parse('https://backend.enjazkw.com/api/user/$userId/chgnageemail'),
+                                      headers: {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': 'Bearer $token',
+                                      },
+                                      body: jsonEncode({"email": email}),
                                     );
-                                  } else {
+            
+                                    final data = jsonDecode(response.body);
+            
+                                    if (response.statusCode == 200) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            data['message'] ?? Translations.getText('email_changed_success', langCode),
+                                            style: const TextStyle(fontFamily: 'IBM_Plex_Sans_Arabic'),
+                                          ),
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      );
+                                      Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => const LoginScreen()),
+                                            (route) => false,
+                                      );
+                                    } else {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            data['message'] ?? Translations.getText('unexpected_error', langCode),
+                                            style: const TextStyle(fontFamily: 'IBM_Plex_Sans_Arabic'),
+                                          ),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                    }
+                                  } catch (e) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(
-                                          data['message'] ?? Translations.getText('unexpected_error', langCode),
+                                          '${Translations.getText('server_error', langCode)}: $e',
                                           style: const TextStyle(fontFamily: 'IBM_Plex_Sans_Arabic'),
                                         ),
                                         backgroundColor: Colors.red,
                                       ),
                                     );
                                   }
-                                } catch (e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        '${Translations.getText('server_error', langCode)}: $e',
-                                        style: const TextStyle(fontFamily: 'IBM_Plex_Sans_Arabic'),
-                                      ),
-                                      backgroundColor: Colors.red,
-                                    ),
-                                  );
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                 ),
-                              ),
-                              child: Text(
-                                Translations.getText('sure', langCode),
-                                style: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: 'IBM_Plex_Sans_Arabic',
-                                  color: Colors.white,
+                                child: Text(
+                                  Translations.getText('sure', langCode),
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: 'IBM_Plex_Sans_Arabic',
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              );
-            },
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),

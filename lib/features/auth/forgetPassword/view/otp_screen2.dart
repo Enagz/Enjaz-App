@@ -341,6 +341,9 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../localization/change_lang.dart';
 import '../widgets/otp_field.dart';
+import 'package:engaz_app/features/auth/forgetPassword/viewmodel/otp_viewmodel.dart';
+import 'package:provider/provider.dart';
+
 
 class OtpScreen2 extends StatefulWidget {
   final String contactInfo;
@@ -353,7 +356,6 @@ class OtpScreen2 extends StatefulWidget {
 }
 
 class _OtpScreen2State extends State<OtpScreen2> {
-  List<String> otpValues = List.filled(6, "");
   int seconds = 0;
   int minutes = 1;
   Timer? _timer;
@@ -368,7 +370,22 @@ class _OtpScreen2State extends State<OtpScreen2> {
   Future<void> verifyOtp() async {
     setState(() => isLoading = true);
 
-    final otpCode = otpValues.join();
+    //final otpCode = Provider.of<OtpViewModel>(context, listen: false).otpValues.join();
+
+
+    final otpRawList = context.read<OtpViewModel>().otpValues;
+    final otpCode = otpRawList.map((e) => e.toString()).join();
+
+    print("DEBUG - OTP CODE: $otpCode");
+
+    final isValid = otpRawList.every((element) => element.trim().isNotEmpty);
+
+    if (!isValid || otpCode.length != 4) {
+      showError("يرجى إدخال رمز مكون من 4 أرقام");
+      setState(() => isLoading = false);
+      return;
+    }
+
     final url = Uri.parse('https://backend.enjazkw.com/api/verify/${widget.userId}');
 
     try {
@@ -379,6 +396,7 @@ class _OtpScreen2State extends State<OtpScreen2> {
       );
 
       final res = jsonDecode(response.body);
+
 
       if (response.statusCode == 200) {
         setState(() {
@@ -483,161 +501,163 @@ class _OtpScreen2State extends State<OtpScreen2> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          double screenWidth = constraints.maxWidth;
-          double padding = screenWidth > 600 ? 48 : 24;
-          double imageWidth = screenWidth > 600 ? 250 : 204;
-          double buttonHeight = screenWidth > 600 ? 60 : 50;
-          return Stack(
-            children: [
-              SingleChildScrollView(
-                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: padding),
-                  child: Column(
-                    crossAxisAlignment:
-                    isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: screenWidth > 600 ? 150 : 130),
-                      Center(
-                        child: Image.asset(
-                          'assets/images/img1.png',
-                          width: imageWidth,
-                          height: imageWidth * 0.37,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        Translations.getText('activation_title', langCode),
-                        textAlign: textAlign,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'IBM_Plex_Sans_Arabic',
-                        ),
-                      ),
-                      Text(
-                        Translations.getText('enter_code_prompt', langCode),
-                        textAlign: textAlign,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: Color(0xffB3B3B3),
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'IBM_Plex_Sans_Arabic',
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        widget.contactInfo,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Color(0xff409EDC),
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'IBM_Plex_Sans_Arabic',
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      OtpFields(),
-                      const SizedBox(height: 16),
-                      isLoading
-                          ? const Center(
-                        child: CircularProgressIndicator(color: Color(0xff409EDC)),
-                      )
-                          : SizedBox(
-                        width: double.infinity,
-                        height: buttonHeight,
-                        child: ElevatedButton(
-                          onPressed: verifyOtp,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xff409EDC),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: Text(
-                            Translations.getText('confirm', langCode),
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'IBM_Plex_Sans_Arabic',
-                              color: Colors.white,
-                            ),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            double screenWidth = constraints.maxWidth;
+            double padding = screenWidth > 600 ? 48 : 24;
+            double imageWidth = screenWidth > 600 ? 250 : 204;
+            double buttonHeight = screenWidth > 600 ? 60 : 50;
+            return Stack(
+              children: [
+                SingleChildScrollView(
+                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: padding),
+                    child: Column(
+                      crossAxisAlignment:
+                      isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: screenWidth > 600 ? 150 : 130),
+                        Center(
+                          child: Image.asset(
+                            'assets/images/img1.png',
+                            width: imageWidth,
+                            height: imageWidth * 0.37,
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      if (message.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            message,
-                            textAlign: textAlign,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: message.contains("تم") ? Colors.green : Colors.red,
-                            ),
+                        const SizedBox(height: 16),
+                        Text(
+                          Translations.getText('activation_title', langCode),
+                          textAlign: textAlign,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'IBM_Plex_Sans_Arabic',
                           ),
                         ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        textDirection: textDir,
-                        children: [
-                          Expanded(
-                            child: Text.rich(
-                              TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: Translations.getText('didnt', langCode),
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      color: Color(0xff000000),
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: 'IBM_Plex_Sans_Arabic',
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: Translations.getText('resend', langCode),
-                                    style: TextStyle(
-                                      color: seconds == 0 ? const Color(0xff409EDC) : Colors.grey,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14,
-                                      fontFamily: 'IBM_Plex_Sans_Arabic',
-                                      decoration: seconds == 0 ? TextDecoration.underline : null,
-                                    ),
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () {
-                                        if (seconds == 0) resendOtp();
-                                        otp1.clear();
-                                        otp2.clear();
-                                        otp3.clear();
-                                        otp4.clear();
-                                      },
-                                  ),
-                                ],
+                        Text(
+                          Translations.getText('enter_code_prompt', langCode),
+                          textAlign: textAlign,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Color(0xffB3B3B3),
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'IBM_Plex_Sans_Arabic',
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          widget.contactInfo,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Color(0xff409EDC),
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'IBM_Plex_Sans_Arabic',
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        OtpFields(),
+                        const SizedBox(height: 16),
+                        isLoading
+                            ? const Center(
+                          child: CircularProgressIndicator(color: Color(0xff409EDC)),
+                        )
+                            : SizedBox(
+                          width: double.infinity,
+                          height: buttonHeight,
+                          child: ElevatedButton(
+                            onPressed: verifyOtp,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xff409EDC),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              textDirection: textDir,
+                            ),
+                            child: Text(
+                              Translations.getText('confirm', langCode),
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'IBM_Plex_Sans_Arabic',
+                                color: Colors.white,
+                              ),
                             ),
                           ),
-                          const SizedBox(width: 10),
-                          Text(
-                            '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xff409EDC),
+                        ),
+                        const SizedBox(height: 12),
+                        if (message.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              message,
+                              textAlign: textAlign,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: message.contains("تم") ? Colors.green : Colors.red,
+                              ),
                             ),
                           ),
-                        ],
-                      ),
-                    ],
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          textDirection: textDir,
+                          children: [
+                            Expanded(
+                              child: Text.rich(
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: Translations.getText('didnt', langCode),
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        color: Color(0xff000000),
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: 'IBM_Plex_Sans_Arabic',
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: Translations.getText('resend', langCode),
+                                      style: TextStyle(
+                                        color: seconds == 0 ? const Color(0xff409EDC) : Colors.grey,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 14,
+                                        fontFamily: 'IBM_Plex_Sans_Arabic',
+                                        decoration: seconds == 0 ? TextDecoration.underline : null,
+                                      ),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () {
+                                          if (seconds == 0) resendOtp();
+                                          otp1.clear();
+                                          otp2.clear();
+                                          otp3.clear();
+                                          otp4.clear();
+                                        },
+                                    ),
+                                  ],
+                                ),
+                                textDirection: textDir,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xff409EDC),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
     );
   }

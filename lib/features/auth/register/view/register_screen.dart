@@ -6,6 +6,8 @@ import '../../../localization/change_lang.dart';
 import '../../forgetPassword/view/otp_screen2.dart';
 import '../viewmodel/register_viewmodel.dart';
 import '../../login/view/login_screen.dart';
+import 'package:engaz_app/features/auth/forgetPassword/viewmodel/otp_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
@@ -19,178 +21,183 @@ class RegisterScreen extends StatelessWidget {
       create: (_) => RegisterViewModel(),
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: LayoutBuilder(
-          builder: (context, constraints) {
-            double screenWidth = constraints.maxWidth;
-            double padding = screenWidth > 600 ? 48 : 24;
-            double imageWidth = screenWidth > 600 ? 250 : 204;
-            double buttonHeight = screenWidth > 600 ? 60 : 50;
-            return Stack(
-              children: [
-                SingleChildScrollView(
-                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: padding),
-                    child: Form(
-                      key: formKey,
-                      child: Column(
-                        crossAxisAlignment: langCode == 'ar'
-                            ? CrossAxisAlignment.end
-                            : CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: screenWidth > 600 ? 150 : 130),
-                          Center(
-                            child: Image.asset(
-                              'assets/images/img1.png',
-                              width: imageWidth,
-                              height: imageWidth * 0.37,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Center(
-                            child: Text(
-                              Translations.getText('create_account', langCode),
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: 'IBM_Plex_Sans_Arabic',
+        body: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              double screenWidth = constraints.maxWidth;
+              double padding = screenWidth > 600 ? 48 : 24;
+              double imageWidth = screenWidth > 600 ? 250 : 204;
+              double buttonHeight = screenWidth > 600 ? 60 : 50;
+              return Stack(
+                children: [
+                  SingleChildScrollView(
+                    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: padding),
+                      child: Form(
+                        key: formKey,
+                        child: Column(
+                          crossAxisAlignment: langCode == 'ar'
+                              ? CrossAxisAlignment.end
+                              : CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: screenWidth > 600 ? 150 : 130),
+                            Center(
+                              child: Image.asset(
+                                'assets/images/img1.png',
+                                width: imageWidth,
+                                height: imageWidth * 0.37,
                               ),
                             ),
-                          ),
-                          Center(
-                            child: Text(
-                              Translations.getText('fill_details', langCode),
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Color(0xffB3B3B3),
-                                fontWeight: FontWeight.w500,
-                                fontFamily: 'IBM_Plex_Sans_Arabic',
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-
-                          // First Name
-                          _buildLabel(Translations.getText('first_name', langCode), langCode),
-                          CustomTextField(
-                            hintKey: 'enter_first_name',
-                            onChanged: (val) => context.read<RegisterViewModel>().setFirstName(val),
-                          ),
-                          const SizedBox(height: 8),
-
-                          // Last Name
-                          _buildLabel(Translations.getText('last_name', langCode), langCode),
-                          CustomTextField(
-                            hintKey: 'enter_last_name',
-                            onChanged: (val) => context.read<RegisterViewModel>().setLastName(val),
-                          ),
-                          const SizedBox(height: 8),
-                          _buildLabel(Translations.getText('phone_number', langCode), langCode),
-                          CustomTextField(
-                            hintKey: 'Enter phone number',
-                            isPhoneField: true,
-                            onChanged: (val) {
-                              context.read<RegisterViewModel>().setPhone(val);
-                            },
-                            onCountryCodeChanged: (code) {
-                              context.read<RegisterViewModel>().setCountryCode(code);
-                            },
-                          ),
-                          const SizedBox(height: 8),
-                          _buildLabel(Translations.getText('email', langCode), langCode),
-                          CustomTextField(
-                            hintKey: 'Enter email',
-                            onChanged: (val) => context.read<RegisterViewModel>().setEmail(val),
-                          ),
-                          const SizedBox(height: 16),
-                          Consumer<RegisterViewModel>(
-                            builder: (context, viewModel, _) {
-                              return SizedBox(
-                                width: double.infinity,
-                                height: buttonHeight,
-                                child: ElevatedButton(
-                                  onPressed: viewModel.registerState == RegisterState.loading
-                                      ? null
-                                      : () async {
-                                    if (!formKey.currentState!.validate()) return;
-                                    if (viewModel.email.isEmpty || viewModel.phone.isEmpty) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text(Translations.getText('fill_all_fields', langCode)),
-                                          backgroundColor: Colors.red,
-                                        ),
-                                      );
-                                      return;
-                                    }
-                                    final result = await viewModel.registerUser(context);
-                                    if (result['success']) {
-                                      final userId = result['user'];
-                                      print(userId);
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => OtpScreen2(
-                                            contactInfo: viewModel.email,
-                                            userId: result['user'],
-                                          ),
-                                        ),
-                                      );
-                                    } else {
-                                      SnackBar(
-                                        content: Text(Translations.getText(result['message'], langCode)),
-                                        backgroundColor: Colors.red,
-                                      );
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color.fromRGBO(64, 157, 220, 1),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                  child: viewModel.registerState == RegisterState.loading
-                                      ? const CircularProgressIndicator(color: Colors.white)
-                                      : Text(
-                                    Translations.getText('signup', langCode),
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: 'IBM_Plex_Sans_Arabic',
-                                      color: Colors.white,
-                                    ),
-                                  ),
+                            const SizedBox(height: 16),
+                            Center(
+                              child: Text(
+                                Translations.getText('create_account', langCode),
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'IBM_Plex_Sans_Arabic',
                                 ),
-                              );
-                            },
-                          ),
-                          const SizedBox(height: 12),
-                          _buildLoginLink(context, langCode),
-                        ],
+                              ),
+                            ),
+                            Center(
+                              child: Text(
+                                Translations.getText('fill_details', langCode),
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Color(0xffB3B3B3),
+                                  fontWeight: FontWeight.w500,
+                                  fontFamily: 'IBM_Plex_Sans_Arabic',
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+
+                            _buildLabel(Translations.getText('first_name', langCode), langCode),
+                            CustomTextField(
+                              hintKey: 'enter_first_name',
+                              onChanged: (val) => context.read<RegisterViewModel>().setFirstName(val),
+                            ),
+                            const SizedBox(height: 8),
+
+                            _buildLabel(Translations.getText('last_name', langCode), langCode),
+                            CustomTextField(
+                              hintKey: 'enter_last_name',
+                              onChanged: (val) => context.read<RegisterViewModel>().setLastName(val),
+                            ),
+                            const SizedBox(height: 8),
+                            _buildLabel(Translations.getText('phone_number', langCode), langCode),
+                            CustomTextField(
+                              hintKey: 'Enter phone number',
+                              isPhoneField: true,
+                              onChanged: (val) {
+                                context.read<RegisterViewModel>().setPhone(val);
+                              },
+                              onCountryCodeChanged: (code) {
+                                context.read<RegisterViewModel>().setCountryCode(code);
+                              },
+                            ),
+                            const SizedBox(height: 8),
+                            _buildLabel(Translations.getText('email', langCode), langCode),
+                            CustomTextField(
+                              hintKey: 'Enter email',
+                              onChanged: (val) => context.read<RegisterViewModel>().setEmail(val),
+                            ),
+                            const SizedBox(height: 16),
+                            Consumer<RegisterViewModel>(
+                              builder: (context, viewModel, _) {
+                                return SizedBox(
+                                  width: double.infinity,
+                                  height: buttonHeight,
+                                  child: ElevatedButton(
+                                    onPressed: viewModel.registerState == RegisterState.loading
+                                        ? null
+                                        : () async {
+                                      if (!formKey.currentState!.validate()) return;
+                                      if (viewModel.email.isEmpty || viewModel.phone.isEmpty) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text(Translations.getText('fill_all_fields', langCode)),
+                                            backgroundColor: Colors.red,
+                                          ),
+                                        );
+                                        return;
+                                      }
+                                      final result = await viewModel.registerUser(context);
+                                      if (result['success']) {
+                                        final userId = result['user'];
+                                        print(userId);
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => ChangeNotifierProvider<OtpViewModel>(
+                                              create: (_) => OtpViewModel(),
+                                              child: OtpScreen2(
+                                                contactInfo: viewModel.email,
+                                                userId: result['user'],
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      } else {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text(Translations.getText(result['message'], langCode)),
+                                            backgroundColor: Colors.red,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color.fromRGBO(64, 157, 220, 1),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                    child: viewModel.registerState == RegisterState.loading
+                                        ? const CircularProgressIndicator(color: Colors.white)
+                                        : Text(
+                                      Translations.getText('signup', langCode),
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: 'IBM_Plex_Sans_Arabic',
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 12),
+                            _buildLoginLink(context, langCode),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Positioned(
-                  top: 60,
-                  left: 24,
-                  child: GestureDetector(
-                    onTap: () {
-                      final currentLang = context.read<LocalizationProvider>().locale.languageCode;
-                      final newLang = currentLang == 'ar' ? 'en' : 'ar';
-                      context.read<LocalizationProvider>().setLocale(Locale(newLang));
-                    },
-                    child: Image.asset(
-                      'assets/images/img2.png',
-                      width: screenWidth > 600 ? 120 : 98,
-                      height: screenWidth > 600 ? 40 : 33,
+                  Positioned(
+                    top: 50,
+                    left: 24,
+                    child: GestureDetector(
+                      onTap: () {
+                        final currentLang = context.read<LocalizationProvider>().locale.languageCode;
+                        final newLang = currentLang == 'ar' ? 'en' : 'ar';
+                        context.read<LocalizationProvider>().setLocale(Locale(newLang));
+                      },
+                      child: Image.asset(
+                        'assets/images/img2.png',
+                        width: screenWidth > 600 ? 120 : 98,
+                        height: screenWidth > 600 ? 40 : 33,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

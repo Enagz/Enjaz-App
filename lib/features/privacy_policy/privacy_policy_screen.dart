@@ -73,35 +73,37 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                 Translations.getText('pol', locale),
               ),
             ),
-            body: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Center(
-                    child: Image.asset('assets/images/img1.png', height: 80),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    width: 346,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFAFAFA),
-                      borderRadius: BorderRadius.circular(16),
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Center(
+                      child: Image.asset('assets/images/img1.png', height: 80),
                     ),
-                    child: isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : SingleChildScrollView(
-                      child: Text(
-                        privacyText,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFF1D1D1D),
-                          fontWeight: FontWeight.bold,
+                    const SizedBox(height: 16),
+                    Container(
+                      width: 346,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFAFAFA),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: isLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : SingleChildScrollView(
+                        child: Text(
+                          privacyText,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF1D1D1D),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

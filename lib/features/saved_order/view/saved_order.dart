@@ -358,44 +358,46 @@ class _SavedAddressState extends State<SavedAddress> {
               elevation: 0,
               iconTheme: const IconThemeData(color: Colors.black),
             ),
-            body: Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Center(
-                            child: Image.asset('assets/images/img52.png',
-                                height: 100)),
-                        const SizedBox(height: 20),
-                        Center(
-                          child: Text(
-                            Translations.getText('choose', locale),
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+            body: SafeArea(
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Center(
+                              child: Image.asset('assets/images/img52.png',
+                                  height: 100)),
+                          const SizedBox(height: 20),
+                          Center(
+                            child: Text(
+                              Translations.getText('choose', locale),
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 20),
-                        ...addresses.map((address) => _buildAddressCard(address, locale)).toList(),
-                        const SizedBox(height: 10),
-                      ],
+                          const SizedBox(height: 20),
+                          ...addresses.map((address) => _buildAddressCard(address, locale)).toList(),
+                          const SizedBox(height: 10),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      if (selectedAddress != null) _buildDeliveryButton(locale),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: _buildAddAddressButton(locale),
-                      ),
-                    ],
-                  ),
-                )
-              ],
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        if (selectedAddress != null) _buildDeliveryButton(locale),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: _buildAddAddressButton(locale),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         );

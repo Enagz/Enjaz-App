@@ -27,15 +27,19 @@ class OrderModel {
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
-      number: json['number']??0,
+      number: json['number'] ?? 0,
       data: json['date'] ?? '',
       time: json['time'] ?? '',
       status: json['status'] ?? '',
-      delivery: Delivery.fromJson(json['delivery']),
+      delivery: json['delivery'] != null
+          ? Delivery.fromJson(json['delivery'])
+          : Delivery(address: '', type: ''),
       translationFrom: json['translationfrom'] ?? '',
-      translationTo: (json['translationto'] as List)
+      translationTo: (json['translationto'] != null)
+          ? (json['translationto'] as List)
           .map((item) => TranslationTo.fromJson(item))
-          .toList(),
+          .toList()
+          : [],
       notes: json['notes'] ?? '',
       files: List<String>.from(json['files'] ?? []),
     );

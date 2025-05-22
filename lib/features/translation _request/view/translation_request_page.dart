@@ -306,124 +306,236 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
               elevation: 0,
               iconTheme: const IconThemeData(color: Colors.black),
             ),
-            body: SingleChildScrollView(
-              padding: EdgeInsets.all(20),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    Image.asset("assets/images/img_new.png"),
-                    SizedBox(height: 5),
-                    Text(
-                      Translations.getText(
-                        'newreq',
-                        context
-                            .read<LocalizationProvider>()
-                            .locale
-                            .languageCode,
-                      ),
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      Translations.getText(
-                        'langneed',
-                        context
-                            .read<LocalizationProvider>()
-                            .locale
-                            .languageCode,
-                      ),
-                    ),
-                    SizedBox(height: 5),
-                    Align(
-                      alignment: AlignmentDirectional.topStart,
-                      child: Text(
+            body: SafeArea(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(20),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      Image.asset("assets/images/img_new.png"),
+                      SizedBox(height: 5),
+                       Text(
                         Translations.getText(
-                          'edjat',
+                          'newreq',
                           context
                               .read<LocalizationProvider>()
                               .locale
                               .languageCode,
                         ),
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.start,
                       ),
-                    ),
-                    SizedBox(height: 5),
-                    DropdownButtonFormField<String>(
-                      decoration: InputDecoration(
-                        hintText: Translations.getText(
-                          'chooose',
+                      SizedBox(height: 5),
+                      Text(
+                        Translations.getText(
+                          'langneed',
                           context
                               .read<LocalizationProvider>()
                               .locale
                               .languageCode,
                         ),
-                        filled: true,
-                        fillColor: Colors.white,
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.transparent),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.blue, width: 2),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.red),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.red, width: 2),
+                      ),
+                      SizedBox(height: 5),
+                      Align(
+                        alignment: AlignmentDirectional.topStart,
+                        child: Text(
+                          Translations.getText(
+                            'edjat',
+                            context
+                                .read<LocalizationProvider>()
+                                .locale
+                                .languageCode,
+                          ),
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.start,
                         ),
                       ),
-                      items: ['Arabic', 'English']
-                          .map((lang) =>
-                              DropdownMenuItem(value: lang, child: Text(lang)))
-                          .toList(),
-                      onChanged: (value) =>
-                          setState(() => fileLanguage = value),
-                      validator: (value) => value == null
-                          ? Translations.getText('required', locale)
-                          : null,
-                    ),
-                    SizedBox(height: 15),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Align(
-                          alignment: AlignmentDirectional.topStart,
-                          child: Text(
+                      SizedBox(height: 5),
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          hintText: Translations.getText(
+                            'chooose',
+                            context
+                                .read<LocalizationProvider>()
+                                .locale
+                                .languageCode,
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.transparent),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.blue, width: 2),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.red),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.red, width: 2),
+                          ),
+                        ),
+                        items: ['Arabic', 'English']
+                            .map((lang) =>
+                                DropdownMenuItem(value: lang, child: Text(lang)))
+                            .toList(),
+                        onChanged: (value) =>
+                            setState(() => fileLanguage = value),
+                        validator: (value) => value == null
+                            ? Translations.getText('required', locale)
+                            : null,
+                      ),
+                      SizedBox(height: 15),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Align(
+                            alignment: AlignmentDirectional.topStart,
+                            child: Text(
+                              Translations.getText(
+                                'attach',
+                                context
+                                    .read<LocalizationProvider>()
+                                    .locale
+                                    .languageCode,
+                              ),
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.start,
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          GestureDetector(
+                            onTap: _showLanguageDialog,
+                            child: AbsorbPointer(
+                              child: DropdownButtonFormField<String>(
+                                decoration: InputDecoration(
+                                  labelText: Translations.getText(
+                                    'chooose',
+                                    context
+                                        .read<LocalizationProvider>()
+                                        .locale
+                                        .languageCode,
+                                  ),
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 14),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide:
+                                        BorderSide(color: Colors.blue, width: 2),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(color: Colors.red),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide:
+                                        BorderSide(color: Colors.red, width: 2),
+                                  ),
+                                ),
+                                value: null,
+                                items: [],
+                                onChanged: null,
+                                validator: (value) => translationLanguages.isEmpty
+                                    ? Translations.getText('required', locale)
+                                    : null,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Wrap(
+                            spacing: 6.0,
+                            children: translationLanguages
+                                .map((lang) => Chip(label: Text(lang)))
+                                .toList(),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 15),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
                             Translations.getText(
-                              'attach',
+                              'addressway',
                               context
                                   .read<LocalizationProvider>()
                                   .locale
                                   .languageCode,
                             ),
                             style: TextStyle(fontWeight: FontWeight.bold),
-                            textAlign: TextAlign.start,
                           ),
-                        ),
-                        SizedBox(height: 5),
-                        GestureDetector(
-                          onTap: _showLanguageDialog,
-                          child: AbsorbPointer(
-                            child: DropdownButtonFormField<String>(
-                              decoration: InputDecoration(
-                                labelText: Translations.getText(
-                                  'chooose',
-                                  context
-                                      .read<LocalizationProvider>()
-                                      .locale
-                                      .languageCode,
+                          SizedBox(height: 1),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: RadioListTile<String>(
+                                  title: Text(
+                                      Translations.getText('office', locale)),
+                                  value: 'Office',
+                                  activeColor: Colors.blue,
+                                  groupValue: deliveryMethod,
+                                  onChanged: (value) =>
+                                      setState(() => deliveryMethod = value),
+                                  contentPadding: EdgeInsets.zero,
                                 ),
+                              ),
+                              Expanded(
+                                child: RadioListTile<String>(
+                                  title:
+                                      Text(Translations.getText(
+                                        'home_value',
+                                        context
+                                            .read<LocalizationProvider>()
+                                            .locale
+                                            .languageCode,
+                                      )),
+                                  value: 'Home',
+                                  activeColor: Colors.blue,
+                                  groupValue: deliveryMethod,
+                                  onChanged: (value) =>
+                                      setState(() => deliveryMethod = value),
+                                  contentPadding: EdgeInsets.zero,
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (_submitted && deliveryMethod == null)
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: Text(
+                                Translations.getText('required', locale),
+                                style: TextStyle(color: Colors.red, fontSize: 12),
+                              ),
+                            ),
+                        ],
+                      ),
+                      if (deliveryMethod == 'Home') ...[
+                        Column(
+                          children: [
+                            TextFormField(
+                              decoration: InputDecoration(
+                                labelText:
+                                    Translations.getText('address', locale),
+                                labelStyle: TextStyle(color: Colors.blue),
+                                prefixIcon: Icon(Icons.home_outlined),
                                 filled: true,
-                                fillColor: Colors.white,
+                                fillColor: Colors.grey.shade200,
                                 contentPadding: EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 14),
+                                    horizontal: 16, vertical: 14),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide:
@@ -444,517 +556,407 @@ class _TranslationOrderFormState extends State<TranslationOrderForm> {
                                       BorderSide(color: Colors.red, width: 2),
                                 ),
                               ),
-                              value: null,
-                              items: [],
-                              onChanged: null,
-                              validator: (value) => translationLanguages.isEmpty
-                                  ? Translations.getText('required', locale)
-                                  : null,
+                              onChanged: (value) => address = value,
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            FutureBuilder(
+                              future: fetchAddresses(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Center(
+                                      child: CircularProgressIndicator(
+                                    color: Colors.blue,
+                                  ));
+                                } else if (snapshot.hasError) {
+                                  /*return Text(Translations.getText(
+                                      'fetch_error', locale));
+                                   */
+                                  return Text('');
+                                } else {
+                                  final addresses = snapshot.data!;
+                                  return Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        Translations.getText(
+                                            'choose_address', locale),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemCount: addresses.length,
+                                        itemBuilder: (context, index) {
+                                          final address = addresses[index];
+                                          return GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                selectedAddressId = address.id;
+                                                selectedAddressName = address.name;
+                                              });
+                                            },
+                                            child: Container(
+                                              margin: const EdgeInsets.only(bottom: 12),
+                                              padding: const EdgeInsets.all(12),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius: BorderRadius.circular(12),
+                                                border: Border.all(
+                                                  color: selectedAddressId == address.id
+                                                      ? Color(0xff409EDC)
+                                                      : Colors.transparent,
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  /// ✅ العنوان الكامل
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          '${address.name}',
+                                                          style: const TextStyle(
+                                                            fontWeight: FontWeight.bold,
+                                                            color: Color(0xff409EDC),
+                                                            fontSize: 14,
+                                                          ),
+                                                        ),
+                                                        const SizedBox(height: 4),
+                                                        Text(
+                                                          '${Translations.getText('address', locale)}: ${address.address}',
+                                                          style: const TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: 13,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+              
+                                                  /// ✅ زر التحديد
+                                                  Radio<String>(
+                                                    value: address.id,
+                                                    groupValue: selectedAddressId,
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        selectedAddressId = value!;
+                                                        selectedAddressName = address.name;
+                                                      });
+                                                    },
+                                                    activeColor: Color(0xff409EDC),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                }
+                              },
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Align(
+                              alignment:
+                              Directionality.of(context) == TextDirection.rtl
+                                  ? Alignment.centerLeft
+                                  : Alignment.centerRight,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => SavedAddress()));
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xff409EDC),
+                                  shape: const CircleBorder(),
+                                  padding: const EdgeInsets.all(5),
+                                  elevation: 4,
+                                ),
+                                child: Container(
+                                  width: 30,
+                                  height: 30,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border:
+                                    Border.all(color: Colors.white, width: 2),
+                                  ),
+                                  child: const Icon(Icons.add,
+                                      size: 18, color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 15),
+                      ],
+                      Theme(
+                        data: Theme.of(context).copyWith(
+                          textSelectionTheme: const TextSelectionThemeData(
+                            cursorColor: Color.fromRGBO(64, 157, 220, 1),
+                            selectionColor: Color.fromRGBO(64, 157, 220, 1),
+                            selectionHandleColor: Color.fromRGBO(64, 157, 220, 1),
+                          ),
+                        ),
+                        child: TextFormField(
+                          maxLines: 3,
+                          onChanged: (value) => notes = value,
+                          decoration: InputDecoration(
+                            labelText: Translations.getText(
+                              'notess',
+                              context
+                                  .read<LocalizationProvider>()
+                                  .locale
+                                  .languageCode,
+                            ),
+                            labelStyle: const TextStyle(color: Colors.blue),
+                            filled: true,
+                            fillColor: Colors.grey.shade200,
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 14),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide:
+                                  BorderSide(color: Colors.blue, width: 2),
                             ),
                           ),
                         ),
-                        SizedBox(height: 5),
-                        Wrap(
-                          spacing: 6.0,
-                          children: translationLanguages
-                              .map((lang) => Chip(label: Text(lang)))
-                              .toList(),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 15),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
+                      ),
+                      SizedBox(height: 20),
+                      Align(
+                        alignment: AlignmentDirectional.topStart,
+                        child: Text(
                           Translations.getText(
-                            'addressway',
+                            'attach',
                             context
                                 .read<LocalizationProvider>()
                                 .locale
                                 .languageCode,
                           ),
                           style: TextStyle(fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.start,
                         ),
-                        SizedBox(height: 1),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: RadioListTile<String>(
-                                title: Text(
-                                    Translations.getText('office', locale)),
-                                value: 'Office',
-                                activeColor: Colors.blue,
-                                groupValue: deliveryMethod,
-                                onChanged: (value) =>
-                                    setState(() => deliveryMethod = value),
-                                contentPadding: EdgeInsets.zero,
+                      ),
+                      SizedBox(height: 5),
+                      SizedBox(
+                        width: double.infinity,
+                        child: InkWell(
+                          onTap: () async {
+                            final files = await openFiles(acceptedTypeGroups: [
+                              XTypeGroup(label: 'docs', extensions: [
+                                'pdf',
+                                'doc',
+                                'docx',
+                                'ppt',
+                                'pptx'
+                              ])
+                            ]);
+                            if (files.isNotEmpty) {
+                              setState(() {
+                                uploadedFiles.addAll(
+                                  files.where((file) => !uploadedFiles
+                                      .any((f) => f.path == file.path)),
+                                );
+                              });
+                            }
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
+                            color: Colors.grey.shade200,
+                            child: Row(
+                              children: Directionality.of(context) == TextDirection.rtl
+                                  ? [
+                                Icon(Icons.file_upload, color: Colors.black),
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: Text(
+                                    Translations.getText('attach2', context.read<LocalizationProvider>().locale.languageCode),
+                                    style: TextStyle(color: Colors.black),
+                                    textAlign: TextAlign.start,
+                                  ),
+                                ),
+                              ]
+                                  : [
+                                Flexible(
+                                  child: Text(
+                                    Translations.getText('attach2', context.read<LocalizationProvider>().locale.languageCode),
+                                    style: TextStyle(color: Colors.black),
+                                    textAlign: TextAlign.start,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: Directionality.of(context) == TextDirection.rtl ? 88: 65,
+                                ),
+                                Icon(Icons.file_upload, color: Colors.black),
+                              ],
+                            )
+                          ),
+                        ),
+                      ),
+                      Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: uploadedFiles.map((file) {
+                          final extension =
+                              file.name.split('.').last.toLowerCase();
+                          final isPDF = extension == 'pdf';
+                          final isDOC = ['doc', 'docx'].contains(extension);
+                          final isXLS = ['xls', 'xlsx'].contains(extension);
+              
+                          IconData icon;
+                          Color color;
+                          String label;
+              
+                          if (isPDF) {
+                            icon = Icons.picture_as_pdf;
+                            color = Colors.red;
+                            label = 'PDF';
+                          } else if (isDOC) {
+                            icon = Icons.description;
+                            color = Colors.blue;
+                            label = 'DOC';
+                          } else if (isXLS) {
+                            icon = Icons.table_chart;
+                            color = Colors.green;
+                            label = 'XLS';
+                          } else {
+                            icon = Icons.insert_drive_file;
+                            color = Colors.grey;
+                            label = extension.toUpperCase();
+                          }
+              
+                          return Stack(
+                            children: [
+                              Container(
+                                width: 80,
+                                height: 100,
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade100,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(icon, size: 36, color: color),
+                                    SizedBox(height: 8),
+                                    Text(label,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold)),
+                                  ],
+                                ),
                               ),
+                              Positioned(
+                                top: 0,
+                                left: 0,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      uploadedFiles.remove(file);
+                                    });
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    padding: EdgeInsets.all(4),
+                                    child: Icon(Icons.close,
+                                        color: Colors.white, size: 14),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        }).toList(),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                          '${uploadedFiles.length} ${Translations.getText('files_selected', locale)}'),
+                      SizedBox(height: 20),
+                      SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: isLoading
+                                ? null
+                                : () {
+                                    setState(() {
+                                      _submitted = true;
+                                    });
+                                    bool isValid =
+                                        _formKey.currentState!.validate();
+                                    if (!isValid ||
+                                        translationLanguages.isEmpty ||
+                                        uploadedFiles.isEmpty ||
+                                        deliveryMethod == null) {
+                                      if (translationLanguages.isEmpty) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                          content: Text(Translations.getText(
+                                              'select_language_error', locale)),
+                                        ));
+                                      }
+                                      if (uploadedFiles.isEmpty) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(Translations.getText(
+                                                'upload_file_error', locale)),
+                                          ),
+                                        );
+                                      }
+                                      return;
+                                    }
+              
+                                    submitOrder();
+                                  },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xff409EDC),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              padding: EdgeInsets.symmetric(vertical: 14),
                             ),
-                            Expanded(
-                              child: RadioListTile<String>(
-                                title:
-                                    Text(Translations.getText(
-                                      'home_value',
+                            child: isLoading
+                                ? SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : Text(
+                                    Translations.getText(
+                                      'send_req',
                                       context
                                           .read<LocalizationProvider>()
                                           .locale
                                           .languageCode,
-                                    )),
-                                value: 'Home',
-                                activeColor: Colors.blue,
-                                groupValue: deliveryMethod,
-                                onChanged: (value) =>
-                                    setState(() => deliveryMethod = value),
-                                contentPadding: EdgeInsets.zero,
-                              ),
-                            ),
-                          ],
-                        ),
-                        if (_submitted && deliveryMethod == null)
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: Text(
-                              Translations.getText('required', locale),
-                              style: TextStyle(color: Colors.red, fontSize: 12),
-                            ),
-                          ),
-                      ],
-                    ),
-                    if (deliveryMethod == 'Home') ...[
-                      Column(
-                        children: [
-                          TextFormField(
-                            decoration: InputDecoration(
-                              labelText:
-                                  Translations.getText('address', locale),
-                              labelStyle: TextStyle(color: Colors.blue),
-                              prefixIcon: Icon(Icons.home_outlined),
-                              filled: true,
-                              fillColor: Colors.grey.shade200,
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 14),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide:
-                                    BorderSide(color: Colors.transparent),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide:
-                                    BorderSide(color: Colors.blue, width: 2),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: Colors.red),
-                              ),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide:
-                                    BorderSide(color: Colors.red, width: 2),
-                              ),
-                            ),
-                            onChanged: (value) => address = value,
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          FutureBuilder(
-                            future: fetchAddresses(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Center(
-                                    child: CircularProgressIndicator(
-                                  color: Colors.blue,
-                                ));
-                              } else if (snapshot.hasError) {
-                                /*return Text(Translations.getText(
-                                    'fetch_error', locale));
-                                 */
-                                return Text('');
-                              } else {
-                                final addresses = snapshot.data!;
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      Translations.getText(
-                                          'choose_address', locale),
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16),
                                     ),
-                                    const SizedBox(height: 10),
-                                    ListView.builder(
-                                      shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
-                                      itemCount: addresses.length,
-                                      itemBuilder: (context, index) {
-                                        final address = addresses[index];
-                                        return GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              selectedAddressId = address.id;
-                                              selectedAddressName = address.name;
-                                            });
-                                          },
-                                          child: Container(
-                                            margin: const EdgeInsets.only(bottom: 12),
-                                            padding: const EdgeInsets.all(12),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius: BorderRadius.circular(12),
-                                              border: Border.all(
-                                                color: selectedAddressId == address.id
-                                                    ? Color(0xff409EDC)
-                                                    : Colors.transparent,
-                                                width: 1.5,
-                                              ),
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                /// ✅ العنوان الكامل
-                                                Expanded(
-                                                  child: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Text(
-                                                        '${address.name}',
-                                                        style: const TextStyle(
-                                                          fontWeight: FontWeight.bold,
-                                                          color: Color(0xff409EDC),
-                                                          fontSize: 14,
-                                                        ),
-                                                      ),
-                                                      const SizedBox(height: 4),
-                                                      Text(
-                                                        '${Translations.getText('address', locale)}: ${address.address}',
-                                                        style: const TextStyle(
-                                                          color: Colors.black,
-                                                          fontSize: 13,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-
-                                                /// ✅ زر التحديد
-                                                Radio<String>(
-                                                  value: address.id,
-                                                  groupValue: selectedAddressId,
-                                                  onChanged: (value) {
-                                                    setState(() {
-                                                      selectedAddressId = value!;
-                                                      selectedAddressName = address.name;
-                                                    });
-                                                  },
-                                                  activeColor: Color(0xff409EDC),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                );
-                              }
-                            },
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Align(
-                            alignment:
-                            Directionality.of(context) == TextDirection.rtl
-                                ? Alignment.centerLeft
-                                : Alignment.centerRight,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => SavedAddress()));
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xff409EDC),
-                                shape: const CircleBorder(),
-                                padding: const EdgeInsets.all(5),
-                                elevation: 4,
-                              ),
-                              child: Container(
-                                width: 30,
-                                height: 30,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border:
-                                  Border.all(color: Colors.white, width: 2),
-                                ),
-                                child: const Icon(Icons.add,
-                                    size: 18, color: Colors.white),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 15),
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                          ))
                     ],
-                    Theme(
-                      data: Theme.of(context).copyWith(
-                        textSelectionTheme: const TextSelectionThemeData(
-                          cursorColor: Color.fromRGBO(64, 157, 220, 1),
-                          selectionColor: Color.fromRGBO(64, 157, 220, 1),
-                          selectionHandleColor: Color.fromRGBO(64, 157, 220, 1),
-                        ),
-                      ),
-                      child: TextFormField(
-                        maxLines: 3,
-                        onChanged: (value) => notes = value,
-                        decoration: InputDecoration(
-                          labelText: Translations.getText(
-                            'notess',
-                            context
-                                .read<LocalizationProvider>()
-                                .locale
-                                .languageCode,
-                          ),
-                          labelStyle: const TextStyle(color: Colors.blue),
-                          filled: true,
-                          fillColor: Colors.grey.shade200,
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 14),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide:
-                                BorderSide(color: Colors.blue, width: 2),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Align(
-                      alignment: AlignmentDirectional.topStart,
-                      child: Text(
-                        Translations.getText(
-                          'attach',
-                          context
-                              .read<LocalizationProvider>()
-                              .locale
-                              .languageCode,
-                        ),
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.start,
-                      ),
-                    ),
-                    SizedBox(height: 5),
-                    SizedBox(
-                      width: double.infinity,
-                      child: InkWell(
-                        onTap: () async {
-                          final files = await openFiles(acceptedTypeGroups: [
-                            XTypeGroup(label: 'docs', extensions: [
-                              'pdf',
-                              'doc',
-                              'docx',
-                              'ppt',
-                              'pptx'
-                            ])
-                          ]);
-                          if (files.isNotEmpty) {
-                            setState(() {
-                              uploadedFiles.addAll(
-                                files.where((file) => !uploadedFiles
-                                    .any((f) => f.path == file.path)),
-                              );
-                            });
-                          }
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12),
-                          color: Colors.grey.shade200,
-                          child: Row(
-                            children: Directionality.of(context) == TextDirection.rtl
-                                ? [
-                              Icon(Icons.file_upload, color: Colors.black),
-                              const SizedBox(width: 8),
-                              Flexible(
-                                child: Text(
-                                  Translations.getText('attach2', context.read<LocalizationProvider>().locale.languageCode),
-                                  style: TextStyle(color: Colors.black),
-                                  textAlign: TextAlign.start,
-                                ),
-                              ),
-                            ]
-                                : [
-                              Flexible(
-                                child: Text(
-                                  Translations.getText('attach2', context.read<LocalizationProvider>().locale.languageCode),
-                                  style: TextStyle(color: Colors.black),
-                                  textAlign: TextAlign.start,
-                                ),
-                              ),
-                              SizedBox(
-                                width: Directionality.of(context) == TextDirection.rtl ? 88: 65,
-                              ),
-                              Icon(Icons.file_upload, color: Colors.black),
-                            ],
-                          )
-                        ),
-                      ),
-                    ),
-                    Wrap(
-                      spacing: 10,
-                      runSpacing: 10,
-                      children: uploadedFiles.map((file) {
-                        final extension =
-                            file.name.split('.').last.toLowerCase();
-                        final isPDF = extension == 'pdf';
-                        final isDOC = ['doc', 'docx'].contains(extension);
-                        final isXLS = ['xls', 'xlsx'].contains(extension);
-
-                        IconData icon;
-                        Color color;
-                        String label;
-
-                        if (isPDF) {
-                          icon = Icons.picture_as_pdf;
-                          color = Colors.red;
-                          label = 'PDF';
-                        } else if (isDOC) {
-                          icon = Icons.description;
-                          color = Colors.blue;
-                          label = 'DOC';
-                        } else if (isXLS) {
-                          icon = Icons.table_chart;
-                          color = Colors.green;
-                          label = 'XLS';
-                        } else {
-                          icon = Icons.insert_drive_file;
-                          color = Colors.grey;
-                          label = extension.toUpperCase();
-                        }
-
-                        return Stack(
-                          children: [
-                            Container(
-                              width: 80,
-                              height: 100,
-                              padding: EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade100,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(icon, size: 36, color: color),
-                                  SizedBox(height: 8),
-                                  Text(label,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold)),
-                                ],
-                              ),
-                            ),
-                            Positioned(
-                              top: 0,
-                              left: 0,
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    uploadedFiles.remove(file);
-                                  });
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.red,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  padding: EdgeInsets.all(4),
-                                  child: Icon(Icons.close,
-                                      color: Colors.white, size: 14),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      }).toList(),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                        '${uploadedFiles.length} ${Translations.getText('files_selected', locale)}'),
-                    SizedBox(height: 20),
-                    SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: isLoading
-                              ? null
-                              : () {
-                                  setState(() {
-                                    _submitted = true;
-                                  });
-                                  bool isValid =
-                                      _formKey.currentState!.validate();
-                                  if (!isValid ||
-                                      translationLanguages.isEmpty ||
-                                      uploadedFiles.isEmpty ||
-                                      deliveryMethod == null) {
-                                    if (translationLanguages.isEmpty) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                        content: Text(Translations.getText(
-                                            'select_language_error', locale)),
-                                      ));
-                                    }
-                                    if (uploadedFiles.isEmpty) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(Translations.getText(
-                                              'upload_file_error', locale)),
-                                        ),
-                                      );
-                                    }
-                                    return;
-                                  }
-
-                                  submitOrder();
-                                },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xff409EDC),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            padding: EdgeInsets.symmetric(vertical: 14),
-                          ),
-                          child: isLoading
-                              ? SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : Text(
-                                  Translations.getText(
-                                    'send_req',
-                                    context
-                                        .read<LocalizationProvider>()
-                                        .locale
-                                        .languageCode,
-                                  ),
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                        ))
-                  ],
+                  ),
                 ),
               ),
             ),

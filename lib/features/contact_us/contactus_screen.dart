@@ -94,90 +94,92 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
               ),
               iconTheme: const IconThemeData(color: Colors.black),
             ),
-            body: Padding(
-              padding: const EdgeInsets.all(16),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment:
-                  locale == 'ar' ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                  children: [
-                    Center(child: Image.asset('assets/images/img1.png', height: 80)),
-                    const SizedBox(height: 16),
-                    Center(
-                      child: Text(
-                        Translations.getText('contactus', locale),
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Center(
-                      child: Text(
-                        Translations.getText('through', locale),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: Color(0xff676767),
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment:
+                    locale == 'ar' ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                    children: [
+                      Center(child: Image.asset('assets/images/img1.png', height: 80)),
+                      const SizedBox(height: 16),
+                      Center(
+                        child: Text(
+                          Translations.getText('contactus', locale),
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset("assets/images/img55.png"),
-                        const SizedBox(width: 8),
-                        Image.asset("assets/images/img50.png"),
-                        const SizedBox(width: 8),
-                        Image.asset("assets/images/img49.png"),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Center(
-                      child: Text(Translations.getText('or', locale)),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      Translations.getText('name', locale),
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                    _buildInputField(nameController, 'name2', locale),
-                    const SizedBox(height: 10),
-                    Text(
-                      Translations.getText('address2', locale),
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                    _buildInputField(phoneController, 'plss', locale),
-                    const SizedBox(height: 10),
-                    Text(
-                      Translations.getText('email', locale),
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                    _buildInputField(emailController, 'email_hint', locale),
-                    const SizedBox(height: 10),
-                    Text(
-                      Translations.getText('msst', locale),
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                    _buildInputField(messageController, 'ent', locale, lines: 4),
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: ElevatedButton(
-                        onPressed: sendContactMessage,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xff409EDC),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                      const SizedBox(height: 8),
+                      Center(
+                        child: Text(
+                          Translations.getText('through', locale),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Color(0xff676767),
                           ),
                         ),
-                        child: Text(
-                          Translations.getText('s', locale),
-                          style: const TextStyle(fontSize: 16, color: Colors.white),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset("assets/images/img55.png"),
+                          const SizedBox(width: 8),
+                          Image.asset("assets/images/img50.png"),
+                          const SizedBox(width: 8),
+                          Image.asset("assets/images/img49.png"),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Center(
+                        child: Text(Translations.getText('or', locale)),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        Translations.getText('name', locale),
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                      ),
+                      _buildInputField(nameController, 'name2', locale),
+                      const SizedBox(height: 10),
+                      Text(
+                        Translations.getText('address2', locale),
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                      ),
+                      _buildInputField(phoneController, 'plss', locale),
+                      const SizedBox(height: 10),
+                      Text(
+                        Translations.getText('email', locale),
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                      ),
+                      _buildInputField(emailController, 'email_hint', locale),
+                      const SizedBox(height: 10),
+                      Text(
+                        Translations.getText('msst', locale),
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                      ),
+                      _buildInputField(messageController, 'ent', locale, lines: 4),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: ElevatedButton(
+                          onPressed: sendContactMessage,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xff409EDC),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: Text(
+                            Translations.getText('s', locale),
+                            style: const TextStyle(fontSize: 16, color: Colors.white),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

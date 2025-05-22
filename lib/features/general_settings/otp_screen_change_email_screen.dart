@@ -62,131 +62,133 @@ class _OtpScreenChangeEmailScreenState extends State<OtpScreenChangeEmailScreen>
       create: (_) => LoginViewModel(),
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: LayoutBuilder(
-          builder: (context, constraints) {
-            double screenWidth = constraints.maxWidth;
-            double padding = screenWidth > 600 ? 48 : 24;
-            double imageWidth = screenWidth > 600 ? 250 : 204;
-            double buttonHeight = screenWidth > 600 ? 60 : 50;
-
-            return Stack(
-              children: [
-                SingleChildScrollView(
-                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: padding),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        SizedBox(height: screenWidth > 600 ? 150 : 130),
-                        Center(
-                          child: Image.asset('assets/images/img1.png',
-                              width: imageWidth, height: imageWidth * 0.37),
-                        ),
-                        const SizedBox(height: 16),
-                        Center(
-                          child: Text(
-                            Translations.getText('activation_title', langCode),
-                            textDirection: context.read<LocalizationProvider>().locale.languageCode == 'ar'
-                                ? TextDirection.rtl
-                                : TextDirection.ltr,
+        body: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              double screenWidth = constraints.maxWidth;
+              double padding = screenWidth > 600 ? 48 : 24;
+              double imageWidth = screenWidth > 600 ? 250 : 204;
+              double buttonHeight = screenWidth > 600 ? 60 : 50;
+          
+              return Stack(
+                children: [
+                  SingleChildScrollView(
+                    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: padding),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          SizedBox(height: screenWidth > 600 ? 150 : 130),
+                          Center(
+                            child: Image.asset('assets/images/img1.png',
+                                width: imageWidth, height: imageWidth * 0.37),
+                          ),
+                          const SizedBox(height: 16),
+                          Center(
+                            child: Text(
+                              Translations.getText('activation_title', langCode),
+                              textDirection: context.read<LocalizationProvider>().locale.languageCode == 'ar'
+                                  ? TextDirection.rtl
+                                  : TextDirection.ltr,
+                              style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'IBM_Plex_Sans_Arabic'),
+                            ),
+                          ),
+                          Text(
+                            Translations.getText('choose_activation_method', langCode),
                             style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                                color: Color(0xffB3B3B3),
+                                fontWeight: FontWeight.w500,
                                 fontFamily: 'IBM_Plex_Sans_Arabic'),
                           ),
-                        ),
-                        Text(
-                          Translations.getText('choose_activation_method', langCode),
-                          style: const TextStyle(
-                              fontSize: 12,
-                              color: Color(0xffB3B3B3),
-                              fontWeight: FontWeight.w500,
-                              fontFamily: 'IBM_Plex_Sans_Arabic'),
-                        ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          controller: codeController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            hintText: Translations.getText('enter_code', langCode),
-                            filled: true,
-                            fillColor: const Color(0xffFAFAFA),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        SizedBox(
-                          width: double.infinity,
-                          height: buttonHeight,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              verifyCode(codeController.text);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xff409EDC),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: codeController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              hintText: Translations.getText('enter_code', langCode),
+                              filled: true,
+                              fillColor: const Color(0xffFAFAFA),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(16),
                               ),
-                            ),
-                            child: Text(
-                              Translations.getText('confirm', langCode),
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: 'IBM_Plex_Sans_Arabic',
-                                color: Colors.white,
-                              ),
+                              contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 60,
-                  left: padding,
-                  child: SizedBox(
-                    width: screenWidth * .9,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Image.asset(
-                          'assets/images/img2.png',
-                          width: screenWidth > 600 ? 120 : 98,
-                          height: screenWidth > 600 ? 40 : 33,
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              Translations.getText('activation_title', langCode),
-                              style: const TextStyle(
-                                color: Color(0xff1D1D1D),
-                                fontWeight: FontWeight.w600,
-                                fontSize: 18,
-                                fontFamily: 'IBM_Plex_Sans_Arabic',
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                Navigator.pop(context);
+                          const SizedBox(height: 20),
+                          SizedBox(
+                            width: double.infinity,
+                            height: buttonHeight,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                verifyCode(codeController.text);
                               },
-                              child: const Icon(Icons.arrow_forward_ios),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xff409EDC),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: Text(
+                                Translations.getText('confirm', langCode),
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'IBM_Plex_Sans_Arabic',
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-            );
-          },
+                  Positioned(
+                    top: 60,
+                    left: padding,
+                    child: SizedBox(
+                      width: screenWidth * .9,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Image.asset(
+                            'assets/images/img2.png',
+                            width: screenWidth > 600 ? 120 : 98,
+                            height: screenWidth > 600 ? 40 : 33,
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                Translations.getText('activation_title', langCode),
+                                style: const TextStyle(
+                                  color: Color(0xff1D1D1D),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 18,
+                                  fontFamily: 'IBM_Plex_Sans_Arabic',
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Icon(Icons.arrow_forward_ios),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

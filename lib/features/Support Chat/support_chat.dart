@@ -170,82 +170,84 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
         iconTheme: const IconThemeData(color: Colors.black),
         elevation: 0,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              reverse: false,
-              padding: const EdgeInsets.all(16),
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                final msg = messages[index];
-                final isClient = msg['sender'] == 'client';
-                final time = DateFormat('HH:mm').format(DateTime.parse(msg['time']).toLocal());
-
-                return Align(
-                  alignment: isClient ? Alignment.centerRight : Alignment.centerLeft,
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                    padding: const EdgeInsets.all(12),
-                    constraints: const BoxConstraints(maxWidth: 280),
-                    decoration: BoxDecoration(
-                      color: isClient ? const Color(0xFFE6E6E6) : const Color(0xFFD6F0FF),
-                      borderRadius: BorderRadius.circular(12),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                reverse: false,
+                padding: const EdgeInsets.all(16),
+                itemCount: messages.length,
+                itemBuilder: (context, index) {
+                  final msg = messages[index];
+                  final isClient = msg['sender'] == 'client';
+                  final time = DateFormat('HH:mm').format(DateTime.parse(msg['time']).toLocal());
+        
+                  return Align(
+                    alignment: isClient ? Alignment.centerRight : Alignment.centerLeft,
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(vertical: 4),
+                      padding: const EdgeInsets.all(12),
+                      constraints: const BoxConstraints(maxWidth: 280),
+                      decoration: BoxDecoration(
+                        color: isClient ? const Color(0xFFE6E6E6) : const Color(0xFFD6F0FF),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment:
+                        isClient ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            msg['message'],
+                            style: const TextStyle(fontSize: 14, color: Colors.black),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            time,
+                            style: const TextStyle(fontSize: 10, color: Color(0xFFB3B3B3)),
+                          ),
+                        ],
+                      ),
                     ),
-                    child: Column(
-                      crossAxisAlignment:
-                      isClient ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          msg['message'],
-                          style: const TextStyle(fontSize: 14, color: Colors.black),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          time,
-                          style: const TextStyle(fontSize: 10, color: Color(0xFFB3B3B3)),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF2F2F2),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: TextField(
-                      controller: messageController,
-                      decoration: InputDecoration(
-                        hintText: Translations.getText('support_hint', langCode),
-                        border: InputBorder.none,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF2F2F2),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: TextField(
+                        controller: messageController,
+                        decoration: InputDecoration(
+                          hintText: Translations.getText('support_hint', langCode),
+                          border: InputBorder.none,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                CircleAvatar(
-                  backgroundColor: const Color(0xFF409EDC),
-                  child: IconButton(
-                    icon: const Icon(Icons.send, color: Colors.white),
-                    onPressed: () {
-                      sendMessage();
-                    },
-                  ),
-                )
-              ],
-            ),
-          )
-        ],
+                  const SizedBox(width: 8),
+                  CircleAvatar(
+                    backgroundColor: const Color(0xFF409EDC),
+                    child: IconButton(
+                      icon: const Icon(Icons.send, color: Colors.white),
+                      onPressed: () {
+                        sendMessage();
+                      },
+                    ),
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
